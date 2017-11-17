@@ -5,13 +5,20 @@
 /************************************************
 init data
 ************************************************/
-static const struct {
+static const struct vertex{
 	float x, y;
 	float r, g, b;
 }vertices[3] = {
 	{ -0.6f, -0.4f, 1.f, 0.f, 0.f },
 	{ 0.6f, -0.4f, 0.f, 1.f, 0.f },
 	{ 0.f,  0.6f, 0.f, 0.f, 1.f }
+};
+
+vertex vertices_2[4] = {
+	{ -1.f, -1.f, 0.f, 0.f, 1.f },
+	{ -1.f, 1.f, 0.f, 1.f, 0.f },
+	{ 1.f, -1.f, 1.f, 0.f, 0.f },
+	{ 1.f, 1.f, 1.f, 1.f, 0.f },
 };
 
 static const char* vertex_shader_text = 
@@ -44,7 +51,7 @@ GLint mvp_location, vpos_location, vc_location;
 void gl_init() {
 	glGenBuffers(1, &vertex_buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_2), vertices_2, GL_STATIC_DRAW);
 
 	vertex_shader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
@@ -72,19 +79,22 @@ void gl_init() {
 }
 
 // ¸üÐÂ
-void gl_update(float width, float height, float delta_time) {
+void gl_update(float width, float height, float cur_time) {
 	glViewport(0, 0, width, height);
 	glClear(GL_COLOR_BUFFER_BIT);
 	mat4x4 m, p, mvp;
 
+	cur_time = 0;
+
 	float ratio = width / height;
 
 	mat4x4_identity(m);
-	mat4x4_rotate_Z(m, m, delta_time);
+	mat4x4_rotate_Z(m, m, cur_time);
 	mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
 	mat4x4_mul(mvp, p, m);
 
 	glUseProgram(progrem);
 	glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*)mvp);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	//glDrawArrays(GL_TRIANGLES, 0, 3);
 }
