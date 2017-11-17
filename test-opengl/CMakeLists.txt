@@ -32,8 +32,12 @@ SET(SRC ${DIR_SRCS} ${GLFW_WINDOW_SRCS} ${HEADERS} ${GLAD_SOURCE})
 
 MESSAGE(${SRC})
 
+# 添加子目录
+add_subdirectory(./src/hello_opengl)
+link_directories(./src/hello_opengl)
+
 # 指定生成目标
 add_executable(test-opengl ${SRC})
 
 # 链接库
-target_link_libraries(test-opengl glfw3)
+target_link_libraries(test-opengl glfw3 hello_opengl)

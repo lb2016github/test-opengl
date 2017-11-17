@@ -1,3 +1,5 @@
+
+#include <hello_opengl\hello_opengl.h>
 #include <glfw_window\glfw_window.h>
 #include <stdio.h>
 #include <thread>
@@ -5,11 +7,23 @@
 
 void main(){
 	fprintf(stdout, "%s\n", "HelloGLFW");
-	init_window(1344, 750, "HellogLFW");
+	bool rst = glfw_win::init_window(640, 480, "HellogLFW");
+	if (!rst) {
+		printf("init failed");
+		glfw_win::destroy_window();
+		return;
+	}
+	gl_init();
 	while (true)
 	{
-		_sleep(0.1);
+		float width = glfw_win::get_win_width();
+		float height = glfw_win::get_win_height();
+		float time = glfw_win::get_time();
+		gl_update(width, height, time);
+		bool rst = glfw_win::update();
+		if (!rst)
+			break;
 	}
-	destroy_window();
+	glfw_win::destroy_window();
 	return;
 }
