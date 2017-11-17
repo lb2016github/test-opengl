@@ -1,15 +1,15 @@
-#include "HelloGLFW.h"
+#include <glfw_window\glfw_window.h>
 #include <stdio.h>
 #include <thread>
 #include <stdlib.h>
 
 void main(){
 	fprintf(stdout, "%s\n", "HelloGLFW");
-	HelloGLFW* window = new HelloGLFW(1344, 750, "Hello GLFW");
+	init_window(1344, 750, "HellogLFW");
 	while (true)
 	{
-		window->update(0.1);
 		_sleep(0.1);
 	}
+	destroy_window();
 	return;
 }
