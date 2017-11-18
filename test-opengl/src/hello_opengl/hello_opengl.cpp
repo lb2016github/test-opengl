@@ -15,10 +15,10 @@ static const struct vertex{
 };
 
 vertex vertices_2[4] = {
-	{ -1.f, -1.f, 0.f, 0.f, 1.f },
-	{ -1.f, 1.f, 0.f, 1.f, 0.f },
-	{ 1.f, -1.f, 1.f, 0.f, 0.f },
-	{ 1.f, 1.f, 1.f, 1.f, 0.f },
+	{ -0.6f, -0.6f, 0.f, 0.f, 1.f },
+	{ -0.6f, 0.6f, 0.f, 1.f, 0.f },
+	{ 0.6f, -0.6f, 1.f, 0.f, 0.f },
+	{ 0.6f, 0.6f, 1.f, 1.f, 0.f },
 };
 
 static const char* vertex_shader_text = 
@@ -83,8 +83,6 @@ void gl_update(float width, float height, float cur_time) {
 	glViewport(0, 0, width, height);
 	glClear(GL_COLOR_BUFFER_BIT);
 	mat4x4 m, p, mvp;
-
-	cur_time = 0;
 
 	float ratio = width / height;
 
