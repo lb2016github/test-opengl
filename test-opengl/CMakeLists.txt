@@ -27,14 +27,14 @@ file(GLOB_RECURSE HEADERS src/glfw_window/*.h src/glfw_window/*.hpp)
 # 并将名称保存到DIR_SCRS变量
 aux_source_directory(./src DIR_SRCS)
 aux_source_directory(./src/glfw_window GLFW_WINDOW_SRCS)
-SET(GLAD_SOURCE "./libs/glad/glad.h" "./libs/glad.c")
+SET(GLAD_SOURCE "libs/glad/glad.h" "libs/glad.c")
 SET(SRC ${DIR_SRCS} ${GLFW_WINDOW_SRCS} ${HEADERS} ${GLAD_SOURCE})
 
 MESSAGE(${SRC})
 
 # 添加子目录
-add_subdirectory(./src/hello_opengl)
-link_directories(./src/hello_opengl)
+add_subdirectory(src/hello_opengl)
+link_directories(src/hello_opengl)
 
 # 指定生成目标
 add_executable(test-opengl ${SRC})
