@@ -15,6 +15,13 @@ static const struct vertex{
 	{0.f, 0.27f, 0.86f, 1.f, 1.f, 0.f},
 };
 
+short indices[4][3] = {
+	{0.f, 1.f, 2.f},
+	{0.f, 2.f, 3.f},
+	{0.f, 1.f, 3.f},
+	{1.f, 2.f, 3.f},
+};
+
 static const char* vertex_shader_text = 
 "uniform mat4 MVP;\n"
 "attribute vec3 vCol;\n"
@@ -38,14 +45,21 @@ static const char* fragment_shader_text =
 end init data
 ************************************************/
 
-GLuint vertex_buffer, vertex_shader, fragment_shader, progrem;
+GLuint vbo, ebo, vertex_shader, fragment_shader, progrem;
 GLint mvp_location, vpos_location, vc_location;
+
+#define BUFFER_OFFSET(offset) ((void*)(offset))
 
 // 初始化
 void gl_init() {
-	glGenBuffers(1, &vertex_buffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+	//生成缓存数据
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	glGenBuffers(1, &ebo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	vertex_shader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
@@ -65,11 +79,11 @@ void gl_init() {
 	vc_location = glGetAttribLocation(progrem, "vCol");
 
 	glEnableVertexAttribArray(vpos_location);
-	glVertexAttribPointer(vpos_location, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (void*)0);
+	glVertexAttribPointer(vpos_location, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, BUFFER_OFFSET(0));
 
 	glEnableVertexAttribArray(vc_location);
 	glVertexAttribPointer(vc_location, 3, GL_FLOAT, GL_FALSE,
-		sizeof(float) * 6, (void*)(sizeof(float) * 3));
+		sizeof(float) * 6, BUFFER_OFFSET(sizeof(float) * 3));
 }
 
 // 更新
@@ -89,5 +103,6 @@ void gl_update(float width, float height, float cur_time) {
 
 	glUseProgram(progrem);
 	glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*)mvp);
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	//glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+	glDrawElements(GL_LINE_STRIP, 4 * 3, GL_UNSIGNED_SHORT, NULL);
 }
