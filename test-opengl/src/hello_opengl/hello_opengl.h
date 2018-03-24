@@ -7,4 +7,7 @@ void gl_init();
 // ¸üÐÂ
 void gl_update(float width, float height, float delta_time);
 
+// Ïú»Ù
+void gl_destroy();
+
 #endif // !HELLO_OPENGL_h

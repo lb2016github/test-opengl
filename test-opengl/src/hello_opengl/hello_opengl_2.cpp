@@ -106,3 +106,8 @@ void gl_update(float width, float height, float cur_time) {
 	//glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 	glDrawElements(GL_LINE_STRIP, 4 * 3, GL_UNSIGNED_SHORT, NULL);
 }
+
+// 销毁
+void gl_destroy() {
+	return;
+}

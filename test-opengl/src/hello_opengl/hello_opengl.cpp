@@ -96,3 +96,9 @@ void gl_update(float width, float height, float cur_time) {
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	//glDrawArrays(GL_TRIANGLES, 0, 3);
 }
+
+
+// Ïú»Ù
+void gl_destroy() {
+	return;
+}
