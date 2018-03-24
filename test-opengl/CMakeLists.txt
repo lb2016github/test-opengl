@@ -19,25 +19,26 @@ include_directories(libs)
 include_directories(src)
 link_directories(./libs/glfw)
 
-# include文件
-file(GLOB_RECURSE HEADERS src/glfw_window/*.h src/glfw_window/*.hpp)
-#source_group("Include" FILES {HEADERS})
 
-# 查找当前目录下的所有源文件
-# 并将名称保存到DIR_SCRS变量
-aux_source_directory(./src DIR_SRCS)
-aux_source_directory(./src/glfw_window GLFW_WINDOW_SRCS)
-SET(GLAD_SOURCE "libs/glad/glad.h" "libs/glad.c")
-SET(SRC ${DIR_SRCS} ${GLFW_WINDOW_SRCS} ${HEADERS} ${GLAD_SOURCE})
+set(GLAD_SRC "libs/glad/glad.h" "libs/glad.c")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-MESSAGE(${SRC})
+#================================ Start 添加子工程 ================================#
+# 添加exe工程
+file(GLOB_RECURSE WINDOW_SRC src/glfw_window/*.*)
+add_executable(ogl_window ${WINDOW_SRC} ${GLAD_SRC} src/main.cpp)
 
-# 添加子目录
-add_subdirectory(src/hello_opengl)
-link_directories(src/hello_opengl)
+# 添加practice_ogl
+file(GLOB_RECURSE PRACTICE_SRC src/practice_ogl/*.*)
+add_library(practice_ogl ${PRACTICE_SRC})
+set(LINK_LIBS ${LINK_LIBS} practice_ogl)
 
-# 指定生成目标
-add_executable(test-opengl ${SRC})
+# 添加hello_opengl
+file(GLOB_RECURSE  HELLO_OGL_SRC src/hello_opengl/*.*)
+add_library(hello_ogl ${HELLO_OGL_SRC})
+set(LINK_LIBS ${LINK_LIBS} hello_ogl)
 
+#================================ End 添加子工程 ================================#
 # 链接库
-target_link_libraries(test-opengl glfw3 hello_opengl)
+target_link_libraries(ogl_window glfw3 ${LINK_LIBS})
