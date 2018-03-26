@@ -1,5 +1,5 @@
-#include <hello_opengl\hello_opengl.h>
 #include <glad\glad.h>
+#include "util\practice_header.h"
 #include "linmath.h"
 
 /************************************************

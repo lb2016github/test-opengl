@@ -1,4 +1,4 @@
-#include <hello_opengl\hello_opengl.h>
+#include "util\practice_header.h"
 #include <glad\glad.h>
 #include "linmath.h"
 

@@ -1,5 +1,4 @@
-
-#include <hello_opengl\hello_opengl.h>
+#include <util\practice_header.h>
 #include <glfw_window\glfw_window.h>
 #include <stdio.h>
 #include <thread>
@@ -24,6 +23,7 @@ void main(){
 		if (!rst)
 			break;
 	}
+	gl_destroy();
 	glfw_win::destroy_window();
 	return;
 }

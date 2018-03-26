@@ -1,13 +1,13 @@
-#ifndef HELLO_OPENGL_h
-#define HELLO_OPENGL_h
+#ifndef _H_PRACTICE
+#define _H_PRACTICE
 
-// ³õÊ¼»¯
+// åˆå§‹åŒ–
 void gl_init();
 
-// ¸üĞÂ
+// æ›´æ–°
 void gl_update(float width, float height, float delta_time);
 
-// Ïú»Ù
+// é”€æ¯
 void gl_destroy();
 
-#endif // !HELLO_OPENGL_h
+#endif // !_H_PRACTICE

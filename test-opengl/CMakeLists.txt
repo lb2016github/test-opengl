@@ -23,22 +23,25 @@ link_directories(./libs/glfw)
 set(GLAD_SRC "libs/glad/glad.h" "libs/glad.c")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 #================================ Start 添加子工程 ================================#
-# 添加exe工程
+# glad
+add_library(glad ${GLAD_SRC})
+
+# 添加窗口工程
 file(GLOB_RECURSE WINDOW_SRC src/glfw_window/*.*)
-add_executable(ogl_window ${WINDOW_SRC} ${GLAD_SRC} src/main.cpp)
+add_library(ogl_window SHARED ${WINDOW_SRC})
+target_link_libraries(ogl_window glfw3 glad)
 
 # 添加practice_ogl
 file(GLOB_RECURSE PRACTICE_SRC src/practice_ogl/*.*)
-add_library(practice_ogl ${PRACTICE_SRC})
-set(LINK_LIBS ${LINK_LIBS} practice_ogl)
+add_executable(practice_ogl ${PRACTICE_SRC} src/main.cpp)
+target_link_libraries(practice_ogl ogl_window glad)
 
 # 添加hello_opengl
-file(GLOB_RECURSE  HELLO_OGL_SRC src/hello_opengl/*.*)
-add_library(hello_ogl ${HELLO_OGL_SRC})
-set(LINK_LIBS ${LINK_LIBS} hello_ogl)
+set(HELLO_OPENGL_SRC src/hello_opengl/hello_opengl.cpp src/main.cpp)
+add_executable(hello_ogl ${HELLO_OPENGL_SRC})
+target_link_libraries(hello_ogl ogl_window glad)
 
 #================================ End 添加子工程 ================================#
-# 链接库
-target_link_libraries(ogl_window glfw3 ${LINK_LIBS})
