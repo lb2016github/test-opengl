@@ -31,17 +31,17 @@ add_library(glad ${GLAD_SRC})
 
 # 添加窗口工程
 file(GLOB_RECURSE WINDOW_SRC src/glfw_window/*.*)
-add_library(ogl_window SHARED ${WINDOW_SRC})
+add_library(ogl_window ${WINDOW_SRC})
 target_link_libraries(ogl_window glfw3 glad)
 
 # 添加practice_ogl
 file(GLOB_RECURSE PRACTICE_SRC src/practice_ogl/*.*)
 add_executable(practice_ogl ${PRACTICE_SRC} src/main.cpp)
-target_link_libraries(practice_ogl ogl_window glad)
+target_link_libraries(practice_ogl ogl_window)
 
 # 添加hello_opengl
 set(HELLO_OPENGL_SRC src/hello_opengl/hello_opengl.cpp src/main.cpp)
 add_executable(hello_ogl ${HELLO_OPENGL_SRC})
-target_link_libraries(hello_ogl ogl_window glad)
+target_link_libraries(hello_ogl ogl_window)
 
 #================================ End 添加子工程 ================================#

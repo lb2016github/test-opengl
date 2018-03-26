@@ -1,5 +1,4 @@
 #include <glad\glad.h>
-#define _DLL_EXPORT_DECL
 #include <glfw_window\glfw_window.h>
 #include <stdio.h>
 

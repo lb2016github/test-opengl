@@ -1,38 +1,31 @@
 #ifndef GLFW_WINDOW_H
 #define GLFW_WINDOW_H
 
-#ifdef _DLL_EXPORT_DECL
-	#define DLL_API_DECL __declspec(dllexport)
-#else
-	#define DLL_API_DECL __declspec(dllimport)
-#endif
-
-
 #include <glfw\include\glfw3.h>
 
 namespace glfw_win{
 
-// 键盘操作的回调
-DLL_API_DECL void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+// 录眉脜脤虏脵脳梅碌脛禄脴碌梅
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
-// 更新
-DLL_API_DECL bool update();
+// 赂眉脨脗
+bool update();
 
-// 错误的回调
-DLL_API_DECL void error_callback(int error, const char* description);
+// 麓铆脦贸碌脛禄脴碌梅
+void error_callback(int error, const char* description);
 
-// 初始化函数
-DLL_API_DECL bool init_window(float width, float height, char* title);
+// 鲁玫脢录禄炉潞炉脢媒
+bool init_window(float width, float height, char* title);
 
-// 关闭
-DLL_API_DECL void destroy_window();
+// 鹿脴卤脮
+void destroy_window();
 
-// 返回窗口比例
-DLL_API_DECL float get_win_width();
-DLL_API_DECL float get_win_height();
+// 路碌禄脴麓掳驴脷卤脠脌媒
+float get_win_width();
+float get_win_height();
 
-// 返回时间
-DLL_API_DECL float get_time();
+// 路碌禄脴脢卤录盲
+float get_time();
 }
 #endif
 
