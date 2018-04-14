@@ -25,6 +25,17 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
+    string( TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG )
+    set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${CMAKE_BINARY_DIR}/bin )
+    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${CMAKE_BINARY_DIR}/bin )
+    set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${CMAKE_BINARY_DIR}/bin )
+endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
+set(CMAKE_DEBUG_POSTFIX "_d")
+set(CMAKE_RELEASE_POSTFIX "_r")
+
+file(GLOB_RECURSE SHADER_SRC src/shaders/*.*)
+
 #================================ Start 添加子工程 ================================#
 # glad
 add_library(glad ${GLAD_SRC})
@@ -34,14 +45,27 @@ file(GLOB_RECURSE WINDOW_SRC src/glfw_window/*.*)
 add_library(ogl_window ${WINDOW_SRC})
 target_link_libraries(ogl_window glfw3 glad)
 
+# 添加util工程
+file(GLOB_RECURSE UTIL_SRC src/util/*.*)
+add_library(util ${UTIL_SRC})
+target_link_libraries(util glad)
+
 # 添加practice_ogl
 file(GLOB_RECURSE PRACTICE_SRC src/practice_ogl/*.*)
-add_executable(practice_ogl ${PRACTICE_SRC} src/main.cpp)
-target_link_libraries(practice_ogl ogl_window)
+add_executable(practice_ogl ${PRACTICE_SRC} src/main.cpp ${SHADER_SRC})
+target_link_libraries(practice_ogl ogl_window util)
 
 # 添加hello_opengl
 set(HELLO_OPENGL_SRC src/hello_opengl/hello_opengl.cpp src/main.cpp)
 add_executable(hello_ogl ${HELLO_OPENGL_SRC})
 target_link_libraries(hello_ogl ogl_window)
+
+# 移动shader文件
+source_group(shaders FILES ${SHADER_SRC})
+add_custom_target(
+	copy_shader
+	ALL
+	COMMAND ${CMAKE_COMMAND} -E copy ${SHADER_SRC} ${CMAKE_BINARY_DIR}/bin
+	)
 
 #================================ End 添加子工程 ================================#
