@@ -17,7 +17,7 @@ void gl_init() {
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_data), vertex_data, GL_STATIC_DRAW);
 
-	program_id = LoadShaders("tutorial_2.vs", "tutorial_2.ps");
+	program_id = LoadShaders("shaders/tutorial_2.vs", "shaders/tutorial_2.ps");
 	glUseProgram(program_id);
 }
 
