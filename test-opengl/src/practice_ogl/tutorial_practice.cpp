@@ -1,6 +1,7 @@
 #include "util\practice_header.h"
 #include "util\util.h"
 #include <glad\glad.h>
+#include <math.h>
 
 
 GLuint vbo, program_id;
@@ -23,6 +24,8 @@ void gl_init() {
 
 // ¸üÐÂ
 void gl_update(float width, float height, float delta_time) {
+
+	glClear(GL_COLOR_BUFFER_BIT);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(
 		0,
@@ -32,9 +35,11 @@ void gl_update(float width, float height, float delta_time) {
 		0,
 		(void*)0
 	);
+	GLint scale_loc = glGetUniformLocation(program_id, "scale");
+	float scale = sinf(delta_time);
+	glUniform1f(scale_loc, scale);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 	glDisableVertexAttribArray(0);
-
 }
 
 // Ïú»Ù
