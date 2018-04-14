@@ -35,6 +35,7 @@ set(CMAKE_DEBUG_POSTFIX "_d")
 set(CMAKE_RELEASE_POSTFIX "_r")
 
 file(GLOB_RECURSE SHADER_SRC src/shaders/*.*)
+source_group(shaders FILES ${SHADER_SRC})
 
 #================================ Start 添加子工程 ================================#
 # glad
@@ -61,7 +62,6 @@ add_executable(hello_ogl ${HELLO_OPENGL_SRC})
 target_link_libraries(hello_ogl ogl_window)
 
 # 移动shader文件
-source_group(shaders FILES ${SHADER_SRC})
 add_custom_target(
 	copy_shader
 	ALL
