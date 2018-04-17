@@ -51,10 +51,18 @@ file(GLOB_RECURSE UTIL_SRC src/util/*.*)
 add_library(util ${UTIL_SRC})
 target_link_libraries(util glad)
 
+# 添加数学库
+#file(GLOB_RECURSE MATH_SRC src/math_3d/*.*)
+#add_library(math_3d SHARED ${MATH_SRC})
+
+# 添加数学库
+file(GLOB_RECURSE MATH3D_SRC src/math3d/*.*)
+add_library(math3d STATIC ${MATH3D_SRC})
+
 # 添加practice_ogl
 file(GLOB_RECURSE PRACTICE_SRC src/practice_ogl/*.*)
 add_executable(practice_ogl ${PRACTICE_SRC} src/main.cpp ${SHADER_SRC})
-target_link_libraries(practice_ogl ogl_window util)
+target_link_libraries(practice_ogl ogl_window util math3d)
 set_target_properties(practice_ogl PROPERTIES DEBUG_POSTFIX "_d")
 set_target_properties(practice_ogl PROPERTIES RELEASE_POSTFIX "_r")
 
