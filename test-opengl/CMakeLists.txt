@@ -39,16 +39,16 @@ source_group(shaders FILES ${SHADER_SRC})
 
 #================================ Start 添加子工程 ================================#
 # glad
-add_library(glad ${GLAD_SRC})
+add_library(glad STATIC ${GLAD_SRC})
 
 # 添加窗口工程
 file(GLOB_RECURSE WINDOW_SRC src/glfw_window/*.*)
-add_library(ogl_window ${WINDOW_SRC})
+add_library(ogl_window STATIC ${WINDOW_SRC})
 target_link_libraries(ogl_window glfw3 glad)
 
 # 添加util工程
 file(GLOB_RECURSE UTIL_SRC src/util/*.*)
-add_library(util ${UTIL_SRC})
+add_library(util STATIC ${UTIL_SRC})
 target_link_libraries(util glad)
 
 # 添加数学库
@@ -60,7 +60,7 @@ file(GLOB_RECURSE MATH3D_SRC src/math3d/*.*)
 add_library(math3d STATIC ${MATH3D_SRC})
 
 # 添加practice_ogl
-file(GLOB_RECURSE PRACTICE_SRC src/practice_ogl/*.*)
+file(GLOB_RECURSE PRACTICE_SRC src/practice_ogl/*.* src/stb-master/*.*)
 add_executable(practice_ogl ${PRACTICE_SRC} src/main.cpp ${SHADER_SRC})
 target_link_libraries(practice_ogl ogl_window util math3d)
 set_target_properties(practice_ogl PROPERTIES DEBUG_POSTFIX "_d")
