@@ -1,3 +1,6 @@
+#ifndef _TEXTURE_H
+#define _TEXTURE_H
+
 #include <string>
 #include "glad\glad.h"
 
@@ -18,3 +21,5 @@ private:
 	unsigned char* data;
 	GLenum m_texture_obj;
 };
+
+#endif // !_TEXTURE_H

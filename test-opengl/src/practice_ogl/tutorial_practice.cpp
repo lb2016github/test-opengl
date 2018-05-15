@@ -4,6 +4,7 @@
 #include <math.h>
 #include "math3d\math3d.h"
 #include "texture.h"
+#include "technique.h"
 
 #define Vector3f M3DVector3f
 #define Vector2f M3DVector2f
@@ -12,6 +13,27 @@ GLuint vbo, ibo, program_id;
 Texture *texture;
 int ele_len = 0;
 
+
+class SimpleTechnique : public Technique {
+public:
+	bool init() {
+		if (!Technique::init()) return false;
+		if (!add_shader(GL_VERTEX_SHADER, "shaders/tutorial_2.vs")) return false;
+		if (!add_shader(GL_FRAGMENT_SHADER, "shaders/tutorial_2.ps")) return false;
+		if (!finalize()) return false;
+		return true;
+	}
+	void set_uniform(char* u_name, float value) {
+		GLuint loc = glGetUniformLocation(m_program_id, u_name);
+		glUniform1f(loc, value);
+	}
+	void set_uniform(char* u_name, bool trans, M3DMatrix33f mtx) {
+		GLuint loc = glGetUniformLocation(m_program_id, u_name);
+		glUniformMatrix3fv(loc, 1, false, mtx);
+	}
+};
+
+SimpleTechnique* tech;
 
 static const GLfloat vertex_data[] = {
 	0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
@@ -48,8 +70,9 @@ void gl_init() {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(index_data), index_data, GL_STATIC_DRAW);
 
-	program_id = LoadShaders("shaders/tutorial_2.vs", "shaders/tutorial_2.ps");
-	glUseProgram(program_id);
+	tech = new SimpleTechnique();
+	tech->init();
+	tech->enable();
 
 	texture = new Texture(GL_TEXTURE_2D, "res/test.png");
 	texture->load();
@@ -77,13 +100,12 @@ void gl_update(float width, float height, float delta_time) {
 		sizeof(vertex_data[0]) * 5,
 		(const GLvoid*)(sizeof(vertex_data[0]) * 3)
 	);
-	GLint scale_loc = glGetUniformLocation(program_id, "scale");
-	GLint rot_mtx = glGetUniformLocation(program_id, "rot_mat");
+
 	float scale = sinf(delta_time);
 	M3DMatrix33f rot_matrix;
 	m3dRotationMatrix33(rot_matrix, delta_time, 1, 1, 1);
-	glUniform1f(scale_loc, scale);
-	glUniformMatrix3fv(rot_mtx, 1, false, rot_matrix);
+	tech->set_uniform("scale", scale);
+	tech->set_uniform("rot_mat", false, rot_matrix);
 
 	texture->bind(GL_TEXTURE0);
 
@@ -95,4 +117,6 @@ void gl_update(float width, float height, float delta_time) {
 // Ïú»Ù
 void gl_destroy() {
 	glDeleteBuffers(1, &vbo);
+	delete texture;
+	delete tech;
 }
