@@ -1,39 +1,7 @@
-#include "util\practice_header.h"
-#include "util\util.h"
-#include <glad\glad.h>
 #include <math.h>
-#include "math3d\math3d.h"
-#include "texture.h"
-#include "technique.h"
+#include "tutorial_practice.h"
+#include "glfw\include\glfw3.h"
 
-#define Vector3f M3DVector3f
-#define Vector2f M3DVector2f
-
-GLuint vbo, ibo, program_id;
-Texture *texture;
-int ele_len = 0;
-
-
-class SimpleTechnique : public Technique {
-public:
-	bool init() {
-		if (!Technique::init()) return false;
-		if (!add_shader(GL_VERTEX_SHADER, "shaders/tutorial_2.vs")) return false;
-		if (!add_shader(GL_FRAGMENT_SHADER, "shaders/tutorial_2.ps")) return false;
-		if (!finalize()) return false;
-		return true;
-	}
-	void set_uniform(char* u_name, float value) {
-		GLuint loc = glGetUniformLocation(m_program_id, u_name);
-		glUniform1f(loc, value);
-	}
-	void set_uniform(char* u_name, bool trans, M3DMatrix33f mtx) {
-		GLuint loc = glGetUniformLocation(m_program_id, u_name);
-		glUniformMatrix3fv(loc, 1, false, mtx);
-	}
-};
-
-SimpleTechnique* tech;
 
 static const GLfloat vertex_data[] = {
 	0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
@@ -49,19 +17,8 @@ static const GLuint index_data[] = {
 	0, 1, 2
 };
 
-struct Vectex {
-public:
-	Vector3f m_pos;
-	Vector2f m_tex;
-
-	Vectex(Vector3f pos, Vector2f tex) {
-		for (int i = 0; i < 3; ++i) m_pos[i] = pos[i];
-		for (int i = 0; i < 2; ++i) m_tex[i] = tex[i];
-	}
-};
-
 // 初始化
-void gl_init() {
+TutorialPractice::TutorialPractice() {
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_data), vertex_data, GL_STATIC_DRAW);
@@ -79,7 +36,7 @@ void gl_init() {
 }
 
 // 更新
-void gl_update(float width, float height, float delta_time) {
+void TutorialPractice::render_scene_callback(float width, float height, float delta_time) {
 
 	glClear(GL_COLOR_BUFFER_BIT);
 	glEnableVertexAttribArray(0);
@@ -114,8 +71,22 @@ void gl_update(float width, float height, float delta_time) {
 	glDisableVertexAttribArray(1);
 }
 
+// 键盘回调
+void TutorialPractice::key_callback(int key, int scancode, int action, int mods) {
+	if (action != GLFW_PRESS) return;
+
+	switch (key)
+	{
+	case GLFW_KEY_UP:
+		printf("up is pressed\n");
+		break;
+	default:
+		break;
+	}
+}
+
 // 销毁
-void gl_destroy() {
+TutorialPractice::~TutorialPractice() {
 	glDeleteBuffers(1, &vbo);
 	delete texture;
 	delete tech;

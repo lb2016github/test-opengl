@@ -1,8 +1,7 @@
 #ifndef _TEXTURE_H
 #define _TEXTURE_H
-
-#include <string>
 #include "glad\glad.h"
+#include <string>
 
 
 class Texture {
