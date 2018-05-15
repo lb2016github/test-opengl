@@ -1,30 +1,43 @@
 #ifndef GLFW_WINDOW_H
 #define GLFW_WINDOW_H
-
-#include <glfw\include\glfw3.h>
+#include <glad\glad.h>
+#include "glfw\include\glfw3.h"
+#include "practice_ogl\i_callbacks.h"
 
 namespace glfw_win{
 
-// ¼üÅÌ²Ù×÷µÄ»Øµ÷
+// 键盘回调
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
-// ¸üÐÂ
+// 鼠标点击回调
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+
+// 光标移动回调
+void cursor_position_callback(GLFWwindow* window, double x, double y);
+
+// 滚轮回调
+void scroll_callback(GLFWwindow* window, double x, double y);
+
+// 更新
 bool update();
 
-// ´íÎóµÄ»Øµ÷
+// 错误的回调
 void error_callback(int error, const char* description);
 
-// ³õÊ¼»¯º¯Êý
+// 初始化窗口
 bool init_window(float width, float height, char* title);
 
-// ¹Ø±Õ
+// 设置回调类
+void set_callback(ICallback* i_callback);
+
+// 销毁窗口
 void destroy_window();
 
-// ·µ»Ø´°¿Ú±ÈÀý
+// 获取窗口宽高
 float get_win_width();
 float get_win_height();
 
-// ·µ»ØÊ±¼ä
+// 获取当前时间
 float get_time();
 }
 #endif

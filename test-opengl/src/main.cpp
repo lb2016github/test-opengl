@@ -1,8 +1,8 @@
-#include <util\practice_header.h>
-#include <glfw_window\glfw_window.h>
+#include "glfw_window\glfw_window.h"
 #include <stdio.h>
 #include <thread>
 #include <stdlib.h>
+#include "practice_ogl\tutorial_practice.h"
 
 void main(){
 	fprintf(stdout, "%s\n", "HelloGLFW");
@@ -12,18 +12,16 @@ void main(){
 		glfw_win::destroy_window();
 		return;
 	}
-	gl_init();
+	
+	TutorialPractice* tp = new TutorialPractice();
+	glfw_win::set_callback(tp);
 	while (true)
 	{
-		float width = glfw_win::get_win_width();
-		float height = glfw_win::get_win_height();
-		float time = glfw_win::get_time();
-		gl_update(width, height, time);
 		bool rst = glfw_win::update();
 		if (!rst)
 			break;
 	}
-	gl_destroy();
 	glfw_win::destroy_window();
+	delete tp;
 	return;
 }
