@@ -3,72 +3,66 @@
 #include "glfw\include\glfw3.h"
 
 
-static const GLfloat vertex_data[] = {
-	0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-	1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-	0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-	0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-};
-
-static const GLuint index_data[] = {
-	0, 3, 1,
-	1, 3, 2,
-	2, 3, 0,
-	0, 1, 2
-};
-
 // 初始化
-TutorialPractice::TutorialPractice() {
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_data), vertex_data, GL_STATIC_DRAW);
+TutorialPractice::TutorialPractice():m_mesh(NULL), m_tech(NULL), m_camera(NULL) {
+	m_pp_info.fov = m3dDegToRad(60);
+	m_pp_info.height = WINDOW_HEIGHT;
+	m_pp_info.width = WINDOW_WIDTH;
+	m_pp_info.z_near = 1;
+	m_pp_info.z_far = 100;
 
-	glGenBuffers(1, &ibo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(index_data), index_data, GL_STATIC_DRAW);
+	m_op_info.bottom = -2;
+	m_op_info.top = 1;
+	m_op_info.left = -1;
+	m_op_info.right = 1;
+	m_op_info.z_near = 1;
+	m_op_info.z_far = 1000;
+}
 
-	tech = new SimpleTechnique();
-	tech->init();
-	tech->enable();
+bool TutorialPractice::init() {
+	m_tech = new AmbianceLightTechnique();
+	m_tech->init();
+	m_tech->enable();
 
-	texture = new Texture(GL_TEXTURE_2D, "res/test.png");
-	texture->load();
+	M3DVector3f pos, target, up;
+	pos[0] = 0, pos[1] = 0, pos[2] = 0;
+	target[0] = 0, target[1] = 0, target[2] = 1;
+	up[0] = 0, up[1] = 1, up[2] = 0;
+	m_camera = new Camera(WINDOW_WIDTH, WINDOW_HEIGHT, pos, target, up);
+
+	pipline = new Pipline();
+
+	m_mesh = new Mesh();
+	m_mesh->load_mesh();
+
+	return true;
 }
 
 // 更新
 void TutorialPractice::render_scene_callback(float width, float height, float delta_time) {
 
 	glClear(GL_COLOR_BUFFER_BIT);
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(
-		0,
-		3,
-		GL_FLOAT,
-		GL_FALSE,
-		sizeof(vertex_data[0]) * 5,
-		(void*)0
-	);
-	glVertexAttribPointer(
-		1,
-		2,
-		GL_FLOAT,
-		GL_FALSE,
-		sizeof(vertex_data[0]) * 5,
-		(const GLvoid*)(sizeof(vertex_data[0]) * 3)
-	);
 
-	float scale = sinf(delta_time);
-	M3DMatrix33f rot_matrix;
-	m3dRotationMatrix33(rot_matrix, delta_time, 1, 1, 1);
-	tech->set_uniform("scale", scale);
-	tech->set_uniform("rot_mat", false, rot_matrix);
+	m_camera->set_pos(0, 0, -10);
 
-	texture->bind(GL_TEXTURE0);
+	M3DMatrix44f wvp;
+	pipline->set_world_pos(0, 0, 0);
+	pipline->set_scale(1);
+	pipline->set_rotation(0, 0, delta_time);
+	pipline->set_camera_info(m_camera->m_pos, m_camera->m_target, m_camera->m_up);
+	//pipline->get_wv_trans(wvp);
 
-	glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
+	//pipline->set_pers_proj_info(m_pp_info);
+	//pipline->get_pers_wvp_trans(wvp);
+
+	pipline->set_orthor_proj_info(m_op_info);
+	pipline->get_orthor_wvp_trans(wvp);
+
+	m_tech->set_ambiance_light();
+	m_tech->set_wvp_trans(wvp);
+
+	m_mesh->transform(wvp);
+	m_mesh->render();
 }
 
 // 键盘回调
@@ -78,7 +72,10 @@ void TutorialPractice::key_callback(int key, int scancode, int action, int mods)
 	switch (key)
 	{
 	case GLFW_KEY_UP:
-		printf("up is pressed\n");
+		m_tech->m_ambiance_intensity += 0.1;
+		break;
+	case GLFW_KEY_DOWN:
+		m_tech->m_ambiance_intensity -= 0.1;
 		break;
 	default:
 		break;
@@ -87,7 +84,36 @@ void TutorialPractice::key_callback(int key, int scancode, int action, int mods)
 
 // 销毁
 TutorialPractice::~TutorialPractice() {
-	glDeleteBuffers(1, &vbo);
-	delete texture;
-	delete tech;
+	if (m_mesh) delete m_mesh;
+	if (m_tech) delete m_tech;
+	if (m_camera) delete m_camera;
+}
+
+////////////////////////////////////AmbianceTechnique////////////////
+bool AmbianceLightTechnique::init() {
+	if (!Technique::init()) return false;
+	// add shader
+	if (!add_shader(GL_VERTEX_SHADER, "shaders/ambiance.vs")) return false;
+	if (!add_shader(GL_FRAGMENT_SHADER, "shaders/ambiance.ps")) return false;
+	// finalize
+	if (!finalize()) return false;
+	m_ambiance_color[0] = 1;
+	m_ambiance_color[1] = 1;
+	m_ambiance_color[2] = 1;
+	m_ambiance_intensity = 1;
+
+	wvp_location = glGetUniformLocation(m_program_id, "wvp");
+	m_ambiance_color_location = glGetUniformLocation(m_program_id, "dir_light.color");
+	m_ambiance_intensity_location = glGetUniformLocation(m_program_id, "dir_light.ambiant_intensity");
+
+	return true;
+}
+
+void AmbianceLightTechnique::set_ambiance_light() {
+	glUniform3f(m_ambiance_color_location, m_ambiance_color[0], m_ambiance_color[1], m_ambiance_color[2]);
+	glUniform1f(m_ambiance_intensity_location, m_ambiance_intensity);
+}
+
+void AmbianceLightTechnique::set_wvp_trans(M3DMatrix44f wvp) {
+	glUniformMatrix4fv(wvp_location, 1, false, wvp);
 }

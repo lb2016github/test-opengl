@@ -604,6 +604,12 @@ float m3dClosestPointOnRay(M3DVector3f vPointOnRay, const M3DVector3f vRayOrigin
 // Miscellany...
 void m3dPerform2DRotationOnPoint(const double inXY[2], double outXY[2], double rotDegrees);
 
+//////////////////////////////////////////////////////////////////
+//extend by luobo
 
+// rotate around x axis, y axis and z axis
+void m3dRotationMatrix44(M3DMatrix44f m, float x, float y, float z);
+// create view matrix
+void m3dCameraMatrix44(M3DMatrix44f m, M3DVector3f target, M3DVector3f up);
 
 #endif

@@ -16,7 +16,7 @@ class OrthorProjInfo {
 public:
 	float right;
 	float left;
-	float back;
+	float bottom;
 	float top;
 	float z_near;
 	float z_far;
@@ -56,7 +56,11 @@ public:
 	void get_world_trans(M3DMatrix44f w);
 	void get_view_trans(M3DMatrix44f v);
 	void get_pers_proj_trans(M3DMatrix44f p);
-	void get_wvp_trans(M3DMatrix44f wvp);
+	void get_orthor_proj_trans(M3DMatrix44f p);
+	void get_wv_trans(M3DMatrix44f wv);
+
+	void get_pers_wvp_trans(M3DMatrix44f wvp);
+	void get_orthor_wvp_trans(M3DMatrix44f wvp);
 
 private:
 	M3DVector3f m_world_pos;

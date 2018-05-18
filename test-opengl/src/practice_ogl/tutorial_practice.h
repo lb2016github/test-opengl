@@ -4,6 +4,13 @@
 #include "technique.h"
 #include "texture.h"
 #include "math3d\math3d.h"
+#include "pipline.h"
+#include "camera.h"
+#include "mesh.h"
+
+#define WINDOW_WIDTH 640
+#define WINDOW_HEIGHT 480
+
 
 class SimpleTechnique : public Technique {
 public:
@@ -14,20 +21,32 @@ public:
 		if (!finalize()) return false;
 		return true;
 	}
-	void set_uniform(char* u_name, float value) {
-		GLuint loc = glGetUniformLocation(m_program_id, u_name);
-		glUniform1f(loc, value);
-	}
-	void set_uniform(char* u_name, bool trans, M3DMatrix33f mtx) {
-		GLuint loc = glGetUniformLocation(m_program_id, u_name);
-		glUniformMatrix3fv(loc, 1, false, mtx);
-	}
+};
+
+
+// 环境光材质
+class AmbianceLightTechnique : public Technique {
+public:
+	bool init();
+	void set_ambiance_light();
+	void set_wvp_trans(M3DMatrix44f wvp);
+
+public:
+	M3DVector3f m_ambiance_color;
+	float m_ambiance_intensity;
+
+protected:
+	GLuint wvp_location;
+	GLuint m_ambiance_color_location;
+	GLuint m_ambiance_intensity_location;
 };
 
 class TutorialPractice : public ICallback {
 public:
 	TutorialPractice();
 	~TutorialPractice();
+
+	bool init();
 
 	// 渲染场景
 	void render_scene_callback(float width, float height, float time);
@@ -36,9 +55,14 @@ public:
 	void key_callback(int key, int scancode, int action, int mods);
 
 private:
-	GLuint vbo, ibo;
-	Texture *texture;
-	SimpleTechnique* tech;
+	Mesh* m_mesh;
+	AmbianceLightTechnique* m_tech;
+	Pipline* pipline;
+	float width, height;
+	PersProjInfo m_pp_info;
+	OrthorProjInfo m_op_info;
+	Camera* m_camera;
+
 };
 
 #endif // !_TUTORIAL_PRACTICE_H

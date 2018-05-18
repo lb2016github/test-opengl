@@ -14,6 +14,7 @@ void main(){
 	}
 	
 	TutorialPractice* tp = new TutorialPractice();
+	tp->init();
 	glfw_win::set_callback(tp);
 	while (true)
 	{

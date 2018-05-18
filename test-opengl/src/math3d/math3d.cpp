@@ -1111,3 +1111,34 @@ float m3dClosestPointOnRay(M3DVector3f vPointOnRay, const M3DVector3f vRayOrigin
 	
 	return m3dGetDistanceSquared3(vPointOnRay, vPointInSpace);
 	}
+
+
+///////////////////////////////////////////////
+// extended by luobo
+
+void m3dRotationMatrix44(M3DMatrix44f m, float x, float y, float z) {
+	M3DMatrix44f rx, ry, rz, tmp;
+	m3dRotationMatrix44(rx, x, 1, 0, 0);
+	m3dRotationMatrix44(ry, y, 0, 1, 0);
+	m3dRotationMatrix44(rz, z, 0, 0, 1);
+
+	m3dMatrixMultiply44(tmp, rx, ry);
+	m3dMatrixMultiply44(m, tmp, rz);
+}
+
+void m3dCameraMatrix44(M3DMatrix44f m, M3DVector3f target, M3DVector3f up) {
+	// normalize
+	M3DVector3f u, v, n;
+	m3dCopyVector3(n, target);
+	m3dNormalizeVector3(n);
+	m3dCrossProduct3(u, up, target);
+	m3dNormalizeVector3(u);
+	m3dCrossProduct3(v, n, u);
+	m3dNormalizeVector3(v);
+#define M(row, col) m[(col << 2) + row]
+	M(0, 0) = u[0], M(0, 1) = u[1], M(0, 2) = u[2], M(0, 3) = 0;
+	M(1, 0) = v[0], M(1, 1) = v[1], M(1, 2) = v[2], M(1, 3) = 0;
+	M(2, 0) = n[0], M(2, 1) = n[1], M(2, 2) = n[2], M(2, 3) = 0;
+	M(3, 0) = 0, M(3, 1) = 0, M(3, 2) = 0, M(3, 3) = 1;
+#undef M
+}
