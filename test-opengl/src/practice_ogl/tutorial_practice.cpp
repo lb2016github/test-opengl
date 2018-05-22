@@ -16,7 +16,7 @@ TutorialPractice::TutorialPractice():m_mesh(NULL), m_tech(NULL), m_camera(NULL) 
 	m_op_info.left = -1;
 	m_op_info.right = 1;
 	m_op_info.z_near = 1;
-	m_op_info.z_far = 1000;
+	m_op_info.z_far = 100;
 }
 
 bool TutorialPractice::init() {
@@ -43,20 +43,19 @@ void TutorialPractice::render_scene_callback(float width, float height, float de
 
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	m_camera->set_pos(0, 0, -10);
+	m_camera->set_pos(0, 0, 10);
 
 	M3DMatrix44f wvp;
-	pipline->set_world_pos(0, 0, 0);
+	pipline->set_world_pos(0, 0, 30);
 	pipline->set_scale(1);
 	pipline->set_rotation(0, 0, delta_time);
 	pipline->set_camera_info(m_camera->m_pos, m_camera->m_target, m_camera->m_up);
-	//pipline->get_wv_trans(wvp);
 
-	//pipline->set_pers_proj_info(m_pp_info);
-	//pipline->get_pers_wvp_trans(wvp);
+	pipline->set_pers_proj_info(m_pp_info);
+	pipline->get_pers_wvp_trans(wvp);
 
-	pipline->set_orthor_proj_info(m_op_info);
-	pipline->get_orthor_wvp_trans(wvp);
+	//pipline->set_orthor_proj_info(m_op_info);
+	//pipline->get_orthor_wvp_trans(wvp);
 
 	m_tech->set_ambiance_light();
 	m_tech->set_wvp_trans(wvp);

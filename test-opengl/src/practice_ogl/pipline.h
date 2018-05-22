@@ -57,6 +57,7 @@ public:
 	void get_view_trans(M3DMatrix44f v);
 	void get_pers_proj_trans(M3DMatrix44f p);
 	void get_orthor_proj_trans(M3DMatrix44f p);
+	void get_vp_trans(M3DMatrix44f vp);
 	void get_wv_trans(M3DMatrix44f wv);
 
 	void get_pers_wvp_trans(M3DMatrix44f wvp);

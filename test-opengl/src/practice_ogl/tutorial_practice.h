@@ -8,8 +8,8 @@
 #include "camera.h"
 #include "mesh.h"
 
-#define WINDOW_WIDTH 640
-#define WINDOW_HEIGHT 480
+#define WINDOW_WIDTH 900
+#define WINDOW_HEIGHT 510
 
 
 class SimpleTechnique : public Technique {

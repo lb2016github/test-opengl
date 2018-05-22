@@ -6,7 +6,7 @@
 
 void main(){
 	fprintf(stdout, "%s\n", "HelloGLFW");
-	bool rst = glfw_win::init_window(640, 480, "HellogLFW");
+	bool rst = glfw_win::init_window(WINDOW_WIDTH, WINDOW_HEIGHT, "HellogLFW");
 	if (!rst) {
 		printf("init failed");
 		glfw_win::destroy_window();

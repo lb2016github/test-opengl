@@ -77,43 +77,41 @@ void Pipline::get_world_trans(M3DMatrix44f w) {
 	M3DMatrix44f tmp_pos, tmp_scale, tmp_rotation, tmp_pr;
 	m3dTranslationMatrix44(tmp_pos, m_world_pos[0], m_world_pos[1], m_world_pos[2]);
 	m3dScaleMatrix44(tmp_scale, m_scale[0], m_scale[1], m_scale[2]);
-	m3dRotationMatrix44(tmp_rotation, m_rotation[0], m_rotation[1], m_rotation[2]);
+	m3dExtendRotationMatrix44(tmp_rotation, m_rotation[0], m_rotation[1], m_rotation[2]);
 
 	m3dMatrixMultiply44(tmp_pr, tmp_scale, tmp_rotation);
-	m3dMatrixMultiply44(w, tmp_pr, tmp_pos);
+	m3dMatrixMultiply44(w, tmp_pos, tmp_pr);
 }
 
 void Pipline::get_view_trans(M3DMatrix44f v) {
-	M3DMatrix44f pos, rot;
-	m3dTranslationMatrix44(pos, -m_cam_info.pos[0], -m_cam_info.pos[1], -m_cam_info.pos[2]);
-	m3dCameraMatrix44(rot, m_cam_info.target, m_cam_info.up);
-	m3dMatrixMultiply44(v, rot, pos);
-
-}
-
-void Pipline::get_wv_trans(M3DMatrix44f wv) {
-	M3DMatrix44f w, v;
-	get_world_trans(w);
-	get_view_trans(v);
-	m3dMatrixMultiply44(wv, v, w);
+	M3DMatrix44f pos, rot, rp;
+	m3dTranslationMatrix44(pos, m_cam_info.pos[0], m_cam_info.pos[1], m_cam_info.pos[2]);
+	m3dExtendCameraMatrix44(rot, m_cam_info.target, m_cam_info.up);
+	m3dMatrixMultiply44(rp, rot, pos);
+	m3dInvertMatrix44(v, rp);
 }
 
 void Pipline::get_pers_proj_trans(M3DMatrix44f p) {
 	float aspect = m_pp_info.width / m_pp_info.height;
-	m3dMakePerspectiveMatrix(p, m_pp_info.fov, aspect, m_pp_info.z_near, m_pp_info.z_far);
+	m3dExtendCratePerspectiveMatrix(p, m_pp_info.fov, aspect, m_pp_info.z_near, m_pp_info.z_far);
 }
 
 void Pipline::get_orthor_proj_trans(M3DMatrix44f p) {
-	m3dMakeOrthographicMatrix(p, m_op_info.left, m_op_info.right, m_op_info.bottom, m_op_info.top, m_op_info.z_near, m_op_info.z_far);
+	m3dExtendMakeOrthographicMatrix(p, m_op_info.left, m_op_info.right, m_op_info.bottom, m_op_info.top, m_op_info.z_near, m_op_info.z_far);
+}
+
+void Pipline::get_vp_trans(M3DMatrix44f wv) {
+	M3DMatrix44f v, p;
+	get_view_trans(v);
+	get_pers_proj_trans(p);
+	m3dMatrixMultiply44(wv, p, v);
 }
 
 void Pipline::get_pers_wvp_trans(M3DMatrix44f wvp) {
-	M3DMatrix44f w, v, p, tmp;
+	M3DMatrix44f w, vp;
 	get_world_trans(w);
-	get_view_trans(v);
-	get_pers_proj_trans(p);
-	m3dMatrixMultiply44(tmp, p, v);
-	m3dMatrixMultiply44(wvp, tmp, w);
+	get_vp_trans(vp);
+	m3dMatrixMultiply44(wvp, vp, w);
 }
 
 void Pipline::get_orthor_wvp_trans(M3DMatrix44f wvp) {

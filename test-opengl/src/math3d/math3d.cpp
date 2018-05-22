@@ -1116,7 +1116,7 @@ float m3dClosestPointOnRay(M3DVector3f vPointOnRay, const M3DVector3f vRayOrigin
 ///////////////////////////////////////////////
 // extended by luobo
 
-void m3dRotationMatrix44(M3DMatrix44f m, float x, float y, float z) {
+void m3dExtendRotationMatrix44(M3DMatrix44f m, float x, float y, float z) {
 	M3DMatrix44f rx, ry, rz, tmp;
 	m3dRotationMatrix44(rx, x, 1, 0, 0);
 	m3dRotationMatrix44(ry, y, 0, 1, 0);
@@ -1126,7 +1126,7 @@ void m3dRotationMatrix44(M3DMatrix44f m, float x, float y, float z) {
 	m3dMatrixMultiply44(m, tmp, rz);
 }
 
-void m3dCameraMatrix44(M3DMatrix44f m, M3DVector3f target, M3DVector3f up) {
+void m3dExtendCameraMatrix44(M3DMatrix44f m, M3DVector3f target, M3DVector3f up) {
 	// normalize
 	M3DVector3f u, v, n;
 	m3dCopyVector3(n, target);
@@ -1141,4 +1141,35 @@ void m3dCameraMatrix44(M3DMatrix44f m, M3DVector3f target, M3DVector3f up) {
 	M(2, 0) = n[0], M(2, 1) = n[1], M(2, 2) = n[2], M(2, 3) = 0;
 	M(3, 0) = 0, M(3, 1) = 0, M(3, 2) = 0, M(3, 3) = 1;
 #undef M
+}
+
+void m3dExtendCratePerspectiveMatrix(M3DMatrix44f mProjection, float fFov, float fAspect, float zMin, float zMax)
+{
+	m3dLoadIdentity44(mProjection);
+
+	float yMax = tanf(fFov / 2) * zMin;
+	float yMin = -yMax;
+	float xMax = fAspect * yMax;
+	float xMin = -xMax;
+#define M(row, col) mProjection[(col << 2) + row]
+	M(0, 0) = 2 * zMin / (xMax - xMin), M(0, 3) = -(xMax + xMin) / (xMax - xMin);
+	M(1, 1) = 2 * zMin / (yMax - yMin), M(1, 3) = -(yMax + yMin) / (yMax - yMin);
+	M(2, 2) = (zMax + zMin) / (zMax - zMin), M(2, 3) = -2 * zMax * zMin / (zMax - zMin);
+	M(3, 2) = 1;
+#undef M
+
+}
+
+// Make a orthographic projection matrix
+void m3dExtendMakeOrthographicMatrix(M3DMatrix44f mProjection, float xMin, float xMax, float yMin, float yMax, float zMin, float zMax)
+{
+	m3dLoadIdentity44(mProjection);
+
+	mProjection[0] = 2.0f / (xMax - xMin);
+	mProjection[5] = 2.0f / (yMax - yMin);
+	mProjection[10] = 2.0f / (zMax - zMin);
+	mProjection[12] = -((xMax + xMin) / (xMax - xMin));
+	mProjection[13] = -((yMax + yMin) / (yMax - yMin));
+	mProjection[14] = -((zMax + zMin) / (zMax - zMin));
+	mProjection[15] = 1.0f;
 }

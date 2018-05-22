@@ -608,8 +608,11 @@ void m3dPerform2DRotationOnPoint(const double inXY[2], double outXY[2], double r
 //extend by luobo
 
 // rotate around x axis, y axis and z axis
-void m3dRotationMatrix44(M3DMatrix44f m, float x, float y, float z);
+void m3dExtendRotationMatrix44(M3DMatrix44f m, float x, float y, float z);
 // create view matrix
-void m3dCameraMatrix44(M3DMatrix44f m, M3DVector3f target, M3DVector3f up);
-
+void m3dExtendCameraMatrix44(M3DMatrix44f m, M3DVector3f target, M3DVector3f up);
+// create project matrix¡£The project space is in positive z axis
+void m3dExtendCratePerspectiveMatrix(M3DMatrix44f mProjection, float fFov, float fAspect, float zMin, float zMax);
+// create ortho project matrix¡£The project space is in positive z axis
+void m3dExtendMakeOrthographicMatrix(M3DMatrix44f mProjection, float xMin, float xMax, float yMin, float yMax, float zMin, float zMax);
 #endif
