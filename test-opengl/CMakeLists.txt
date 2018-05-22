@@ -66,11 +66,6 @@ target_link_libraries(practice_ogl ogl_window util math3d)
 set_target_properties(practice_ogl PROPERTIES DEBUG_POSTFIX "_d")
 set_target_properties(practice_ogl PROPERTIES RELEASE_POSTFIX "_r")
 
-# 添加hello_opengl
-set(HELLO_OPENGL_SRC src/hello_opengl/hello_opengl.cpp src/main.cpp)
-add_executable(hello_ogl ${HELLO_OPENGL_SRC})
-target_link_libraries(hello_ogl ogl_window)
-
 # 移动shader文件
 add_custom_target(
 	copy_shader
