@@ -8,8 +8,8 @@
 #include "camera.h"
 #include "mesh.h"
 
-#define WINDOW_WIDTH 900
-#define WINDOW_HEIGHT 510
+#define WINDOW_WIDTH 1280
+#define WINDOW_HEIGHT 750
 
 
 class SimpleTechnique : public Technique {
@@ -53,6 +53,9 @@ public:
 
 	// 键盘回调
 	void key_callback(int key, int scancode, int action, int mods);
+
+	// 光标移动回调
+	void cursor_position_callback(double x, double y);
 
 private:
 	Mesh* m_mesh;

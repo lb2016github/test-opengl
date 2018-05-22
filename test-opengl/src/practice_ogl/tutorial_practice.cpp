@@ -43,7 +43,7 @@ void TutorialPractice::render_scene_callback(float width, float height, float de
 
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	m_camera->set_pos(0, 0, 10);
+	m_camera->on_render_cb();
 
 	M3DMatrix44f wvp;
 	pipline->set_world_pos(0, 0, 30);
@@ -60,12 +60,13 @@ void TutorialPractice::render_scene_callback(float width, float height, float de
 	m_tech->set_ambiance_light();
 	m_tech->set_wvp_trans(wvp);
 
-	m_mesh->transform(wvp);
 	m_mesh->render();
 }
 
 // ¼üÅÌ»Øµ÷
 void TutorialPractice::key_callback(int key, int scancode, int action, int mods) {
+	m_camera->on_keyboard(key);
+
 	if (action != GLFW_PRESS) return;
 
 	switch (key)
@@ -80,6 +81,11 @@ void TutorialPractice::key_callback(int key, int scancode, int action, int mods)
 		break;
 	}
 }
+
+void TutorialPractice::cursor_position_callback(double x, double y) {
+	m_camera->on_mouse_move(x, y);
+}
+
 
 // Ïú»Ù
 TutorialPractice::~TutorialPractice() {
