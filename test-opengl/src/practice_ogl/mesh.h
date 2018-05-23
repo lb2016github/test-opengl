@@ -8,9 +8,12 @@ class Vertex {
 public:
 	M3DVector3f m_pos;
 	M3DVector2f m_coor;
+	M3DVector3f m_normal;
 
 public:
-	Vertex(float x, float y, float z, float u, float);
+	Vertex(float x, float y, float z, float u, float v);
+
+private:
 	//Vertex(const Vertex& ver);
 	//Vertex& operator=(const Vertex& ver);
 
@@ -34,10 +37,12 @@ public:
 	void render();
 	void transform(M3DMatrix44f trans);
 
+protected:
+	void calc_normal(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices);
+
 private:
 	MeshEntity m_mesh_ent;
 	Texture* m_tex;
-	std::vector<Vertex> m_vertex;
 };
 
 #endif // _MESH_H

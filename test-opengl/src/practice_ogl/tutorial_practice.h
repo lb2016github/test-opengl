@@ -29,16 +29,22 @@ class AmbianceLightTechnique : public Technique {
 public:
 	bool init();
 	void set_ambiance_light();
-	void set_wvp_trans(M3DMatrix44f wvp);
+	void set_transformation(M3DMatrix44f wvp, M3DMatrix44f w);
+	void set_texture_unit(int unit_idx);
 
 public:
-	M3DVector3f m_ambiance_color;
-	float m_ambiance_intensity;
+	struct DirectionLight {
+	public:
+		M3DVector3f m_color;
+		float m_ambiance_intensity;
+		float m_diffuse_intensity;
+		M3DVector3f m_diffuse_direction;
+	}m_dir_light;
 
 protected:
-	GLuint wvp_location;
-	GLuint m_ambiance_color_location;
-	GLuint m_ambiance_intensity_location;
+	GLuint wvp_location, w_locatioin;
+	GLuint m_ambiance_color_location, m_ambiance_intensity_location, m_diffuse_intensity_location, m_diffuse_direction_location;
+	GLuint m_sampler_location;
 };
 
 class TutorialPractice : public ICallback {
