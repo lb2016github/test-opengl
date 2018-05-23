@@ -90,3 +90,74 @@ bool Technique::finalize() {
 	if (result == GL_FALSE) return false;
 	else return true;
 }
+
+////////////////////////////////////DirectionLightTechnique////////////////
+bool DirectionLightTechnique::init() {
+	if (!Technique::init()) return false;
+	// add shader
+	if (!add_shader(GL_VERTEX_SHADER, "shaders/ambiance.vert")) return false;
+	if (!add_shader(GL_FRAGMENT_SHADER, "shaders/ambiance.frag")) return false;
+	// finalize
+	if (!finalize()) return false;
+
+	wvp_location = glGetUniformLocation(m_program_id, "wvp");
+	w_locatioin = glGetUniformLocation(m_program_id, "w");
+	m_color_location = glGetUniformLocation(m_program_id, "dir_light.color");
+	m_ambiance_intensity_location = glGetUniformLocation(m_program_id, "dir_light.ambiant_intensity");
+	m_diffuse_intensity_location = glGetUniformLocation(m_program_id, "dir_light.diffuse_intensity");
+	m_direction_location = glGetUniformLocation(m_program_id, "dir_light.direction");
+
+	m_sampler_location = glGetUniformLocation(m_program_id, "g_sampler");
+
+	m_eye_pos_location = glGetUniformLocation(m_program_id, "eye_pos");
+	m_materia_specular_intensity_location = glGetUniformLocation(m_program_id, "materia_specular_intensity");
+
+	m_specular_power = glGetUniformLocation(m_program_id, "specular_power");
+
+#define UNDEFINED_LOCATION 0xFFFFFFFF
+	if (wvp_location == UNDEFINED_LOCATION ||
+		w_locatioin == UNDEFINED_LOCATION ||
+		m_color_location == UNDEFINED_LOCATION ||
+		m_ambiance_intensity_location == UNDEFINED_LOCATION ||
+		m_diffuse_intensity_location == UNDEFINED_LOCATION ||
+		m_direction_location == UNDEFINED_LOCATION ||
+		m_sampler_location == UNDEFINED_LOCATION ||
+		m_eye_pos_location == UNDEFINED_LOCATION ||
+		m_materia_specular_intensity_location == UNDEFINED_LOCATION
+		){
+		printf("Error: get locations\n");
+		return false;
+	}
+#undef UNDEFINED_LOCATION
+
+	return true;
+}
+
+void DirectionLightTechnique::set_light(DirectionLight& m_dir_light) {
+	glUniform3f(m_color_location, m_dir_light.m_color[0], m_dir_light.m_color[1], m_dir_light.m_color[2]);
+	glUniform1f(m_ambiance_intensity_location, m_dir_light.m_ambiance_intensity);
+	glUniform1f(m_diffuse_intensity_location, m_dir_light.m_diffuse_intensity);
+	glUniform3f(m_direction_location, m_dir_light.m_direction[0], m_dir_light.m_direction[1], m_dir_light.m_direction[2]);
+}
+
+void DirectionLightTechnique::set_transformation(M3DMatrix44f wvp, M3DMatrix44f w) {
+	glUniformMatrix4fv(wvp_location, 1, false, wvp);
+	glUniformMatrix4fv(w_locatioin, 1, false, w);
+}
+
+void DirectionLightTechnique::set_texture_unit(int unit_idx) {
+	glUniform1i(m_sampler_location, unit_idx);
+}
+
+void DirectionLightTechnique::set_eye_pos(M3DVector3f eye_pos) {
+	glUniform3f(m_eye_pos_location, eye_pos[0], eye_pos[1], eye_pos[2]);
+}
+
+void DirectionLightTechnique::set_material_specular_intensity(float materia_specular_intensity) {
+	glUniform1f(m_materia_specular_intensity_location, materia_specular_intensity);
+}
+
+void DirectionLightTechnique::set_specular_power(float power) {
+	glUniform1f(m_specular_power, power);
+}
+

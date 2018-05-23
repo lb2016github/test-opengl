@@ -52,10 +52,6 @@ add_library(util STATIC ${UTIL_SRC})
 target_link_libraries(util glad)
 
 # 添加数学库
-#file(GLOB_RECURSE MATH_SRC src/math_3d/*.*)
-#add_library(math_3d SHARED ${MATH_SRC})
-
-# 添加数学库
 file(GLOB_RECURSE MATH3D_SRC src/math3d/*.*)
 add_library(math3d STATIC ${MATH3D_SRC})
 

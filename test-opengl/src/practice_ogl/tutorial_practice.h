@@ -11,42 +11,6 @@
 #define WINDOW_WIDTH 1280
 #define WINDOW_HEIGHT 750
 
-
-class SimpleTechnique : public Technique {
-public:
-	bool init() {
-		if (!Technique::init()) return false;
-		if (!add_shader(GL_VERTEX_SHADER, "shaders/tutorial_2.vs")) return false;
-		if (!add_shader(GL_FRAGMENT_SHADER, "shaders/tutorial_2.ps")) return false;
-		if (!finalize()) return false;
-		return true;
-	}
-};
-
-
-// 环境光材质
-class AmbianceLightTechnique : public Technique {
-public:
-	bool init();
-	void set_ambiance_light();
-	void set_transformation(M3DMatrix44f wvp, M3DMatrix44f w);
-	void set_texture_unit(int unit_idx);
-
-public:
-	struct DirectionLight {
-	public:
-		M3DVector3f m_color;
-		float m_ambiance_intensity;
-		float m_diffuse_intensity;
-		M3DVector3f m_diffuse_direction;
-	}m_dir_light;
-
-protected:
-	GLuint wvp_location, w_locatioin;
-	GLuint m_ambiance_color_location, m_ambiance_intensity_location, m_diffuse_intensity_location, m_diffuse_direction_location;
-	GLuint m_sampler_location;
-};
-
 class TutorialPractice : public ICallback {
 public:
 	TutorialPractice();
@@ -65,13 +29,13 @@ public:
 
 private:
 	Mesh* m_mesh;
-	AmbianceLightTechnique* m_tech;
+	DirectionLightTechnique* m_tech;
 	Pipline* pipline;
 	float width, height;
 	PersProjInfo m_pp_info;
 	OrthorProjInfo m_op_info;
 	Camera* m_camera;
-
+	DirectionLight m_dir_light;
 };
 
 #endif // !_TUTORIAL_PRACTICE_H

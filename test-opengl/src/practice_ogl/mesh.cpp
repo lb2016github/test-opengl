@@ -52,24 +52,22 @@ bool Mesh::load_mesh() {
 }
 
 void Mesh::calc_normal(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices) {
-	std::vector<unsigned int> add_count(vertices.size(), 0);
 	for (int i = 2; i < indices.size(); i += 3) {
 		unsigned int idx_1 = indices[i - 2], idx_2 = indices[i - 1], idx_3 = indices[i];
 		M3DVector3f line_1, line_2, normal;
-		m3dSubtractVectors3(line_1, vertices[idx_1].m_pos, vertices[idx_2].m_pos);
-		m3dSubtractVectors3(line_2, vertices[idx_2].m_pos, vertices[idx_3].m_pos);
+		m3dSubtractVectors3(line_1, vertices[idx_2].m_pos, vertices[idx_1].m_pos);
+		m3dSubtractVectors3(line_2, vertices[idx_3].m_pos, vertices[idx_1].m_pos);
 		m3dCrossProduct3(normal, line_1, line_2);
 		m3dNormalizeVector3(normal);
 
 		// add normal to vertex
-		m3dAddVectors3(vertices[idx_1].m_normal, vertices[idx_1].m_normal, normal), add_count[idx_1] += 1;
-		m3dAddVectors3(vertices[idx_2].m_normal, vertices[idx_2].m_normal, normal), add_count[idx_2] += 1;
-		m3dAddVectors3(vertices[idx_3].m_normal, vertices[idx_3].m_normal, normal), add_count[idx_3] += 1;
+		m3dAddVectors3(vertices[idx_1].m_normal, vertices[idx_1].m_normal, normal);
+		m3dAddVectors3(vertices[idx_2].m_normal, vertices[idx_2].m_normal, normal);
+		m3dAddVectors3(vertices[idx_3].m_normal, vertices[idx_3].m_normal, normal);
 	}
 
 	// average normal
 	for (int i = 0; i < vertices.size(); ++i) {
-		m3dScaleVector3(vertices[i].m_normal, 1.0 / add_count[i]);
 		m3dNormalizeVector3(vertices[i].m_normal);
 	}
 }
