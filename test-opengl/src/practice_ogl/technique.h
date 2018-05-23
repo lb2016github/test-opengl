@@ -23,9 +23,9 @@ private:
 
 };
 
-/*
+/*********************************************************
 Direction light Technique
-*/
+*********************************************************/
 
 struct DirectionLight {
 public:
@@ -54,5 +54,10 @@ protected:
 	GLuint m_materia_specular_intensity_location;
 	GLuint m_specular_power;
 };
+
+
+/*********************************************************
+Spot light Technique
+*********************************************************/
 
 #endif // !_TECHNIQUE_H

@@ -95,8 +95,8 @@ bool Technique::finalize() {
 bool DirectionLightTechnique::init() {
 	if (!Technique::init()) return false;
 	// add shader
-	if (!add_shader(GL_VERTEX_SHADER, "shaders/ambiance.vert")) return false;
-	if (!add_shader(GL_FRAGMENT_SHADER, "shaders/ambiance.frag")) return false;
+	if (!add_shader(GL_VERTEX_SHADER, "shaders/direction_light.vert")) return false;
+	if (!add_shader(GL_FRAGMENT_SHADER, "shaders/direction_light.frag")) return false;
 	// finalize
 	if (!finalize()) return false;
 
