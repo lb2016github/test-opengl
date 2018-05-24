@@ -3,6 +3,7 @@
 #include <thread>
 #include <stdlib.h>
 #include "practice_ogl\tutorial_practice.h"
+#include "practice_ogl/tutorial_point_light.h"
 
 void main(){
 	fprintf(stdout, "%s\n", "HelloGLFW");
@@ -13,7 +14,7 @@ void main(){
 		return;
 	}
 	
-	TutorialPractice* tp = new TutorialPractice();
+	TutorialPointLight* tp = new TutorialPointLight();
 	tp->init();
 	glfw_win::set_callback(tp);
 	while (true)

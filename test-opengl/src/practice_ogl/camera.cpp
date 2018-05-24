@@ -2,7 +2,7 @@
 #include "glfw\include\glfw3.h"
 #include <stdio.h>
 
-Camera::Camera(int width, int height){
+Camera::Camera(const int width, const int height){
 	M3DVector3f pos, target, up;
 	m3dLoadVector3(pos, 0, 0, 0);
 	m3dLoadVector3(target, 0, 0, 1);
@@ -10,12 +10,16 @@ Camera::Camera(int width, int height){
 	Camera(width, height, pos, target, up);
 }
 
-Camera::Camera(int width, int height, M3DVector3f pos, M3DVector3f target, M3DVector3f up) : m_width(width), m_height(height) {
+Camera::Camera(const int width, const int height, const M3DVector3f pos, const M3DVector3f target, const M3DVector3f up) : m_width(width), m_height(height) {
 	m3dCopyVector3(m_pos, pos);
 	m3dCopyVector3(m_target, target);
 	m3dCopyVector3(m_up, up);
 	m3dCrossProduct3(m_right, m_target, m_up);
 	m_cam_rot_info = new CameraRotationInfo(width, height, 2000, m_target);
+}
+
+Camera::Camera(const Camera& cam) {
+	Camera(cam.m_width, cam.m_height, cam.m_pos, cam.m_target, cam.m_up);
 }
 
 void Camera::set_pos(float x, float y, float z) {

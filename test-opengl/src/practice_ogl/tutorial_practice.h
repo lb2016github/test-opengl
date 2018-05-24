@@ -1,5 +1,6 @@
 #ifndef _TUTORIAL_PRACTICE_H
 #define _TUTORIAL_PRACTICE_H
+#include "const.h"
 #include "i_callbacks.h"
 #include "technique.h"
 #include "texture.h"
@@ -8,8 +9,6 @@
 #include "camera.h"
 #include "mesh.h"
 
-#define WINDOW_WIDTH 1280
-#define WINDOW_HEIGHT 750
 
 class TutorialPractice : public ICallback {
 public:

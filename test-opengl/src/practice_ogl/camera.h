@@ -23,8 +23,9 @@ private:
 
 class Camera {
 public:
-	Camera(int width, int height);
-	Camera(int width, int height, M3DVector3f pos, M3DVector3f target, M3DVector3f up);
+	Camera(const int width, const int height);
+	Camera(const int width, const int height, const M3DVector3f pos, const M3DVector3f target, const M3DVector3f up);
+	Camera(const Camera& cam);
 
 	void on_render_cb();
 

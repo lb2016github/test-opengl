@@ -1,4 +1,5 @@
 #ifndef _MESH_H
+#define _MESH_H
 #include "glad\glad.h"
 #include "math3d\math3d.h"
 #include <vector>
