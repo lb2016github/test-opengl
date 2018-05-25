@@ -34,14 +34,12 @@ public:
 
 class Mesh {
 public:
-	bool load_mesh();
+	virtual bool load_mesh();
 	void render();
-	void transform(M3DMatrix44f trans);
 
 protected:
 	void calc_normal(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices);
 
-private:
 	MeshEntity m_mesh_ent;
 	Texture* m_tex;
 };

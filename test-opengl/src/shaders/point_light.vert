@@ -15,6 +15,6 @@ void main(){
 	gl_Position = wvp * vec4(position, 1);
 	tex_coord0 = tex_coord;
 	w_pos0 = (w * vec4(position, 1)).xyz;
-	w_normal0 = (w * vec4(position, 0)).xyz;
+	w_normal0 = (w * vec4(normal, 0)).xyz;
 
 }
