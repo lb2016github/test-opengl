@@ -1,4 +1,4 @@
-#include "tutorial_point_light.h"
+#include "tutorial_spot_light.h"
 #include "const.h"
 #include "glfw/include/glfw3.h"
 
@@ -33,7 +33,7 @@ public:
 	}
 };
 
-bool TutorialPointLight::init() {
+bool TutorialSpotLight::init() {
 	m_proj_info.fov = m3dDegToRad(60);
 	m_proj_info.height = WINDOW_HEIGHT;
 	m_proj_info.width = WINDOW_WIDTH;
@@ -49,7 +49,7 @@ bool TutorialPointLight::init() {
 	m_mesh = new PlaneMesh();
 	m_mesh->load_mesh();
 
-	m_tech = new PointLightTechnique();
+	m_tech = new SpotLightTechnique();
 	if (!m_tech->init()) {
 		printf("Error: init technique\n");
 	}
@@ -69,7 +69,7 @@ bool TutorialPointLight::init() {
 }
 
 // 渲染场景
-void TutorialPointLight::render_scene_callback(float width, float height, float time) {
+void TutorialSpotLight::render_scene_callback(float width, float height, float time) {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	m_cam->on_render_cb();
@@ -97,17 +97,33 @@ void TutorialPointLight::render_scene_callback(float width, float height, float 
 	pl[1].atten.linear = 0.1;
 	pl[1].atten.exp = 1;
 
+	std::vector<SpotLight> sl(2);
+	sl[0].diffuse_intensity = 0.9;
+	m3dLoadVector3(sl[0].color, 0, 1, 1);
+	m3dCopyVector3(sl[0].position, m_cam->m_pos);
+	m3dCopyVector3(sl[0].direction, m_cam->m_target);
+	sl[0].atten.linear = 0.1f;
+	sl[0].cutoff = 10;
+
+	sl[1].diffuse_intensity = 0.9;
+	m3dLoadVector3(sl[1].color, 1, 1, 1);
+	m3dLoadVector3(sl[1].position, 5.0f, 3.0f, 10.0f);
+	m3dLoadVector3(sl[1].direction, 0.0f, -1.0f, 0.0f);
+	sl[1].atten.linear = 0.1f;
+	sl[1].cutoff = 20;
+
 	m_tech->set_direction_light(m_direction_light);
 	m_tech->set_eye_position(m_cam->m_pos);
 	m_tech->set_point_lights(pl);
 	m_tech->set_specular_parameter(0, 0);
 	m_tech->set_transformation(wvp, w);
+	m_tech->set_spot_lights(sl);
 
 	m_mesh->render();
 }
 
 // 键盘回调
-void TutorialPointLight::key_callback(int key, int scancode, int action, int mods) {
+void TutorialSpotLight::key_callback(int key, int scancode, int action, int mods) {
 	m_cam->on_keyboard(key);
 
 	if (action != GLFW_PRESS) return;
@@ -128,6 +144,6 @@ void TutorialPointLight::key_callback(int key, int scancode, int action, int mod
 }
 
 // 光标移动回调
-void TutorialPointLight::cursor_position_callback(double x, double y) {
+void TutorialSpotLight::cursor_position_callback(double x, double y) {
 	m_cam->on_mouse_move(x, y);
 }

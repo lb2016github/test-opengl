@@ -135,10 +135,10 @@ bool DirectionLightTechnique::init() {
 }
 
 void DirectionLightTechnique::set_light(DirectionLight& m_dir_light) {
-	glUniform3f(m_color_location, m_dir_light.m_color[0], m_dir_light.m_color[1], m_dir_light.m_color[2]);
-	glUniform1f(m_ambiance_intensity_location, m_dir_light.m_ambiance_intensity);
-	glUniform1f(m_diffuse_intensity_location, m_dir_light.m_diffuse_intensity);
-	glUniform3f(m_direction_location, m_dir_light.m_direction[0], m_dir_light.m_direction[1], m_dir_light.m_direction[2]);
+	glUniform3f(m_color_location, m_dir_light.color[0], m_dir_light.color[1], m_dir_light.color[2]);
+	glUniform1f(m_ambiance_intensity_location, m_dir_light.ambiance_intensity);
+	glUniform1f(m_diffuse_intensity_location, m_dir_light.diffuse_intensity);
+	glUniform3f(m_direction_location, m_dir_light.direction[0], m_dir_light.direction[1], m_dir_light.direction[2]);
 }
 
 void DirectionLightTechnique::set_transformation(M3DMatrix44f wvp, M3DMatrix44f w) {
@@ -167,8 +167,8 @@ Point Light Technique
 *****************************************/
 bool PointLightTechnique::init() {
 	if (!Technique::init()) return false;
-	if (!add_shader(GL_VERTEX_SHADER, "shaders/point_light.vert")) return false;
-	if (!add_shader(GL_FRAGMENT_SHADER, "shaders/point_light.frag")) return false;
+	if (!add_shader(GL_VERTEX_SHADER, "shaders/spot_light.vert")) return false;
+	if (!add_shader(GL_FRAGMENT_SHADER, "shaders/spot_light.frag")) return false;
 	if (!finalize()) return false;
 
 	m_direction_light_location.init_location(
@@ -202,20 +202,19 @@ bool PointLightTechnique::init() {
 	m_specular_power_location = glGetUniformLocation(m_program_id, "g_specular_power");
 	m_wvp_location = glGetUniformLocation(m_program_id, "wvp");
 	m_w_location = glGetUniformLocation(m_program_id, "w");
+
+	return true;
 }
 
 void PointLightTechnique::set_direction_light(DirectionLight& dir_light) {
-	m_direction_light_location.set_light(dir_light.m_color, dir_light.m_ambiance_intensity, dir_light.m_diffuse_intensity, dir_light.m_direction);
+	m_direction_light_location.set_light(dir_light);
 }
 void PointLightTechnique::set_point_lights(std::vector<PointLight>& point_light_list) {
 	int num_light = point_light_list.size();
 	glUniform1i(m_point_light_num_location, num_light);
 
 	for (int i = 0; i < num_light; ++i){
-		m_point_light_locations[i].set_light(
-			point_light_list[i].m_color, point_light_list[i].m_ambiance_intensity, point_light_list[i].m_diffuse_intensity,
-			point_light_list[i].position, point_light_list[i].atten.constant, point_light_list[i].atten.linear, point_light_list[i].atten.exp
-		);
+		m_point_light_locations[i].set_light(point_light_list[i]);
 	}
 }
 void PointLightTechnique::set_eye_position(M3DVector3f eye_pos) {
@@ -236,6 +235,50 @@ void PointLightTechnique::set_texture_unit(int unit_idx) {
 	glUniform1f(m_sampler_location, unit_idx);
 }
 
+/*********************************************************
+Spot light technique
+*********************************************************/
+bool SpotLightTechnique::init() {
+	bool rst = PointLightTechnique::init();
+
+	for (int i = 0; i < MAX_SPOT_LIGHT_COUNT; ++i) {
+		char name[128];
+		snprintf(name, sizeof(name), "g_spot_light_list[%d].point_light.base_light.color", i);
+		m_spot_light_locations[i].color = glGetUniformLocation(m_program_id, name);
+		snprintf(name, sizeof(name), "g_spot_light_list[%d].point_light.base_light.ambiant_intensity", i);
+		m_spot_light_locations[i].ambiant_intensity = glGetUniformLocation(m_program_id, name);
+		snprintf(name, sizeof(name), "g_spot_light_list[%d].point_light.base_light.diffuse_intensity", i);
+		m_spot_light_locations[i].diffuse_intensity = glGetUniformLocation(m_program_id, name);
+
+		snprintf(name, sizeof(name), "g_spot_light_list[%d].point_light.position", i);
+		m_spot_light_locations[i].position = glGetUniformLocation(m_program_id, name);
+
+		snprintf(name, sizeof(name), "g_spot_light_list[%d].point_light.atten.constant", i);
+		m_spot_light_locations[i].constant = glGetUniformLocation(m_program_id, name);
+		snprintf(name, sizeof(name), "g_spot_light_list[%d].point_light.atten.linear", i);
+		m_spot_light_locations[i].linear = glGetUniformLocation(m_program_id, name);
+		snprintf(name, sizeof(name), "g_spot_light_list[%d].point_light.atten.expo", i);
+		m_spot_light_locations[i].exp = glGetUniformLocation(m_program_id, name);
+
+		snprintf(name, sizeof(name), "g_spot_light_list[%d].direction", i);
+		m_spot_light_locations[i].direction = glGetUniformLocation(m_program_id, name);
+		snprintf(name, sizeof(name), "g_spot_light_list[%d].cutoff", i);
+		m_spot_light_locations[i].cutoff = glGetUniformLocation(m_program_id, name);
+	}
+
+	m_spot_light_num_location = glGetUniformLocation(m_program_id, "g_spot_light_num");
+
+	return true;
+
+}
+void SpotLightTechnique::set_spot_lights(std::vector<SpotLight>& spot_light_list) {
+	int light_num = spot_light_list.size();
+	glUniform1i(m_spot_light_num_location, light_num);
+
+	for (int i = 0; i < light_num; ++i) {
+		m_spot_light_locations[i].set_light(spot_light_list[i]);
+	}
+}
 
 /*********************************************************
 light location
@@ -250,10 +293,10 @@ bool BaseLightLocation::init_location(
 	return color != LOCATION_UNDEFINED && ambiant_intensity != LOCATION_UNDEFINED && diffuse_intensity != LOCATION_UNDEFINED;
 }
 
-void BaseLightLocation::set_light(M3DVector3f color0, float ambiant_intensity0, float diffuse_intensity0) {
-	glUniform3f(color, color0[0], color0[1], color0[2]);
-	glUniform1f(ambiant_intensity, ambiant_intensity0);
-	glUniform1f(diffuse_intensity, diffuse_intensity0);
+void BaseLightLocation::set_light(BaseLight& light) {
+	glUniform3f(color, light.color[0], light.color[1], light.color[2]);
+	glUniform1f(ambiant_intensity, light.ambiance_intensity);
+	glUniform1f(diffuse_intensity, light.diffuse_intensity);
 }
 
 bool DirectionLightLocation::init_location(
@@ -265,10 +308,10 @@ bool DirectionLightLocation::init_location(
 	return rst && direction != LOCATION_UNDEFINED;
 }
 
-void DirectionLightLocation::set_light(M3DVector3f color0, float ambiant_intensity0, float diffuse_intensity0, M3DVector3f direction0) {
-	BaseLightLocation::set_light(color0, ambiant_intensity0, diffuse_intensity0);
+void DirectionLightLocation::set_light(DirectionLight& light) {
+	BaseLightLocation::set_light(light);
 	M3DVector3f norm_dir;
-	m3dCopyVector3(norm_dir, direction0);
+	m3dCopyVector3(norm_dir, light.direction);
 	m3dNormalizeVector3(norm_dir);
 	glUniform3f(direction, norm_dir[0], norm_dir[1], norm_dir[2]);
 }
@@ -286,13 +329,20 @@ bool PointLightLocation::init_location(
 	return rst && position != LOCATION_UNDEFINED && constant != LOCATION_UNDEFINED && linear != LOCATION_UNDEFINED && exp != LOCATION_UNDEFINED;
 }
 
-void PointLightLocation::set_light(
-	M3DVector3f color0, float ambiant_intensity0, float diffuse_intensity0,
-	M3DVector3f position0, float constant0, float linear0, float exp0
-) {
-	BaseLightLocation::set_light(color0, ambiant_intensity0, diffuse_intensity0);
-	glUniform3f(position, position0[0], position0[1], position0[2]);
-	glUniform1f(constant, constant0);
-	glUniform1f(linear, linear0);
-	glUniform1f(exp, exp0);
+void PointLightLocation::set_light(PointLight& light) {
+	BaseLightLocation::set_light(light);
+	glUniform3f(position, light.position[0], light.position[1], light.position[2]);
+	glUniform1f(constant, light.atten.constant);
+	glUniform1f(linear, light.atten.linear);
+	glUniform1f(exp, light.atten.exp);
+}
+
+void SpotLightLocation::set_light(SpotLight& light) {
+	PointLightLocation::set_light(light);
+	M3DVector3f norm;
+	m3dCopyVector3(norm, light.direction);
+	m3dNormalizeVector3(norm);
+
+	glUniform3f(direction, norm[0], norm[1], norm[2]);
+	glUniform1f(cutoff, cosf(m3dDegToRad(light.cutoff)));
 }

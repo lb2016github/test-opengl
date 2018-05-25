@@ -36,11 +36,11 @@ bool TutorialPractice::init() {
 	m_mesh = new Mesh();
 	m_mesh->load_mesh();
 
-	m3dLoadVector3(m_dir_light.m_color, 1, 1, 1);
-	m_dir_light.m_ambiance_intensity = 0;
-	m_dir_light.m_diffuse_intensity = 0.2;
-	m3dLoadVector3(m_dir_light.m_direction, 0, 0, 1);
-	m3dNormalizeVector3(m_dir_light.m_direction);
+	m3dLoadVector3(m_dir_light.color, 1, 1, 1);
+	m_dir_light.ambiance_intensity = 0;
+	m_dir_light.diffuse_intensity = 0.2;
+	m3dLoadVector3(m_dir_light.direction, 0, 0, 1);
+	m3dNormalizeVector3(m_dir_light.direction);
 
 	glFrontFace(GL_CW);
 	glCullFace(GL_BACK);
@@ -87,12 +87,12 @@ void TutorialPractice::key_callback(int key, int scancode, int action, int mods)
 	switch (key)
 	{
 	case GLFW_KEY_UP:
-		m_dir_light.m_ambiance_intensity += 0.1;
-		m_dir_light.m_diffuse_intensity -= 0.1;
+		m_dir_light.ambiance_intensity += 0.1;
+		m_dir_light.diffuse_intensity -= 0.1;
 		break;
 	case GLFW_KEY_DOWN:
-		m_dir_light.m_ambiance_intensity -= 0.1;
-		m_dir_light.m_diffuse_intensity += 0.1;
+		m_dir_light.ambiance_intensity -= 0.1;
+		m_dir_light.diffuse_intensity += 0.1;
 		break;
 	default:
 		break;

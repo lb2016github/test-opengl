@@ -7,6 +7,7 @@
 #include <vector>
 
 #define MAX_POINT_LIGHT_COUNT 2
+#define MAX_SPOT_LIGHT_COUNT 2
 
 class Technique {
 public:
@@ -63,7 +64,7 @@ struct BaseLightLocation {
 		const char* color_name, const char* ambiant_intensity_name, const char* diffuse_intensity_name
 	);
 
-	void set_light(M3DVector3f color, float ambiant_intensity, float diffuse_intensity);
+	virtual void set_light(BaseLight& light);
 };
 
 struct DirectionLightLocation: BaseLightLocation {
@@ -74,7 +75,7 @@ struct DirectionLightLocation: BaseLightLocation {
 		const char* color_name, const char* ambiant_intensity_name, const char* diffuse_intensity_name, const char* direction_name
 	);
 
-	void set_light(M3DVector3f color, float ambiant_intensity, float diffuse_intensity, M3DVector3f direction);
+	virtual void set_light(DirectionLight& light);
 };
 
 struct PointLightLocation : BaseLightLocation {
@@ -89,10 +90,21 @@ struct PointLightLocation : BaseLightLocation {
 		const char* position_name, const char* constant_name, const char* linear_name, const char* exp_name
 	);
 
-	void set_light(
-		M3DVector3f color, float ambiant_intensity, float diffuse_intensity,
-		M3DVector3f position, float constant, float linear, float exp
+	virtual void set_light(PointLight& light);
+};
+
+struct SpotLightLocation : PointLightLocation {
+	GLuint direction;
+	GLuint cutoff;
+
+	bool init_location(
+		const GLuint program_id,
+		const char* color_name, const char* ambiant_intensity_name, const char* diffuse_intensity_name,
+		const char* position_name, const char* constant_name, const char* linear_name, const char* exp_name,
+		const char* direction_name, const char* cutoff_name
 	);
+
+	virtual void set_light(SpotLight& light);
 };
 
 class PointLightTechnique : public Technique {
@@ -118,4 +130,15 @@ private:
 	GLuint m_w_location;
 
 };
+
+class SpotLightTechnique : public PointLightTechnique {
+public:
+	bool init();
+	void set_spot_lights(std::vector<SpotLight>& spot_light_list);
+
+private:
+	SpotLightLocation m_spot_light_locations[MAX_SPOT_LIGHT_COUNT];
+	GLuint m_spot_light_num_location;
+};
+
 #endif // !_TECHNIQUE_H
