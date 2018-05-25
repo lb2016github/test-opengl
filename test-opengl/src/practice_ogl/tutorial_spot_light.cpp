@@ -73,7 +73,7 @@ bool TutorialSpotLight::init() {
 
 // äÖÈ¾³¡¾°
 void TutorialSpotLight::render_scene_callback(float width, float height, float time) {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT);
 
 	m_cam->on_render_cb();
 

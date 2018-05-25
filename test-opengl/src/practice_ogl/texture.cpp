@@ -1,8 +1,6 @@
 #include "texture.h"
 #define STB_IMAGE_IMPLEMENTATION
-#define STB_IMAGE_RESIZE_IMPLEMENTATION
 #include "stb-master/stb_image.h"
-#include "stb-master/stb_image_resize.h"
 #include <stdio.h>
 
 Texture::Texture(GLenum texture_target, const std::string& filename): data(NULL) {
