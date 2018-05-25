@@ -32,7 +32,13 @@ public:
 	unsigned int num_indices;
 };
 
-class Mesh {
+class IMesh {
+public:
+	virtual bool load_mesh()=0;
+	virtual void render()=0;
+};
+
+class SimpleMesh: public IMesh {
 public:
 	virtual bool load_mesh();
 	void render();

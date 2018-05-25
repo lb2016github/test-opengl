@@ -27,7 +27,7 @@ public:
 	void cursor_position_callback(double x, double y);
 
 private:
-	Mesh* m_mesh;
+	IMesh* m_mesh;
 	DirectionLightTechnique* m_tech;
 	Pipline* pipline;
 	float width, height;

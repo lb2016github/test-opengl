@@ -5,7 +5,7 @@
 #define FIElD_WIDTH 10
 #define FIELD_DEPTH 20 
 
-class PlaneMesh : public Mesh {
+class PlaneMesh : public SimpleMesh {
 
 public:
 	bool load_mesh() {
@@ -76,7 +76,7 @@ void TutorialSpotLight::render_scene_callback(float width, float height, float t
 
 	M3DMatrix44f wvp, w;
 	m_pipline.set_world_pos(0, 0, 1);
-	m_pipline.set_scale(1);
+	m_pipline.set_scale(2);
 	//m_pipline.set_rotation(0, time / 5, 0);
 	m_pipline.set_camera_info(m_cam->m_pos, m_cam->m_target, m_cam->m_up);
 

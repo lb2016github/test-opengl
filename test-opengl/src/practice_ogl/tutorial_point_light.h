@@ -27,7 +27,7 @@ private:
 	PersProjInfo m_proj_info;
 	Pipline m_pipline;
 	
-	Mesh* m_mesh;
+	IMesh* m_mesh;
 	PointLightTechnique* m_tech;
 
 	DirectionLight m_direction_light;

@@ -25,7 +25,7 @@ void MeshEntity::init(const std::vector<Vertex>& vertices, const std::vector<uns
 }
 
 
-bool Mesh::load_mesh() {
+bool SimpleMesh::load_mesh() {
 	// init vertexes
 	std::vector<Vertex> vertices = {
 		Vertex(-1.0f, -1.0f, 0.5773f, 0, 0),
@@ -51,7 +51,7 @@ bool Mesh::load_mesh() {
 	return true;
 }
 
-void Mesh::calc_normal(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices) {
+void SimpleMesh::calc_normal(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices) {
 	for (int i = 2; i < indices.size(); i += 3) {
 		unsigned int idx_1 = indices[i - 2], idx_2 = indices[i - 1], idx_3 = indices[i];
 		M3DVector3f line_1, line_2, normal;
@@ -72,7 +72,7 @@ void Mesh::calc_normal(std::vector<Vertex>& vertices, std::vector<unsigned int>&
 	}
 }
 
-void Mesh::render() {
+void SimpleMesh::render() {
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
