@@ -28,6 +28,8 @@ private:
 	Pipline m_pipline;
 
 	IMesh* m_mesh;
+	Mesh* m_box;
+
 	SpotLightTechnique* m_tech;
 
 	DirectionLight m_direction_light;

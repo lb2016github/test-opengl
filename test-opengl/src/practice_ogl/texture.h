@@ -6,7 +6,7 @@
 
 class Texture {
 public:
-	Texture(GLenum texture_target, char* filename);
+	Texture(GLenum texture_target, const std::string& filename);
 
 	bool load();
 
@@ -15,7 +15,7 @@ public:
 	~Texture();
 
 private:
-	char* m_filename;
+	std::string m_filename;
 	GLenum m_texture_target;
 	unsigned char* data;
 	GLenum m_texture_obj;

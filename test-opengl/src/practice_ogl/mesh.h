@@ -4,6 +4,8 @@
 #include "math3d\math3d.h"
 #include <vector>
 #include "texture.h"
+#include <string>
+#include "assimp/include/scene.h"
 
 class Vertex {
 public:
@@ -13,6 +15,7 @@ public:
 
 public:
 	Vertex(float x, float y, float z, float u, float v);
+	Vertex(float x, float y, float z, float u, float v, float n_x, float n_y, float n_z);
 
 private:
 	//Vertex(const Vertex& ver);
@@ -30,17 +33,18 @@ public:
 	GLuint vb;
 	GLuint ib;
 	unsigned int num_indices;
+	unsigned int material_index;
 };
 
 class IMesh {
 public:
-	virtual bool load_mesh()=0;
+	virtual bool load_mesh(const std::string& filename)=0;
 	virtual void render()=0;
 };
 
 class SimpleMesh: public IMesh {
 public:
-	virtual bool load_mesh();
+	virtual bool load_mesh(const std::string& filename);
 	void render();
 
 protected:
@@ -48,6 +52,21 @@ protected:
 
 	MeshEntity m_mesh_ent;
 	Texture* m_tex;
+};
+
+class Mesh : public IMesh {
+public:
+	virtual bool load_mesh(const std::string& filename);
+	virtual void render();
+private:
+	bool init_from_scene(const aiScene* scene, const std::string& filename);
+	void init_mesh(unsigned int index, const aiMesh* ai_mesh);
+	bool init_materials(const aiScene* scene, const std::string& filename);
+	void clear();
+
+	std::vector<MeshEntity> m_entities;
+	std::vector<Texture*> m_textures;
+
 };
 
 #endif // _MESH_H

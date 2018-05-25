@@ -1,9 +1,17 @@
 #include "mesh.h"
+#include "assimp/include/postprocess.h"
+#include "assimp/include/Importer.hpp"
 
 Vertex::Vertex(float x, float y, float z, float u, float v) {
-	m_pos[0] = x, m_pos[1] = y, m_pos[2] = z;
-	m_coor[0] = u, m_coor[1] = v;
+	m3dLoadVector3(m_pos, x, y, z);
+	m3dLoadVector2(m_coor, u, v);
 	m3dLoadVector3(m_normal, 0, 0, 0);
+}
+
+Vertex::Vertex(float x, float y, float z, float u, float v, float n_x, float n_y, float n_z) {
+	m3dLoadVector3(m_pos, x, y, z);
+	m3dLoadVector2(m_coor, u, v);
+	m3dLoadVector3(m_normal, n_x, n_y, n_z);
 }
 
 void Vertex::transform(M3DMatrix44f trans) {
@@ -25,7 +33,7 @@ void MeshEntity::init(const std::vector<Vertex>& vertices, const std::vector<uns
 }
 
 
-bool SimpleMesh::load_mesh() {
+bool SimpleMesh::load_mesh(const std::string& filename) {
 	// init vertexes
 	std::vector<Vertex> vertices = {
 		Vertex(-1.0f, -1.0f, 0.5773f, 0, 0),
@@ -106,4 +114,145 @@ void SimpleMesh::render() {
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(2);
+}
+
+/********************************************
+Mesh implementation
+*********************************************/
+void Mesh::render() {
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
+	
+	for (int i = 0; i < m_entities.size(); ++i) {
+		glBindBuffer(GL_ARRAY_BUFFER, m_entities[i].vb);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)12);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)20);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_entities[i].ib);
+		
+		const unsigned int material_index = m_entities[i].material_index;
+		if (material_index < m_textures.size() && m_textures[material_index]) {
+			m_textures[material_index]->bind(GL_TEXTURE0);
+		}
+
+		glDrawElements(GL_TRIANGLES, m_entities[i].num_indices, GL_UNSIGNED_INT, 0);
+	}
+
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(2);
+}
+
+bool Mesh::load_mesh(const std::string& filename) {
+	clear();
+
+	bool ret = false;
+	Assimp::Importer importer;
+	const aiScene* scene = importer.ReadFile(filename, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
+	if (scene) {
+		ret = init_from_scene(scene, filename);
+	}
+	return ret;
+}
+
+bool Mesh::init_from_scene(const aiScene* scene, const std::string& filename) {
+	m_entities.resize(scene->mNumMeshes);
+	m_textures.resize(scene->mNumMaterials);
+
+	// init meshes in the scene one by one
+	for (unsigned int i = 0; i < m_entities.size(); ++i) {
+		const aiMesh* ai_mesh = scene->mMeshes[i];
+		init_mesh(i, ai_mesh);
+	}
+
+	return init_materials(scene, filename);
+}
+
+void Mesh::init_mesh(unsigned int index, const aiMesh* ai_mesh){
+	m_entities[index].material_index = ai_mesh->mMaterialIndex;
+
+	std::vector<Vertex> vertices;
+	std::vector<unsigned int> indices;
+
+	// init vertices
+	const aiVector3D Zero3D(0.0f, 0.0f, 0.0f);
+	for (int i = 0; i < ai_mesh->mNumVertices; ++i) {
+		const aiVector3D* pos = &(ai_mesh->mVertices[i]);
+		const aiVector3D* normal = &(ai_mesh->mNormals[i]);
+		const aiVector3D* cood = ai_mesh->HasTextureCoords(0) ? &(ai_mesh->mTextureCoords[0][i]): &Zero3D;
+
+		Vertex v(pos->x, pos->y, pos->z, cood->x, cood->y, normal->x, normal->y, normal->z);
+		vertices.push_back(v);
+	}
+
+	// init indicies
+	for (int i = 0; i < ai_mesh->mNumFaces; ++i) {
+		const aiFace& face = ai_mesh->mFaces[i];
+		assert(face.mNumIndices == 3);
+		indices.push_back(face.mIndices[0]);
+		indices.push_back(face.mIndices[1]);
+		indices.push_back(face.mIndices[2]);
+	}
+
+	// init MeshEntry
+	m_entities[index].init(vertices, indices);
+}
+
+bool Mesh::init_materials(const aiScene* scene, const std::string& filename) {
+	bool ret = true;
+
+	// extract the directory of file
+	std::string::size_type slash_index = filename.find_last_of("/");
+	std::string dir;
+	if (slash_index == std::string::npos) {
+		dir = ".";
+	}
+	else if (slash_index == 0) {
+		dir = "/";
+	}
+	else {
+		dir = filename.substr(0, slash_index);
+	}
+
+	// extract filepath of textures and generate textures
+	for (int i = 0; i < scene->mNumMaterials; ++i) {
+		const aiMaterial* material = scene->mMaterials[i];
+		m_textures[i] = NULL;
+		if (material->GetTextureCount(aiTextureType_DIFFUSE) <= 0){
+			continue;
+		}
+		aiString path;
+		if (material->GetTexture(aiTextureType_DIFFUSE, 0, &path) == AI_SUCCESS) {
+			std::string full_path = dir + "/" + path.data;
+			m_textures[i] = new Texture(GL_TEXTURE_2D, full_path.c_str());
+
+			if (!m_textures[i]->load()) {
+				printf("Error: loading texture '%s'\n", full_path.c_str());
+				delete m_textures[i];
+				m_textures[i] = NULL;
+				ret = false;
+			}
+			else {
+				printf("Loaded texture '%s'\n", full_path.c_str());
+			}
+		}
+
+		// load white texture for null textures
+		if (!m_textures[i]) {
+			m_textures[i] = new Texture(GL_TEXTURE_2D, "res/white.png");
+			ret = m_textures[i]->load();
+		}
+	}
+	return ret;
+
+}
+
+void Mesh::clear() {
+	for (int i = 0; i < m_textures.size(); ++i) {
+		if (m_textures[i]) {
+			delete m_textures[i];
+		}
+	}
 }

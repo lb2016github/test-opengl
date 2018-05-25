@@ -1,9 +1,11 @@
 #include "texture.h"
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb-master\stb_image.h"
+#define STB_IMAGE_RESIZE_IMPLEMENTATION
+#include "stb-master/stb_image.h"
+#include "stb-master/stb_image_resize.h"
 #include <stdio.h>
 
-Texture::Texture(GLenum texture_target, char* filename): data(NULL) {
+Texture::Texture(GLenum texture_target, const std::string& filename): data(NULL) {
 	m_texture_target = texture_target;
 	m_filename = filename;
 }
@@ -14,12 +16,13 @@ bool Texture::load() {
 		data = NULL;
 	}
 	int width, height, channels;
-	data = stbi_load(m_filename, &width, &height, &channels, 0);
+	data = stbi_load(m_filename.c_str(), &width, &height, &channels, 4);
 	if (data == NULL) {
 		printf("loading file %s failed\n", m_filename);
 		return false;
 	}
 	printf("loading file %s success\n", m_filename);
+	
 
 	glGenTextures(1, &m_texture_obj);
 	glBindTexture(m_texture_target, m_texture_obj);

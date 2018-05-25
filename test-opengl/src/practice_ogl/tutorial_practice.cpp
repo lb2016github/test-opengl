@@ -34,7 +34,7 @@ bool TutorialPractice::init() {
 	pipline = new Pipline();
 
 	m_mesh = new SimpleMesh();
-	m_mesh->load_mesh();
+	m_mesh->load_mesh("");
 
 	m3dLoadVector3(m_dir_light.color, 1, 1, 1);
 	m_dir_light.ambiance_intensity = 0;

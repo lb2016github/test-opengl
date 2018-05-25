@@ -8,7 +8,7 @@
 class PlaneMesh : public SimpleMesh {
 
 public:
-	bool load_mesh() {
+	bool load_mesh(const std::string& filename) {
 		// init vertexes
 		std::vector<Vertex> vertices = {
 			Vertex(0.0f, 0.0f, 0.0f, 0, 0),
@@ -41,13 +41,16 @@ bool TutorialSpotLight::init() {
 	m_proj_info.z_far = 50;
 
 	M3DVector3f pos, target, up;
-	pos[0] = 5, pos[1] = 1, pos[2] = -3;
+	pos[0] = 0, pos[1] = 1, pos[2] = -3;
 	target[0] = 0, target[1] = 0, target[2] = 1;
 	up[0] = 0, up[1] = 1, up[2] = 0;
 	m_cam = new Camera(WINDOW_WIDTH, WINDOW_HEIGHT, pos, target, up);
 
 	m_mesh = new PlaneMesh();
-	m_mesh->load_mesh();
+	m_mesh->load_mesh("");
+
+	m_box = new Mesh();
+	m_box->load_mesh("res/box.obj");
 
 	m_tech = new SpotLightTechnique();
 	if (!m_tech->init()) {
@@ -58,25 +61,25 @@ bool TutorialSpotLight::init() {
 
 	m3dLoadVector3(m_direction_light.color, 1, 1, 1);
 	m_direction_light.ambiance_intensity = 0;
-	m_direction_light.diffuse_intensity = 0.01f;
+	m_direction_light.diffuse_intensity = 0.1f;
 	m3dLoadVector3(m_direction_light.direction, 1, -1, 0);
 
 	glFrontFace(GL_CW);
 	glCullFace(GL_BACK);
-	glEnable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE | GL_DEPTH_TEST);
 
 	return true;
 }
 
 // äÖÈ¾³¡¾°
 void TutorialSpotLight::render_scene_callback(float width, float height, float time) {
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	m_cam->on_render_cb();
 
 	M3DMatrix44f wvp, w;
 	m_pipline.set_world_pos(0, 0, 1);
-	m_pipline.set_scale(2);
+	m_pipline.set_scale(1);
 	//m_pipline.set_rotation(0, time / 5, 0);
 	m_pipline.set_camera_info(m_cam->m_pos, m_cam->m_target, m_cam->m_up);
 
@@ -120,6 +123,7 @@ void TutorialSpotLight::render_scene_callback(float width, float height, float t
 	m_tech->set_spot_lights(sl);
 
 	m_mesh->render();
+	m_box->render();
 }
 
 // ¼üÅÌ»Øµ÷

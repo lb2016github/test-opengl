@@ -8,7 +8,7 @@
 class PlaneMesh : public SimpleMesh {
 
 public:
-	bool load_mesh() {
+	bool load_mesh(const std::string& filename) {
 		// init vertexes
 		std::vector<Vertex> vertices = {
 			Vertex(0.0f, 0.0f, 0.0f, 0, 0),
@@ -47,7 +47,7 @@ bool TutorialPointLight::init() {
 	m_cam = new Camera(WINDOW_WIDTH, WINDOW_HEIGHT, pos, target, up);
 
 	m_mesh = new PlaneMesh();
-	m_mesh->load_mesh();
+	m_mesh->load_mesh("");
 
 	m_tech = new PointLightTechnique();
 	if (!m_tech->init()) {

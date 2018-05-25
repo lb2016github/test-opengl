@@ -59,9 +59,16 @@ add_library(math3d STATIC ${MATH3D_SRC})
 # 添加practice_ogl
 file(GLOB_RECURSE PRACTICE_SRC src/practice_ogl/*.* src/stb-master/*.*)
 add_executable(practice_ogl ${PRACTICE_SRC} src/main.cpp ${SHADER_SRC})
-target_link_libraries(practice_ogl ogl_window math3d)
+target_link_libraries(practice_ogl ogl_window math3d assimp)
 set_target_properties(practice_ogl PROPERTIES DEBUG_POSTFIX "_d")
 set_target_properties(practice_ogl PROPERTIES RELEASE_POSTFIX "_r")
+
+file(GLOB_RECURSE ASSIMP_LIBS libs/assimp/assimp.* libs/assimp/assimp_d.*)
+add_custom_command(
+	TARGET practice_ogl
+	POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy ${ASSIMP_LIBS} ${CMAKE_BINARY_DIR}/bin
+	)
 
 # 移动shader文件
 add_custom_target(
