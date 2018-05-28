@@ -2,7 +2,7 @@
 #define GLFW_WINDOW_H
 #include <glad\glad.h>
 #include "glfw\include\glfw3.h"
-#include "practice_ogl\i_callbacks.h"
+#include "common\i_callbacks.h"
 
 namespace glfw_win{
 

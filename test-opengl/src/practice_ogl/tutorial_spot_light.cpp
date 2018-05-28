@@ -1,5 +1,5 @@
 #include "tutorial_spot_light.h"
-#include "const.h"
+#include "common/const.h"
 #include "glfw/include/glfw3.h"
 
 #define FIElD_WIDTH 10

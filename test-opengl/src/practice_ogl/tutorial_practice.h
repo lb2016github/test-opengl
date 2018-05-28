@@ -1,13 +1,13 @@
 #ifndef _TUTORIAL_PRACTICE_H
 #define _TUTORIAL_PRACTICE_H
-#include "const.h"
-#include "i_callbacks.h"
-#include "technique.h"
-#include "texture.h"
+#include "common/const.h"
+#include "common/i_callbacks.h"
+#include "common/technique.h"
+#include "common/texture.h"
 #include "math3d\math3d.h"
-#include "pipline.h"
-#include "camera.h"
-#include "mesh.h"
+#include "common/pipline.h"
+#include "common/camera.h"
+#include "common/mesh.h"
 
 
 class TutorialPractice : public ICallback {

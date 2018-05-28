@@ -21,7 +21,6 @@ link_directories(./libs/glfw)
 link_directories(./libs/assimp)
 
 
-set(GLAD_SRC "libs/glad/glad.h" "libs/glad.c")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -40,17 +39,17 @@ source_group(shaders FILES ${SHADER_SRC})
 
 #================================ Start 添加子工程 ================================#
 # glad
+set(GLAD_SRC "libs/glad/glad.h" "libs/glad.c")
 add_library(glad STATIC ${GLAD_SRC})
 
 # 添加窗口工程
 file(GLOB_RECURSE WINDOW_SRC src/glfw_window/*.*)
 add_library(ogl_window STATIC ${WINDOW_SRC})
-target_link_libraries(ogl_window glfw3 glad)
+# target_link_libraries(ogl_window glfw3 glad)
 
-# # 添加util工程
-# file(GLOB_RECURSE UTIL_SRC src/util/*.*)
-# add_library(util STATIC ${UTIL_SRC})
-# target_link_libraries(util glad)
+# 添加common工程
+file(GLOB_RECURSE COMMON_SRC src/common/*.*)
+add_library(common STATIC ${COMMON_SRC})
 
 # 添加数学库
 file(GLOB_RECURSE MATH3D_SRC src/math3d/*.*)
@@ -59,7 +58,7 @@ add_library(math3d STATIC ${MATH3D_SRC})
 # 添加practice_ogl
 file(GLOB_RECURSE PRACTICE_SRC src/practice_ogl/*.* src/stb-master/*.*)
 add_executable(practice_ogl ${PRACTICE_SRC} src/main.cpp ${SHADER_SRC})
-target_link_libraries(practice_ogl ogl_window math3d assimp)
+target_link_libraries(practice_ogl ogl_window math3d assimp common glad glfw3)
 set_target_properties(practice_ogl PROPERTIES DEBUG_POSTFIX "_d")
 set_target_properties(practice_ogl PROPERTIES RELEASE_POSTFIX "_r")
 

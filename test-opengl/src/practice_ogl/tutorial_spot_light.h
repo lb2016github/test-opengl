@@ -1,11 +1,11 @@
 #ifndef _TUTORIAL_SPOT_LIGHT_H
 #define _TUTORIAL_SPOT_LIGHT_H
-#include "i_callbacks.h"
-#include "camera.h"
-#include "mesh.h"
-#include "pipline.h"
-#include "technique.h"
-#include "light.h"
+#include "common/i_callbacks.h"
+#include "common/camera.h"
+#include "common/mesh.h"
+#include "common/pipline.h"
+#include "common/technique.h"
+#include "common/light.h"
 #include <vector>
 
 

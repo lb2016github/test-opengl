@@ -1,6 +1,6 @@
 #include <glfw_window\glfw_window.h>
 #include <stdio.h>
-#include "practice_ogl\i_callbacks.h"
+#include "common/i_callbacks.h"
 
 
 namespace glfw_win {
