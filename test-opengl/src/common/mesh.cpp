@@ -1,6 +1,7 @@
 #include "mesh.h"
 #include "assimp/include/postprocess.h"
 #include "assimp/include/Importer.hpp"
+#include "const.h"
 
 Vertex::Vertex(float x, float y, float z, float u, float v) {
 	m3dLoadVector3(m_pos, x, y, z);
@@ -18,6 +19,22 @@ void Vertex::transform(M3DMatrix44f trans) {
 	M3DVector3f tmp;
 	m3dCopyVector3(tmp, m_pos);
 	m3dTransformVector3(m_pos, tmp, trans);
+}
+
+MeshEntity::MeshEntity() {
+	vb = INVALID_OGL_VALUE;
+	ib = INVALID_OGL_VALUE;
+	num_indices = 0;
+	material_index = INVALID_MATERIAL;
+}
+
+MeshEntity::~MeshEntity() {
+	if (vb != INVALID_OGL_VALUE) {
+		glDeleteBuffers(1, &vb);
+	}
+	if (ib != INVALID_OGL_VALUE) {
+		glDeleteBuffers(1, &ib);
+	}
 }
 
 void MeshEntity::init(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices) {
@@ -119,6 +136,13 @@ void SimpleMesh::render() {
 /********************************************
 Mesh implementation
 *********************************************/
+Mesh::Mesh() {
+
+}
+Mesh::~Mesh() {
+	clear();
+}
+
 void Mesh::render() {
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
@@ -127,8 +151,8 @@ void Mesh::render() {
 	for (int i = 0; i < m_entities.size(); ++i) {
 		glBindBuffer(GL_ARRAY_BUFFER, m_entities[i].vb);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)12);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)20);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)12);
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)20);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_entities[i].ib);
 		
@@ -153,6 +177,9 @@ bool Mesh::load_mesh(const std::string& filename) {
 	const aiScene* scene = importer.ReadFile(filename, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
 	if (scene) {
 		ret = init_from_scene(scene, filename);
+	}
+	else {
+		printf("Error parsing '%s': '%s'\n", filename, importer.GetErrorString());
 	}
 	return ret;
 }

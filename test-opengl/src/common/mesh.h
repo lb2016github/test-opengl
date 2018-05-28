@@ -27,6 +27,9 @@ private:
 
 class MeshEntity {
 public:
+	MeshEntity();
+	~MeshEntity();
+
 	void init(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices);
 
 public:
@@ -56,6 +59,9 @@ protected:
 
 class Mesh : public IMesh {
 public:
+	Mesh();
+	~Mesh();
+
 	virtual bool load_mesh(const std::string& filename);
 	virtual void render();
 private:
