@@ -172,7 +172,7 @@ bool PointLightTechnique::init() {
 	if (!finalize()) return false;
 
 	m_direction_light_location.init_location(
-		m_program_id, "g_dir_light.base_light.color", "g_dir_light.base_light.ambiant_intensity", "g_dir_light.base_light.ambiant_intensity", "g_dir_light.direction"
+		m_program_id, "g_dir_light.base_light.color", "g_dir_light.base_light.ambiant_intensity", "g_dir_light.base_light.diffuse_intensity", "g_dir_light.direction"
 	);
 
 	for (int i = 0; i < MAX_POINT_LIGHT_COUNT; ++i) {
