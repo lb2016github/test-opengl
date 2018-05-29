@@ -1,6 +1,6 @@
 #include <math.h>
 #include "tutorial_practice.h"
-#include "glfw\include\glfw3.h"
+#include "glfw3\glfw3.h"
 
 
 // ≥ı ºªØ

@@ -15,10 +15,9 @@ configure_file(
 # 设置宏
 option(USE_TEST "use test" ON)
 
-include_directories(libs)
+include_directories(include)
 include_directories(src)
-link_directories(./libs/glfw)
-link_directories(./libs/assimp)
+link_directories(libs)
 
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -32,15 +31,15 @@ foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
     set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${CMAKE_BINARY_DIR}/bin )
 endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
 set(CMAKE_DEBUG_POSTFIX "_d")
-set(CMAKE_RELEASE_POSTFIX "_r")
+set(CMAKE_RELEASE_POSTFIX "")
 
 file(GLOB_RECURSE SHADER_SRC src/shaders/*.*)
 source_group(shaders FILES ${SHADER_SRC})
 
 #================================ Start 添加子工程 ================================#
 # glad
-set(GLAD_SRC "libs/glad/glad.h" "libs/glad.c")
-add_library(glad STATIC ${GLAD_SRC})
+# set(GLAD_SRC "src/glad/glad.h" "src/glad/glad.c")
+# add_library(glad STATIC ${GLAD_SRC})
 
 # 添加窗口工程
 file(GLOB_RECURSE WINDOW_SRC src/glfw_window/*.*)
@@ -60,13 +59,13 @@ file(GLOB_RECURSE PRACTICE_SRC src/practice_ogl/*.* src/stb-master/*.*)
 add_executable(practice_ogl ${PRACTICE_SRC} src/main.cpp ${SHADER_SRC})
 target_link_libraries(practice_ogl ogl_window math3d assimp common glad glfw3)
 set_target_properties(practice_ogl PROPERTIES DEBUG_POSTFIX "_d")
-set_target_properties(practice_ogl PROPERTIES RELEASE_POSTFIX "_r")
+set_target_properties(practice_ogl PROPERTIES RELEASE_POSTFIX "")
 
-file(GLOB_RECURSE ASSIMP_LIBS libs/assimp/assimp.* libs/assimp/assimp_d.*)
+file(GLOB_RECURSE LIBS libs/*.dll)
 add_custom_command(
 	TARGET practice_ogl
 	POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy ${ASSIMP_LIBS} ${CMAKE_BINARY_DIR}/bin
+	COMMAND ${CMAKE_COMMAND} -E copy ${LIBS} ${CMAKE_BINARY_DIR}/bin
 	)
 
 # 移动shader文件

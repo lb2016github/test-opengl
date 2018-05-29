@@ -1,5 +1,5 @@
 #include "camera.h"
-#include "glfw\include\glfw3.h"
+#include "glfw3\glfw3.h"
 #include <stdio.h>
 
 Camera::Camera(const int width, const int height){
@@ -14,7 +14,10 @@ Camera::Camera(const int width, const int height, const M3DVector3f pos, const M
 	m3dCopyVector3(m_pos, pos);
 	m3dCopyVector3(m_target, target);
 	m3dCopyVector3(m_up, up);
+	m3dNormalizeVector3(m_target);
+	m3dNormalizeVector3(m_up);
 	m3dCrossProduct3(m_right, m_target, m_up);
+	m3dNormalizeVector3(m_right);
 	m_cam_rot_info = new CameraRotationInfo(width, height, 2000, m_target);
 }
 
@@ -65,7 +68,9 @@ void Camera::on_render_cb() {
 	m_cam_rot_info->get_forward(m_target);
 	
 	m3dCrossProduct3(m_right, m_target, m_up);
+	m3dNormalizeVector3(m_right);
 	m3dCrossProduct3(m_up, m_right, m_target);
+	m3dNormalizeVector3(m_up);
 }
 
 CameraRotationInfo::CameraRotationInfo(float width, float height, float factor, M3DVector3f target): 
@@ -96,6 +101,8 @@ CameraRotationInfo::CameraRotationInfo(float width, float height, float factor, 
 }
 
 void CameraRotationInfo::on_mouse_move(double x, double y) {
+	//printf("%f, %f\n", x, y);
+
 	float delta_x = x - m_mouse_x;
 	float delta_y = y - m_mouse_y;
 
@@ -120,6 +127,8 @@ void CameraRotationInfo::update() {
 	if (m_right_edge) m_h_angle -= EDGE_SPEED;
 	if (m_upper_edge) m_v_angle += EDGE_SPEED;
 	if (m_lower_edge) m_v_angle -= EDGE_SPEED;
+
+	printf("%d, %d, %d, %d\n", m_left_edge, m_right_edge, m_lower_edge, m_upper_edge);
 
 	m_forward[0] = cos(m_h_angle);
 	m_forward[2] = sin(m_h_angle);

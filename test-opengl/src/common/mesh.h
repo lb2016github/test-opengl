@@ -5,7 +5,7 @@
 #include <vector>
 #include "texture.h"
 #include <string>
-#include "assimp/include/scene.h"
+#include "assimp/scene.h"
 
 class Vertex {
 public:

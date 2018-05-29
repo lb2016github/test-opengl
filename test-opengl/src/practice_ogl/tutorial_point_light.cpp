@@ -1,6 +1,6 @@
 #include "tutorial_point_light.h"
 #include "common/const.h"
-#include "glfw/include/glfw3.h"
+#include "glfw3/glfw3.h"
 
 #define FIElD_WIDTH 10
 #define FIELD_DEPTH 20 

@@ -2,7 +2,7 @@
 #define _CAMERA_H
 #include "math3d\math3d.h"
 
-#define MARGIN 3
+#define MARGIN 30
 #define EDGE_SPEED 0.01
 
 class CameraRotationInfo {

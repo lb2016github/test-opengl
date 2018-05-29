@@ -1,6 +1,6 @@
 #include "mesh.h"
-#include "assimp/include/postprocess.h"
-#include "assimp/include/Importer.hpp"
+#include "assimp/postprocess.h"
+#include "assimp/Importer.hpp"
 #include "const.h"
 
 Vertex::Vertex(float x, float y, float z, float u, float v) {
