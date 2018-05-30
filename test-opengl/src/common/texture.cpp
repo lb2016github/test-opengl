@@ -16,10 +16,10 @@ bool Texture::load() {
 	int width, height, channels;
 	data = stbi_load(m_filename.c_str(), &width, &height, &channels, 4);
 	if (data == NULL) {
-		printf("loading file %s failed\n", m_filename);
+		printf("loading file %s failed\n", m_filename.c_str());
 		return false;
 	}
-	printf("loading file %s success\n", m_filename);
+	printf("loading file %s success\n", m_filename.c_str());
 	
 
 	glGenTextures(1, &m_texture_obj);

@@ -28,6 +28,8 @@ public:
 	CameraInfo(const CameraInfo& cam_info);
 	CameraInfo& operator=(const CameraInfo& cam_info);
 
+	void set_cam_info(const M3DVector3f p_pos, const M3DVector3f p_target, const M3DVector3f p_up);
+
 	M3DVector3f pos;
 	M3DVector3f target;
 	M3DVector3f up;

@@ -13,6 +13,14 @@ CameraInfo& CameraInfo::operator=(const CameraInfo& cam_info) {
 	return *this;
 }
 
+void CameraInfo::set_cam_info(const M3DVector3f p_pos, const M3DVector3f p_target, const M3DVector3f p_up) {
+	m3dCopyVector3(pos, p_pos);
+	m3dCopyVector3(target, p_target);
+	m3dCopyVector3(up, p_up);
+	m3dNormalizeVector3(target);
+	m3dNormalizeVector3(up);
+}
+
 Pipline::Pipline()
 {
 	m_world_pos[0] = 0;
@@ -68,9 +76,7 @@ void Pipline::set_orthor_proj_info(float right, float left, float bottom, float 
 }
 
 void Pipline::set_camera_info(M3DVector3f pos, M3DVector3f target, M3DVector3f up) {
-	m3dCopyVector3(m_cam_info.pos, pos);
-	m3dCopyVector3(m_cam_info.target, target);
-	m3dCopyVector3(m_cam_info.up, up);
+	m_cam_info.set_cam_info(pos, target, up);
 }
 
 void Pipline::get_world_trans(M3DMatrix44f w) {
