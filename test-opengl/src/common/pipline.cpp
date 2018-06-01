@@ -90,11 +90,10 @@ void Pipline::get_world_trans(M3DMatrix44f w) {
 }
 
 void Pipline::get_view_trans(M3DMatrix44f v) {
-	M3DMatrix44f pos, rot, rp;
-	m3dTranslationMatrix44(pos, m_cam_info.pos[0], m_cam_info.pos[1], m_cam_info.pos[2]);
+	M3DMatrix44f pos, rot, irot;
+	m3dTranslationMatrix44(pos, -m_cam_info.pos[0], -m_cam_info.pos[1], -m_cam_info.pos[2]);
 	m3dExtendCameraMatrix44(rot, m_cam_info.target, m_cam_info.up);
-	m3dMatrixMultiply44(rp, pos, rot);
-	m3dInvertMatrix44(v, rp);
+	m3dMatrixMultiply44(v, rot, pos);
 }
 
 void Pipline::get_pers_proj_trans(M3DMatrix44f p) {
