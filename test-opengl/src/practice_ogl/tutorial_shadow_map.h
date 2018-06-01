@@ -42,12 +42,9 @@ protected:
 private:
 	Camera * m_cam;
 	PersProjInfo m_proj_info;
-	Pipline m_pipline;
 
 	Mesh* m_plane;
 	Mesh* m_mesh;
-
-	Texture* tex;
 
 	ShadowMapTechnique* m_shadow_map_tech;
 
