@@ -10,16 +10,18 @@
 #include <vector>
 #include "common/shadow_map_fbo.h"
 
-class ShadowMapTechnique : public Technique {
+class ShadowMapTechnique : public SpotLightTechnique {
 public:
 	ShadowMapTechnique();
 
 	bool init();
-	void set_wvp_trans(M3DMatrix44f wvp);
-	void set_texture_unit(unsigned int tex_unit);
+	void set_light_wvp_trans(M3DMatrix44f light_wvp);
+protected:
+	virtual void init_shader_path();
+
 private:
-	GLuint m_wvp_location;
-	GLuint m_shadow_map_location;
+	GLuint m_light_wvp_location;
+	GLuint m_sampler_shadow_map_location;
 };
 
 class TutorialShadowMap : public ICallback {

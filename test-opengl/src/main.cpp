@@ -16,8 +16,8 @@ void main(){
 		return;
 	}
 	
-	TutorialShadowMap* tp = new TutorialShadowMap();;
-	//TutorialSpotLight* tp = new TutorialSpotLight();
+	//TutorialShadowMap* tp = new TutorialShadowMap();;
+	TutorialSpotLight* tp = new TutorialSpotLight();
 	tp->init();
 	glfw_win::set_callback(tp);
 	while (true)

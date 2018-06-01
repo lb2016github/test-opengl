@@ -32,8 +32,8 @@ bool TutorialShadowMap::init() {
 	//m_spot_light.cutoff = 20;
 
 	M3DVector3f pos, target, up;
-	pos[0] = 0, pos[1] = 0, pos[2] = 0;
-	target[0] = 0, target[1] = 0, target[2] = 1;
+	pos[0] = 0, pos[1] = 10, pos[2] = -10;
+	target[0] = 0, target[1] = -0.6, target[2] = 1;
 	up[0] = 0, up[1] = 1, up[2] = 0;
 	m_cam = new Camera(WINDOW_WIDTH, WINDOW_HEIGHT, pos, target, up);
 
@@ -96,7 +96,6 @@ void TutorialShadowMap::cursor_position_callback(double x, double y) {
 void TutorialShadowMap::shadow_map_pass() {
 	m_shadow_map_fbo->bind_for_writing();
 	glClear(GL_DEPTH_BUFFER_BIT);
-	//glEnable(GL_DEPTH_TEST);
 
 	Pipline pipline;
 	M3DVector3f up;
@@ -107,7 +106,6 @@ void TutorialShadowMap::shadow_map_pass() {
 	pipline.set_pers_proj_info(m_proj_info);
 	M3DMatrix44f wvp;
 	pipline.get_pers_wvp_trans(wvp);
-	m_shadow_map_tech->set_wvp_trans(wvp);
 	m_mesh->render();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -117,16 +115,15 @@ void TutorialShadowMap::render_pass() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	m_shadow_map_tech->set_texture_unit(0);
-	m_shadow_map_fbo->bind_for_reading(GL_TEXTURE0);
 
 	Pipline pipline;
 	M3DMatrix44f wvp;
 	pipline.set_world_pos(0, 0, 10);
-	pipline.set_scale(5);
+	pipline.set_scale(10);
+	pipline.set_rotation(m3dDegToRad(-90), 0, 0);
 	pipline.set_camera_info(m_cam->m_pos, m_cam->m_target, m_cam->m_up);
 	pipline.set_pers_proj_info(m_proj_info);
 	pipline.get_pers_wvp_trans(wvp);
-	m_shadow_map_tech->set_wvp_trans(wvp);
 	m_plane->render();
 
 }
@@ -137,21 +134,20 @@ ShadowMapTechnique::ShadowMapTechnique() {
 }
 
 bool ShadowMapTechnique::init() {
-	if (!Technique::init()) return false;
-	if (!add_shader(GL_VERTEX_SHADER, "shaders/shadow_map.vert")) return false;
-	if (!add_shader(GL_FRAGMENT_SHADER, "shaders/shadow_map.frag")) return false;
-	if (!finalize()) return false;
+	bool rst = SpotLightTechnique::init();
 
-	m_wvp_location = glGetUniformLocation(m_program_id, "g_wvp");
-	m_shadow_map_location = glGetUniformLocation(m_program_id, "g_shadow_map");
+	m_light_wvp_location = glGetUniformLocation(m_program_id, "light_wvp");
+	m_sampler_shadow_map_location = glGetUniformLocation(m_program_id, "g_sampler_shadow_map");
 
-	if (m_wvp_location == INVALID_UNIFORM_LOCATION || m_shadow_map_location == INVALID_UNIFORM_LOCATION) return false;
+	if (m_light_wvp_location == INVALID_UNIFORM_LOCATION || m_light_wvp_location == INVALID_UNIFORM_LOCATION || !rst) return false;
 
 	return true;
 }
-void ShadowMapTechnique::set_wvp_trans(M3DMatrix44f wvp) {
-	glUniformMatrix4fv(m_wvp_location, 1, false, wvp);
+
+void ShadowMapTechnique::set_light_wvp_trans(M3DMatrix44f light_wvp) {
+	glUniformMatrix4fv(m_light_wvp_location, 1, false, light_wvp);
 }
-void ShadowMapTechnique::set_texture_unit(unsigned int tex_unit) {
-	glUniform1i(m_shadow_map_location, tex_unit);
+void ShadowMapTechnique::init_shader_path() {
+	m_vertex_shader_path = "shaders/shadow_map.vert";
+	m_fragment_shader_path = "shaders/shadow_map.frag";
 }
