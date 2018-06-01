@@ -94,10 +94,12 @@ bool Technique::finalize() {
 
 ////////////////////////////////////DirectionLightTechnique////////////////
 bool DirectionLightTechnique::init() {
+	init_shader_path();
+
 	if (!Technique::init()) return false;
 	// add shader
-	if (!add_shader(GL_VERTEX_SHADER, "shaders/direction_light.vert")) return false;
-	if (!add_shader(GL_FRAGMENT_SHADER, "shaders/direction_light.frag")) return false;
+	if (!add_shader(GL_VERTEX_SHADER, m_vertex_shader_path.c_str())) return false;
+	if (!add_shader(GL_FRAGMENT_SHADER, m_fragment_shader_path.c_str())) return false;
 	// finalize
 	if (!finalize()) return false;
 
@@ -162,13 +164,20 @@ void DirectionLightTechnique::set_specular_power(float power) {
 	glUniform1f(m_specular_power, power);
 }
 
+void DirectionLightTechnique::init_shader_path() {
+	m_vertex_shader_path = "shaders/direction_light.vert";
+	m_fragment_shader_path = "shaders/direction_light.frag";
+}
+
 /*************************************
 Point Light Technique
 *****************************************/
 bool PointLightTechnique::init() {
+	init_shader_path();
+
 	if (!Technique::init()) return false;
-	if (!add_shader(GL_VERTEX_SHADER, "shaders/spot_light.vert")) return false;
-	if (!add_shader(GL_FRAGMENT_SHADER, "shaders/spot_light.frag")) return false;
+	if (!add_shader(GL_VERTEX_SHADER, m_vertex_shader_path.c_str())) return false;
+	if (!add_shader(GL_FRAGMENT_SHADER, m_fragment_shader_path.c_str())) return false;
 	if (!finalize()) return false;
 
 	m_direction_light_location.init_location(
@@ -206,6 +215,11 @@ bool PointLightTechnique::init() {
 	return true;
 }
 
+void PointLightTechnique::init_shader_path() {
+	m_vertex_shader_path = "shaders/point_light.vert";
+	m_fragment_shader_path = "shaders/point_light.frag";
+}
+
 void PointLightTechnique::set_direction_light(DirectionLight& dir_light) {
 	m_direction_light_location.set_light(dir_light);
 }
@@ -239,6 +253,7 @@ void PointLightTechnique::set_texture_unit(int unit_idx) {
 Spot light technique
 *********************************************************/
 bool SpotLightTechnique::init() {
+	init_shader_path();
 	bool rst = PointLightTechnique::init();
 
 	for (int i = 0; i < MAX_SPOT_LIGHT_COUNT; ++i) {
@@ -271,6 +286,12 @@ bool SpotLightTechnique::init() {
 	return true;
 
 }
+
+void SpotLightTechnique::init_shader_path() {
+	m_vertex_shader_path = "shaders/spot_light.vert";
+	m_fragment_shader_path = "shaders/spot_light.frag";
+}
+
 void SpotLightTechnique::set_spot_lights(std::vector<SpotLight>& spot_light_list) {
 	int light_num = spot_light_list.size();
 	glUniform1i(m_spot_light_num_location, light_num);
