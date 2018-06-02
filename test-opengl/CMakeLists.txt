@@ -73,7 +73,7 @@ add_custom_target(
 	copy_shader
 	ALL
 	COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/bin/shaders
-	COMMAND ${CMAKE_COMMAND} -E copy ${SHADER_SRC} ${CMAKE_BINARY_DIR}/bin/shaders
+	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/src/shaders ${CMAKE_BINARY_DIR}/bin/shaders
 	)
 
 #================================ End 添加子工程 ================================#

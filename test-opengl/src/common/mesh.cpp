@@ -179,7 +179,7 @@ bool Mesh::load_mesh(const std::string& filename) {
 		ret = init_from_scene(scene, filename);
 	}
 	else {
-		printf("Error parsing '%s': '%s'\n", filename, importer.GetErrorString());
+		printf("Error parsing '%s': '%s'\n", filename.c_str(), importer.GetErrorString());
 	}
 	return ret;
 }

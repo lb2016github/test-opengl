@@ -128,7 +128,7 @@ void CameraRotationInfo::update() {
 	if (m_upper_edge) m_v_angle += EDGE_SPEED;
 	if (m_lower_edge) m_v_angle -= EDGE_SPEED;
 
-	printf("%d, %d, %d, %d\n", m_left_edge, m_right_edge, m_lower_edge, m_upper_edge);
+	//printf("%d, %d, %d, %d\n", m_left_edge, m_right_edge, m_lower_edge, m_upper_edge);
 
 	m_forward[0] = cos(m_h_angle);
 	m_forward[2] = sin(m_h_angle);
