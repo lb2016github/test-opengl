@@ -16,6 +16,7 @@ public:
 
 	bool init();
 	void set_light_wvp_trans(M3DMatrix44f light_wvp);
+	void set_shadow_map_tex_unit(unsigned int tex_idx);
 protected:
 	virtual void init_shader_path();
 
@@ -48,11 +49,16 @@ private:
 	Mesh* m_plane;
 	Mesh* m_mesh;
 
+	M3DVector3f m_mesh_pos;
+	M3DVector3f m_mesh_rot;
+
 	ShadowMapTechnique* m_shadow_map_tech;
 
 	SpotLight m_spot_light;
 
 	ShadowMapFBO* m_shadow_map_fbo;
+
+	Texture* m_test_tex;
 };
 
 #endif // !_TUTORIAL_SHADOW_MAP_H
