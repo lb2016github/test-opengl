@@ -6,7 +6,7 @@ const int MAX_SPOT_LIGHTS = 2;
 in vec2 tex_coord0;
 in vec3 w_pos0;
 in vec3 w_normal0;
-in vec2 shadow_map_coord0;
+in vec4 shadow_map_coord0;
 
 out vec4 frag_color;
 
@@ -99,13 +99,16 @@ vec3 calc_spot_color(SpotLight light, vec3 normal){
 
 void main(){
 	vec3 normal = normalize(w_normal0);
+	vec3 v_shadow = shadow_map_coord0.xyz / shadow_map_coord0.w;
+	float shadow_u = 0.5 * v_shadow.x + 0.5;
+	float shadow_v = 0.5 * v_shadow.y + 0.5;
+	float shadow_depth = 0.5 * v_shadow.z +0.5;
 
 	// shadow map
-	float depth = texture2D(g_sampler_shadow_map, shadow_map_coord0).x;
-	float dis_to_light = length(w_pos0 - g_spot_light_list[0].point_light.position);
+	float depth = texture2D(g_sampler_shadow_map, vec2(shadow_u, shadow_v)).x;
 	float factor = 1;
-	if (dis_to_light > depth){
-		factor = 0.2;
+	if (shadow_depth > depth){
+		factor = 0.5;
 	}
 
 	// 计算平行光颜色
