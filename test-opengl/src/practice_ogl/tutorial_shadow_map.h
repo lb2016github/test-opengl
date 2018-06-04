@@ -51,6 +51,7 @@ private:
 
 	M3DVector3f m_mesh_pos;
 	M3DVector3f m_mesh_rot;
+	M3DVector3f m_mesh_scale;
 
 	ShadowMapTechnique* m_shadow_map_tech;
 

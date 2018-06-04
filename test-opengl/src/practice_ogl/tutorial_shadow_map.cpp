@@ -11,33 +11,34 @@ bool TutorialShadowMap::init() {
 	m_proj_info.height = WINDOW_HEIGHT;
 	m_proj_info.width = WINDOW_WIDTH;
 	m_proj_info.z_near = 1;
-	m_proj_info.z_far = 500;
+	m_proj_info.z_far = 50;
 
-	m_spot_light.ambiance_intensity = 0;
+	m_spot_light.ambiance_intensity = 0.1;
 	m_spot_light.diffuse_intensity = 0.9;
 	m3dLoadVector3(m_spot_light.color, 1, 1, 1);
 	m_spot_light.atten.linear = 0.01f;
-	m3dLoadVector3(m_spot_light.position, -20, 20, 5);
+	m3dLoadVector3(m_spot_light.position, -20, 20, 1);
 	m3dLoadVector3(m_spot_light.direction, 1, -1, 0);
 	m3dNormalizeVector3(m_spot_light.direction);
-	m_spot_light.cutoff = 40;
+	m_spot_light.cutoff = 20;
 
 	M3DVector3f pos, target, up;
-	pos[0] = 0, pos[1] = 10, pos[2] = -10;
-	target[0] = 0, target[1] = -0.6, target[2] = 1;
+	pos[0] = 3, pos[1] = 8, pos[2] = -10;
+	target[0] = 0, target[1] = -0.2, target[2] = 1;
 	up[0] = 0, up[1] = 1, up[2] = 0;
 	m_cam = new Camera(WINDOW_WIDTH, WINDOW_HEIGHT, pos, target, up);
 
 	m_plane = new Mesh();
 	m_plane->load_mesh("res/quad.obj");
 	m_mesh = new Mesh();
-	m_mesh->load_mesh("res/box.obj");
+	m_mesh->load_mesh("res/phoenix_ugv.md2");
 
 	m_test_tex = new Texture(GL_TEXTURE_2D, "res/test.png");
 	m_test_tex->load();
 
-	m3dLoadVector3(m_mesh_pos, 0, 0, 5);
+	m3dLoadVector3(m_mesh_pos, 0, 0, 3);
 	m3dLoadVector3(m_mesh_rot, m3dDegToRad(30), m3dDegToRad(30), 0);
+	m3dLoadVector3(m_mesh_scale, 0.1, 0.1, 0.1);
 
 	m_shadow_map_tech = new ShadowMapTechnique();
 	if (!m_shadow_map_tech->init()) {
@@ -57,7 +58,9 @@ bool TutorialShadowMap::init() {
 
 // äÖÈ¾³¡¾°
 void TutorialShadowMap::render_scene_callback(float width, float height, float time) {
-	//m_cam->on_render_cb();
+	m_cam->on_render_cb();
+	m3dLoadVector3(m_mesh_rot, 0, time / 10, 0);
+	//m3dLoadVector3(m_mesh_pos, 0, 3 * sinf(time), 0);
 
 	shadow_map_pass();
 	render_pass();
@@ -99,10 +102,13 @@ void TutorialShadowMap::shadow_map_pass() {
 	m3dLoadVector3(up, 0, 1, 0);
 	pipline.set_world_pos(m_mesh_pos);
 	pipline.set_rotation(m_mesh_rot);
+	pipline.set_scale(m_mesh_scale);
 	pipline.set_camera_info(m_spot_light.position, m_spot_light.direction, up);
 	pipline.set_pers_proj_info(m_proj_info);
-	M3DMatrix44f wvp;
+	M3DMatrix44f wvp, w;
 	pipline.get_pers_wvp_trans(wvp);
+
+	m_shadow_map_tech->set_transformation(wvp, w);
 	m_mesh->render();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -125,7 +131,7 @@ void TutorialShadowMap::render_pass() {
 	M3DMatrix44f w, wvp, light_wvp;
 	M3DVector3f up;
 	m3dLoadVector3(up, 0, 1, 0);
-	pipline.set_world_pos(0, 0, 10);
+	pipline.set_world_pos(0, 0, 1);
 	pipline.set_scale(10);
 	pipline.set_rotation(m3dDegToRad(90), 0, 0);
 	pipline.get_world_trans(w);
@@ -152,16 +158,11 @@ void TutorialShadowMap::render_pass() {
 	m_plane->render();
 	
 	// render mesh
-
-	Pipline pip_mesh;
-	pip_mesh.set_world_pos(m_mesh_pos);
-	pip_mesh.set_rotation(m_mesh_rot);
-	pipline.get_world_trans(w);
-
 	Pipline pipline_mesh;
 	M3DMatrix44f w_mesh, wvp_mesh, light_wvp_mesh;
 	pipline_mesh.set_world_pos(m_mesh_pos);
 	pipline_mesh.set_rotation(m_mesh_rot);
+	pipline_mesh.set_scale(m_mesh_scale);
 	pipline_mesh.get_world_trans(w_mesh);
 	pipline_mesh.set_pers_proj_info(m_proj_info);
 	pipline_mesh.set_camera_info(m_spot_light.position, m_spot_light.direction, up);

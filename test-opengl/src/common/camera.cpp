@@ -109,8 +109,8 @@ void CameraRotationInfo::on_mouse_move(double x, double y) {
 	m_mouse_x = x;
 	m_mouse_y = y;
 
-	m_h_angle += delta_x / m_factor;
-	m_v_angle += delta_y / m_factor;
+	m_h_angle -= delta_x / m_factor;
+	m_v_angle -= delta_y / m_factor;
 
 	if (delta_x == 0) {
 		m_left_edge = x <= MARGIN;
@@ -123,10 +123,10 @@ void CameraRotationInfo::on_mouse_move(double x, double y) {
 }
 
 void CameraRotationInfo::update() {
-	if (m_left_edge) m_h_angle += EDGE_SPEED;
-	if (m_right_edge) m_h_angle -= EDGE_SPEED;
-	if (m_upper_edge) m_v_angle += EDGE_SPEED;
-	if (m_lower_edge) m_v_angle -= EDGE_SPEED;
+	if (m_left_edge) m_h_angle -= EDGE_SPEED;
+	if (m_right_edge) m_h_angle += EDGE_SPEED;
+	if (m_upper_edge) m_v_angle -= EDGE_SPEED;
+	if (m_lower_edge) m_v_angle += EDGE_SPEED;
 
 	//printf("%d, %d, %d, %d\n", m_left_edge, m_right_edge, m_lower_edge, m_upper_edge);
 
