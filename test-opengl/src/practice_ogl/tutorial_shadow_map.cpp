@@ -44,7 +44,6 @@ bool TutorialShadowMap::init() {
 	if (!m_shadow_map_tech->init()) {
 		printf("Error: init shadow map technique\n");
 	}
-	m_shadow_map_tech->enable();
 
 	m_shadow_map_fbo = new ShadowMapFBO();
 	m_shadow_map_fbo->init(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -52,6 +51,16 @@ bool TutorialShadowMap::init() {
 	glFrontFace(GL_CW);
 	glCullFace(GL_BACK);
 	glEnable(GL_CULL_FACE | GL_DEPTH_TEST);
+
+	m_skybox = new Skybox(m_cam, m_proj_info);
+	m_skybox->init(
+		"res/sp3right.jpg",
+		"res/sp3top.jpg",
+		"res/sp3front.jpg",
+		"res/sp3left.jpg",
+		"res/sp3bot.jpg",
+		"res/sp3back.jpg"
+	);
 
 	return true;
 }
@@ -62,9 +71,10 @@ void TutorialShadowMap::render_scene_callback(float width, float height, float t
 	m3dLoadVector3(m_mesh_rot, 0, time / 10, 0);
 	//m3dLoadVector3(m_mesh_pos, 0, 3 * sinf(time), 0);
 
+	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	shadow_map_pass();
 	render_pass();
-
+	m_skybox->render();
 }
 
 // ¼üÅÌ»Øµ÷
@@ -94,6 +104,7 @@ void TutorialShadowMap::cursor_position_callback(double x, double y) {
 }
 
 void TutorialShadowMap::shadow_map_pass() {
+	m_shadow_map_tech->enable();
 	m_shadow_map_fbo->bind_for_writing();
 	glClear(GL_DEPTH_BUFFER_BIT);
 
@@ -117,6 +128,8 @@ void TutorialShadowMap::shadow_map_pass() {
 void TutorialShadowMap::render_pass() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
+
+	m_shadow_map_tech->enable();
 
 	// spot light
 	std::vector<SpotLight> spot_lights;

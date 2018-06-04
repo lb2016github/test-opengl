@@ -43,3 +43,65 @@ Texture::~Texture() {
 		data = NULL;
 	}
 }
+/***********************************************
+CubemapTexture
+**********************************************/
+static const GLenum cube_map_types[6] = {
+	GL_TEXTURE_CUBE_MAP_POSITIVE_X,
+	GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
+	GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
+	GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+	GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+	GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
+};
+
+CubemapTexture::CubemapTexture(
+	const std::string& pox_x_filepath,
+	const std::string& pox_y_filepath,
+	const std::string& pox_z_filepath,
+	const std::string& neg_x_filepath,
+	const std::string& neg_y_filepath,
+	const std::string& neg_z_filepath
+) {
+	m_filepaths[0] = pox_x_filepath;
+	m_filepaths[1] = pox_y_filepath;
+	m_filepaths[2] = pox_z_filepath;
+	m_filepaths[3] = neg_x_filepath;
+	m_filepaths[4] = neg_y_filepath;
+	m_filepaths[5] = neg_z_filepath;
+	m_texture_obj = 0;
+}
+CubemapTexture::~CubemapTexture() {
+	if (m_texture_obj != 0) {
+		glDeleteTextures(1, &m_texture_obj);
+	}
+}
+bool CubemapTexture::load() {
+	glGenTextures(1, &m_texture_obj);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, m_texture_obj);
+	for (int i = 0; i < 6; ++i) {
+		int width, height, channels;
+		unsigned char* data = stbi_load(m_filepaths[i].c_str(), &width, &height, &channels, 4);
+		if (data == NULL) {
+			printf("loading file %s failed\n", m_filepaths[i].c_str());
+			continue;
+		}
+		printf("loading file %s success\n", m_filepaths[i].c_str());
+		glTexImage2D(cube_map_types[i], 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+		stbi_image_free(data);
+	}
+
+	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+	return true;
+}
+void CubemapTexture::bind(GLenum texture_unit) {
+	glActiveTexture(texture_unit);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, m_texture_obj);
+}

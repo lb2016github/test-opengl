@@ -75,7 +75,7 @@ void Pipline::set_orthor_proj_info(float right, float left, float bottom, float 
 	m_op_info.z_far = z_far;
 }
 
-void Pipline::set_camera_info(M3DVector3f pos, M3DVector3f target, M3DVector3f up) {
+void Pipline::set_camera_info(const M3DVector3f pos, const M3DVector3f target, const M3DVector3f up) {
 	m_cam_info.set_cam_info(pos, target, up);
 }
 

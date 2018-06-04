@@ -9,6 +9,7 @@
 #include "common/light.h"
 #include <vector>
 #include "common/shadow_map_fbo.h"
+#include "common/skybox.h"
 
 class ShadowMapTechnique : public SpotLightTechnique {
 public:
@@ -60,6 +61,8 @@ private:
 	ShadowMapFBO* m_shadow_map_fbo;
 
 	Texture* m_test_tex;
+
+	Skybox* m_skybox;
 };
 
 #endif // !_TUTORIAL_SHADOW_MAP_H

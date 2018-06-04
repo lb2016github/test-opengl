@@ -41,11 +41,11 @@ public:
 	Pipline();
 	~Pipline();
 
-	void set_world_pos(M3DVector3f world_pos) { m3dCopyVector3(m_world_pos, world_pos); }
+	void set_world_pos(const M3DVector3f world_pos) { m3dCopyVector3(m_world_pos, world_pos); }
 	void set_world_pos(float x, float y, float z);
-	void set_scale(M3DVector3f scale) { m3dCopyVector3(m_scale, scale); }
+	void set_scale(const M3DVector3f scale) { m3dCopyVector3(m_scale, scale); }
 	void set_scale(float scale);
-	void set_rotation(M3DVector3f rotation) { m3dCopyVector3(m_rotation, rotation); }
+	void set_rotation(const M3DVector3f rotation) { m3dCopyVector3(m_rotation, rotation); }
 	void set_rotation(float x, float y, float z);
 
 	void set_pers_proj_info(PersProjInfo& pp_info) { m_pp_info = pp_info; }
@@ -53,7 +53,7 @@ public:
 	void set_orthor_proj_info(OrthorProjInfo& op_info) { m_op_info = op_info; }
 	void set_orthor_proj_info(float right, float left, float back, float top, float z_near, float z_far);
 	void set_camera_info(CameraInfo& cam_info) { m_cam_info = cam_info; }
-	void set_camera_info(M3DVector3f pos, M3DVector3f target, M3DVector3f up);
+	void set_camera_info(const M3DVector3f pos, const M3DVector3f target, const M3DVector3f up);
 
 	void get_world_trans(M3DMatrix44f w);
 	void get_view_trans(M3DMatrix44f v);
