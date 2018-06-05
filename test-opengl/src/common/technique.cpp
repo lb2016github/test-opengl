@@ -4,6 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include "const.h"
 
 #define LOCATION_UNDEFINED 0xFFFFFFFF
 
@@ -366,4 +367,48 @@ void SpotLightLocation::set_light(SpotLight& light) {
 
 	glUniform3f(direction, norm[0], norm[1], norm[2]);
 	glUniform1f(cutoff, cosf(m3dDegToRad(light.cutoff)));
+}
+
+/*********************************************************
+ShadowMapTechnique
+*********************************************************/
+
+ShadowMapTechnique::ShadowMapTechnique() {
+}
+
+bool ShadowMapTechnique::init() {
+	bool rst = SpotLightTechnique::init();
+
+	m_light_wvp_location = glGetUniformLocation(m_program_id, "light_wvp");
+	m_sampler_shadow_map_location = glGetUniformLocation(m_program_id, "g_sampler_shadow_map");
+
+	if (m_light_wvp_location == INVALID_UNIFORM_LOCATION || m_light_wvp_location == INVALID_UNIFORM_LOCATION || !rst) return false;
+
+	return true;
+}
+
+void ShadowMapTechnique::set_light_wvp_trans(M3DMatrix44f light_wvp) {
+	glUniformMatrix4fv(m_light_wvp_location, 1, false, light_wvp);
+}
+
+void ShadowMapTechnique::init_shader_path() {
+	m_vertex_shader_path = "shaders/shadow_map.vert";
+	m_fragment_shader_path = "shaders/shadow_map.frag";
+}
+
+void ShadowMapTechnique::set_shadow_map_tex_unit(unsigned int tex_idx) {
+	glUniform1i(m_sampler_shadow_map_location, tex_idx);
+}
+
+/*********************************************************
+ShadowMapTechnique
+*********************************************************/
+bool LightingTechnique::init() {
+	bool rst = ShadowMapTechnique::init();
+	m_sampler_normal_map_location = glGetUniformLocation(m_program_id, "g_sampler_normal_map");
+	return rst && m_sampler_normal_map_location != INVALID_UNIFORM_LOCATION;
+}
+
+void LightingTechnique::set_normal_map_tex_unit(unsigned int texture_unit) {
+	glUniform1i(m_sampler_normal_map_location, texture_unit);
 }

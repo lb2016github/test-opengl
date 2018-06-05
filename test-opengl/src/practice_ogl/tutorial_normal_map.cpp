@@ -1,4 +1,4 @@
-#include "tutorial_shadow_map.h"
+#include "tutorial_normal_map.h"
 #include "common/const.h"
 #include "glfw3/glfw3.h"
 
@@ -6,7 +6,7 @@
 #define FIELD_DEPTH 20 
 
 
-bool TutorialShadowMap::init() {
+bool TutorialNormalMap::init() {
 	m_proj_info.fov = m3dDegToRad(60);
 	m_proj_info.height = WINDOW_HEIGHT;
 	m_proj_info.width = WINDOW_WIDTH;
@@ -31,16 +31,24 @@ bool TutorialShadowMap::init() {
 	m_plane = new Mesh();
 	m_plane->load_mesh("res/quad.obj");
 	m_mesh = new Mesh();
-	m_mesh->load_mesh("res/phoenix_ugv.md2");
+	m_mesh->load_mesh("res/box.obj");
 
 	m_test_tex = new Texture(GL_TEXTURE_2D, "res/test.png");
 	m_test_tex->load();
 
-	m3dLoadVector3(m_mesh_pos, 0, 0, 3);
-	m3dLoadVector3(m_mesh_rot, m3dDegToRad(30), m3dDegToRad(30), 0);
-	m3dLoadVector3(m_mesh_scale, 0.1, 0.1, 0.1);
+	m_normal_map = new Texture(GL_TEXTURE_2D, "res/normal_map.jpg");
+	m_normal_map->load();
 
-	m_shadow_map_tech = new ShadowMapTechnique();
+	m_up_map = new Texture(GL_TEXTURE_2D, "res/normal_up.jpg");
+	m_up_map->load();
+
+	m_normal_tex = m_normal_map;
+
+	m3dLoadVector3(m_mesh_pos, 0, 4, 3);
+	m3dLoadVector3(m_mesh_rot, m3dDegToRad(30), m3dDegToRad(30), 0);
+	m3dLoadVector3(m_mesh_scale, 4, 4, 4);
+
+	m_shadow_map_tech = new LightingTechnique();
 	if (!m_shadow_map_tech->init()) {
 		printf("Error: init shadow map technique\n");
 	}
@@ -66,7 +74,7 @@ bool TutorialShadowMap::init() {
 }
 
 // 渲染场景
-void TutorialShadowMap::render_scene_callback(float width, float height, float time) {
+void TutorialNormalMap::render_scene_callback(float width, float height, float time) {
 	m_cam->on_render_cb();
 	m3dLoadVector3(m_mesh_rot, 0, time / 10, 0);
 	//m3dLoadVector3(m_mesh_pos, 0, 3 * sinf(time), 0);
@@ -78,32 +86,30 @@ void TutorialShadowMap::render_scene_callback(float width, float height, float t
 }
 
 // 键盘回调
-void TutorialShadowMap::key_callback(int key, int scancode, int action, int mods) {
+void TutorialNormalMap::key_callback(int key, int scancode, int action, int mods) {
 	m_cam->on_keyboard(key);
 
 	if (action != GLFW_PRESS) return;
 
 	switch (key)
 	{
-	//case GLFW_KEY_UP:
-	//	m_direction_light.ambiance_intensity += 0.1;
-	//	m_direction_light.diffuse_intensity -= 0.1;
-	//	break;
-	//case GLFW_KEY_DOWN:
-	//	m_direction_light.ambiance_intensity -= 0.1;
-	//	m_direction_light.diffuse_intensity += 0.1;
-	//	break;
+	case GLFW_KEY_N:
+		m_normal_tex = m_normal_map;
+		break;
+	case GLFW_KEY_U:
+		m_normal_tex = m_up_map;
+		break;
 	default:
 		break;
 	}
 }
 
 // 光标移动回调
-void TutorialShadowMap::cursor_position_callback(double x, double y) {
+void TutorialNormalMap::cursor_position_callback(double x, double y) {
 	m_cam->on_mouse_move(x, y);
 }
 
-void TutorialShadowMap::shadow_map_pass() {
+void TutorialNormalMap::shadow_map_pass() {
 	m_shadow_map_tech->enable();
 	m_shadow_map_fbo->bind_for_writing();
 	glClear(GL_DEPTH_BUFFER_BIT);
@@ -125,7 +131,7 @@ void TutorialShadowMap::shadow_map_pass() {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void TutorialShadowMap::render_pass() {
+void TutorialNormalMap::render_pass() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
 
@@ -157,6 +163,7 @@ void TutorialShadowMap::render_pass() {
 	// init technique
 	m_shadow_map_tech->set_texture_unit(0);
 	m_shadow_map_tech->set_shadow_map_tex_unit(1);
+	m_shadow_map_tech->set_normal_map_tex_unit(2);
 	m_shadow_map_tech->set_spot_lights(spot_lights);
 	m_shadow_map_tech->set_point_lights(point_lights);
 	m_shadow_map_tech->set_direction_light(dir_light);
@@ -164,12 +171,13 @@ void TutorialShadowMap::render_pass() {
 	m_shadow_map_tech->set_light_wvp_trans(light_wvp);
 	m_shadow_map_tech->set_eye_position(m_cam->m_pos);
 	m_shadow_map_tech->set_specular_parameter(0.5, 5);
-	
+
 
 	m_test_tex->bind(GL_TEXTURE0);
 	m_shadow_map_fbo->bind_for_reading(GL_TEXTURE1);
+	m_normal_tex->bind(GL_TEXTURE2);
 	m_plane->render();
-	
+
 	// render mesh
 	Pipline pipline_mesh;
 	M3DMatrix44f w_mesh, wvp_mesh, light_wvp_mesh;

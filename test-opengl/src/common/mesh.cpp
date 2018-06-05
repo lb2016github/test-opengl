@@ -7,12 +7,21 @@ Vertex::Vertex(float x, float y, float z, float u, float v) {
 	m3dLoadVector3(m_pos, x, y, z);
 	m3dLoadVector2(m_coor, u, v);
 	m3dLoadVector3(m_normal, 0, 0, 0);
+	m3dLoadVector3(m_tangent, 0, 0, 0);
 }
 
 Vertex::Vertex(float x, float y, float z, float u, float v, float n_x, float n_y, float n_z) {
 	m3dLoadVector3(m_pos, x, y, z);
 	m3dLoadVector2(m_coor, u, v);
 	m3dLoadVector3(m_normal, n_x, n_y, n_z);
+	m3dLoadVector3(m_tangent, 0, 0, 0);
+}
+
+Vertex::Vertex(float x, float y, float z, float u, float v, float n_x, float n_y, float n_z, float t_x, float t_y, float t_z) {
+	m3dLoadVector3(m_pos, x, y, z);
+	m3dLoadVector2(m_coor, u, v);
+	m3dLoadVector3(m_normal, n_x, n_y, n_z);
+	m3dLoadVector3(m_tangent, t_x, t_y, t_z);
 }
 
 void Vertex::transform(M3DMatrix44f trans) {
@@ -147,12 +156,14 @@ void Mesh::render() {
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
+	glEnableVertexAttribArray(3);
 	
 	for (int i = 0; i < m_entities.size(); ++i) {
 		glBindBuffer(GL_ARRAY_BUFFER, m_entities[i].vb);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)12);
 		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)20);
+		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)32);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_entities[i].ib);
 		
@@ -167,6 +178,7 @@ void Mesh::render() {
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(2);
+	glDisableVertexAttribArray(3);
 }
 
 bool Mesh::load_mesh(const std::string& filename) {
@@ -174,7 +186,7 @@ bool Mesh::load_mesh(const std::string& filename) {
 
 	bool ret = false;
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(filename, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
+	const aiScene* scene = importer.ReadFile(filename, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 	if (scene) {
 		ret = init_from_scene(scene, filename);
 	}
@@ -203,14 +215,20 @@ void Mesh::init_mesh(unsigned int index, const aiMesh* ai_mesh){
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
 
+	aiVector3D default_tangent(1, 0, 0);
+
 	// init vertices
 	const aiVector3D Zero3D(0.0f, 0.0f, 0.0f);
 	for (int i = 0; i < ai_mesh->mNumVertices; ++i) {
 		const aiVector3D* pos = &(ai_mesh->mVertices[i]);
 		const aiVector3D* normal = &(ai_mesh->mNormals[i]);
 		const aiVector3D* cood = ai_mesh->HasTextureCoords(0) ? &(ai_mesh->mTextureCoords[0][i]): &Zero3D;
-
-		Vertex v(pos->x, pos->y, pos->z, cood->x, cood->y, normal->x, normal->y, normal->z);
+		const aiVector3D* tangent = &default_tangent;
+		if (ai_mesh->mTangents) {
+			tangent = &(ai_mesh->mTangents[i]);
+		}
+		
+		Vertex v(pos->x, pos->y, pos->z, cood->x, cood->y, normal->x, normal->y, normal->z, tangent->x, tangent->y, tangent->z);
 		vertices.push_back(v);
 	}
 

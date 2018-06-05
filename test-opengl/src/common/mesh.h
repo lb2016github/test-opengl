@@ -12,10 +12,12 @@ public:
 	M3DVector3f m_pos;
 	M3DVector2f m_coor;
 	M3DVector3f m_normal;
+	M3DVector3f m_tangent;
 
 public:
 	Vertex(float x, float y, float z, float u, float v);
 	Vertex(float x, float y, float z, float u, float v, float n_x, float n_y, float n_z);
+	Vertex(float x, float y, float z, float u, float v, float n_x, float n_y, float n_z, float t_x, float t_y, float t_z);
 
 private:
 	//Vertex(const Vertex& ver);

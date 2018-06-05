@@ -1,5 +1,5 @@
-#ifndef _TUTORIAL_SHADOW_MAP_H
-#define _TUTORIAL_SHADOW_MAP_H
+#ifndef _TUTORIAL_NORMAL_MAP_H
+#define _TUTORIAL_NORMAL_MAP_H
 
 #include "common/i_callbacks.h"
 #include "common/camera.h"
@@ -11,7 +11,7 @@
 #include "common/shadow_map_fbo.h"
 #include "common/skybox.h"
 
-class TutorialShadowMap : public ICallback {
+class TutorialNormalMap : public ICallback {
 public:
 	bool init();
 
@@ -39,7 +39,7 @@ private:
 	M3DVector3f m_mesh_rot;
 	M3DVector3f m_mesh_scale;
 
-	ShadowMapTechnique* m_shadow_map_tech;
+	LightingTechnique* m_shadow_map_tech;
 
 	SpotLight m_spot_light;
 
@@ -47,7 +47,11 @@ private:
 
 	Texture* m_test_tex;
 
+	Texture* m_normal_map;
+	Texture* m_up_map;
+	Texture* m_normal_tex;
+
 	Skybox* m_skybox;
 };
 
-#endif // !_TUTORIAL_SHADOW_MAP_H
+#endif // !_TUTORIAL_NORMAL_MAP_H
