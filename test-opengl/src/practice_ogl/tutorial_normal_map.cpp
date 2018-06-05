@@ -175,7 +175,7 @@ void TutorialNormalMap::render_pass() {
 
 	m_test_tex->bind(GL_TEXTURE0);
 	m_shadow_map_fbo->bind_for_reading(GL_TEXTURE1);
-	m_normal_tex->bind(GL_TEXTURE2);
+	m_up_map->bind(GL_TEXTURE2);
 	m_plane->render();
 
 	// render mesh
@@ -190,6 +190,8 @@ void TutorialNormalMap::render_pass() {
 	pipline_mesh.get_pers_wvp_trans(light_wvp_mesh);
 	pipline_mesh.set_camera_info(m_cam->m_pos, m_cam->m_target, m_cam->m_up);
 	pipline_mesh.get_pers_wvp_trans(wvp_mesh);
+
+	m_normal_tex->bind(GL_TEXTURE2);
 
 	m_shadow_map_tech->set_transformation(wvp_mesh, w_mesh);
 	m_shadow_map_tech->set_light_wvp_trans(light_wvp_mesh);
