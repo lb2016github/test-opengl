@@ -1,13 +1,13 @@
 #include "skybox.h"
 
 SkyboxTechnique::SkyboxTechnique() {
-
+	m_vertex_shader_path = "shaders/skybox.vert";
+	m_fragment_shader_path = "shaders/skybox.frag";
 }
 SkyboxTechnique::~SkyboxTechnique() {
 
 }
 bool SkyboxTechnique::init() {
-	init_shader_path();
 	if (!Technique::init()) return false;
 	if (!add_shader(GL_VERTEX_SHADER, m_vertex_shader_path.c_str())) return false;
 	if (!add_shader(GL_FRAGMENT_SHADER, m_fragment_shader_path.c_str())) return false;
@@ -21,11 +21,6 @@ bool SkyboxTechnique::init() {
 	}
 
 	return true;
-}
-
-void SkyboxTechnique::init_shader_path() {
-	m_vertex_shader_path = "shaders/skybox.vert";
-	m_fragment_shader_path = "shaders/skybox.frag";
 }
 
 void SkyboxTechnique::set_wvp_trans(const M3DMatrix44f wvp) {

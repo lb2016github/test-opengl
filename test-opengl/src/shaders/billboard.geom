@@ -24,7 +24,7 @@ void main(){
 	tex_coord = vec2(0, 1);
 	EmitVertex();
 
-		// generate right down corner
+	// generate right down corner
 	pos -= vec4(up * (-height), 0);
 	pos += vec4(right * width, 0);
 	gl_Position = pos;

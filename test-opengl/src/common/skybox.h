@@ -17,9 +17,6 @@ public:
 	void set_wvp_trans(const M3DMatrix44f wvp);
 	void set_texture_unit(unsigned int texture_unit);
 
-protected:
-	virtual void init_shader_path();
-
 private:
 	GLuint m_wvp_location;
 	GLuint m_sampler_location;

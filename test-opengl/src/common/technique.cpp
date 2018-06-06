@@ -8,7 +8,13 @@
 
 #define LOCATION_UNDEFINED 0xFFFFFFFF
 
-Technique::Technique() : m_program_id(0){
+Technique::Technique() : Technique("", "", "") {
+}
+
+Technique::Technique(const std::string& vertex_shader_path, const std::string& fragment_shader_path, const std::string& geometry_shader_path): m_program_id(0) {
+	m_vertex_shader_path = vertex_shader_path;
+	m_fragment_shader_path = fragment_shader_path;
+	m_geometry_shader_path = geometry_shader_path;
 }
 
 Technique::~Technique() {
@@ -94,8 +100,12 @@ bool Technique::finalize() {
 }
 
 ////////////////////////////////////DirectionLightTechnique////////////////
+DirectionLightTechnique::DirectionLightTechnique(){
+	m_vertex_shader_path = "shaders/direction_light.vert";
+	m_fragment_shader_path = "shaders/direction_light.frag";
+}
+
 bool DirectionLightTechnique::init() {
-	init_shader_path();
 
 	if (!Technique::init()) return false;
 	// add shader
@@ -165,16 +175,15 @@ void DirectionLightTechnique::set_specular_power(float power) {
 	glUniform1f(m_specular_power, power);
 }
 
-void DirectionLightTechnique::init_shader_path() {
-	m_vertex_shader_path = "shaders/direction_light.vert";
-	m_fragment_shader_path = "shaders/direction_light.frag";
-}
-
 /*************************************
 Point Light Technique
 *****************************************/
+PointLightTechnique::PointLightTechnique() {
+	m_vertex_shader_path = "shaders/point_light.vert";
+	m_fragment_shader_path = "shaders/point_light.frag";
+}
+
 bool PointLightTechnique::init() {
-	init_shader_path();
 
 	if (!Technique::init()) return false;
 	if (!add_shader(GL_VERTEX_SHADER, m_vertex_shader_path.c_str())) return false;
@@ -216,11 +225,6 @@ bool PointLightTechnique::init() {
 	return true;
 }
 
-void PointLightTechnique::init_shader_path() {
-	m_vertex_shader_path = "shaders/point_light.vert";
-	m_fragment_shader_path = "shaders/point_light.frag";
-}
-
 void PointLightTechnique::set_direction_light(DirectionLight& dir_light) {
 	m_direction_light_location.set_light(dir_light);
 }
@@ -253,8 +257,12 @@ void PointLightTechnique::set_texture_unit(int unit_idx) {
 /*********************************************************
 Spot light technique
 *********************************************************/
+SpotLightTechnique::SpotLightTechnique() {
+	m_vertex_shader_path = "shaders/spot_light.vert";
+	m_fragment_shader_path = "shaders/spot_light.frag";
+}
+
 bool SpotLightTechnique::init() {
-	init_shader_path();
 	bool rst = PointLightTechnique::init();
 
 	for (int i = 0; i < MAX_SPOT_LIGHT_COUNT; ++i) {
@@ -286,11 +294,6 @@ bool SpotLightTechnique::init() {
 
 	return true;
 
-}
-
-void SpotLightTechnique::init_shader_path() {
-	m_vertex_shader_path = "shaders/spot_light.vert";
-	m_fragment_shader_path = "shaders/spot_light.frag";
 }
 
 void SpotLightTechnique::set_spot_lights(std::vector<SpotLight>& spot_light_list) {
@@ -374,6 +377,8 @@ ShadowMapTechnique
 *********************************************************/
 
 ShadowMapTechnique::ShadowMapTechnique() {
+	m_vertex_shader_path = "shaders/shadow_map.vert";
+	m_fragment_shader_path = "shaders/shadow_map.frag";
 }
 
 bool ShadowMapTechnique::init() {
@@ -391,11 +396,6 @@ void ShadowMapTechnique::set_light_wvp_trans(M3DMatrix44f light_wvp) {
 	glUniformMatrix4fv(m_light_wvp_location, 1, false, light_wvp);
 }
 
-void ShadowMapTechnique::init_shader_path() {
-	m_vertex_shader_path = "shaders/shadow_map.vert";
-	m_fragment_shader_path = "shaders/shadow_map.frag";
-}
-
 void ShadowMapTechnique::set_shadow_map_tex_unit(unsigned int tex_idx) {
 	glUniform1i(m_sampler_shadow_map_location, tex_idx);
 }
@@ -403,6 +403,11 @@ void ShadowMapTechnique::set_shadow_map_tex_unit(unsigned int tex_idx) {
 /*********************************************************
 ShadowMapTechnique
 *********************************************************/
+LightingTechnique::LightingTechnique() {
+	m_vertex_shader_path = "shaders/lighting_technique.vert";
+	m_fragment_shader_path = "shaders/lighting_technique.frag";
+}
+
 bool LightingTechnique::init() {
 	bool rst = ShadowMapTechnique::init();
 	m_sampler_normal_map_location = glGetUniformLocation(m_program_id, "g_sampler_normal_map");

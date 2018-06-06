@@ -12,18 +12,18 @@
 class Technique {
 public:
 	Technique();
+	Technique(const std::string& vertex_shader_path, const std::string& fragment_shader_path, const std::string& geometry_shader_path);
 	virtual ~Technique();
 	virtual bool init();
 	void enable();
 
 protected:
-	virtual void init_shader_path()=0;
-
 	bool add_shader(GLenum shader_type, const char* filename);	// add shader object
 	bool finalize();	// compile and link shader
 	GLuint m_program_id;
 	std::string m_vertex_shader_path;
 	std::string m_fragment_shader_path;
+	std::string m_geometry_shader_path;
 
 private:
 	typedef std::list<GLuint> ShaderObjList;
@@ -94,6 +94,8 @@ Direction light Technique
 // 环境光材质
 class DirectionLightTechnique : public Technique {
 public:
+	DirectionLightTechnique();
+
 	virtual bool init();
 	void set_light(DirectionLight& m_dir_light);
 	void set_transformation(M3DMatrix44f wvp, M3DMatrix44f w);
@@ -101,9 +103,6 @@ public:
 	void set_eye_pos(M3DVector3f eye_pos);
 	void set_material_specular_intensity(float materia);
 	void set_specular_power(float power);
-
-protected:
-	virtual void init_shader_path();
 
 protected:
 	GLuint wvp_location, w_locatioin;
@@ -120,6 +119,7 @@ Point light Technique
 *********************************************************/
 class PointLightTechnique : public Technique {
 public:
+	PointLightTechnique();
 	virtual bool init();
 
 	void set_direction_light(DirectionLight& dir_light);
@@ -128,9 +128,6 @@ public:
 	void set_specular_parameter(float spec_intensity, float spec_pow);
 	void set_transformation(M3DMatrix44f wvp, M3DMatrix44f world_trans);
 	void set_texture_unit(int unit_idx);
-
-protected:
-	virtual void init_shader_path();
 
 private:
 	DirectionLightLocation m_direction_light_location;
@@ -151,11 +148,9 @@ Spot light Technique
 *********************************************************/
 class SpotLightTechnique : public PointLightTechnique {
 public:
+	SpotLightTechnique();
 	virtual bool init();
 	void set_spot_lights(std::vector<SpotLight>& spot_light_list);
-
-protected:
-	virtual void init_shader_path();
 
 private:
 	SpotLightLocation m_spot_light_locations[MAX_SPOT_LIGHT_COUNT];
@@ -172,8 +167,6 @@ public:
 	virtual bool init();
 	void set_light_wvp_trans(M3DMatrix44f light_wvp);
 	void set_shadow_map_tex_unit(unsigned int tex_idx);
-protected:
-	virtual void init_shader_path();
 
 private:
 	GLuint m_light_wvp_location;
@@ -185,14 +178,10 @@ Lighting Technique
 *********************************************************/
 class LightingTechnique : public ShadowMapTechnique {
 public:
+	LightingTechnique();
 	virtual bool init();
 	void set_normal_map_tex_unit(unsigned int texture_unit);
 
-protected:
-	virtual void init_shader_path() {
-		m_vertex_shader_path = "shaders/lighting_technique.vert";
-		m_fragment_shader_path = "shaders/lighting_technique.frag";
-	}
 private:
 	GLuint m_sampler_normal_map_location;
 };
