@@ -7,6 +7,7 @@
 #include "practice_ogl/tutorial_spot_light.h"
 #include "practice_ogl/tutorial_shadow_map.h"
 #include "practice_ogl/tutorial_normal_map.h"
+#include "practice_ogl/tutorial_billboard.h"
 
 void main(){
 	fprintf(stdout, "%s\n", "HelloGLFW");
@@ -17,7 +18,7 @@ void main(){
 		return;
 	}
 	
-	TutorialNormalMap* tp = new TutorialNormalMap();
+	TutorialBillboard* tp = new TutorialBillboard();
 	tp->init();
 	glfw_win::set_callback(tp);
 	while (true)

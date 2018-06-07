@@ -41,6 +41,10 @@ void Technique::enable() {
 	glUseProgram(m_program_id);
 }
 
+bool Technique::add_shader(GLenum shader_type, const std::string& filename) {
+	return add_shader(shader_type, filename.c_str());
+}
+
 bool Technique::add_shader(GLenum shader_type, const char* filename) {
 	// create shader
 	GLuint shader_id = glCreateShader(shader_type);
@@ -416,4 +420,44 @@ bool LightingTechnique::init() {
 
 void LightingTechnique::set_normal_map_tex_unit(unsigned int texture_unit) {
 	glUniform1i(m_sampler_normal_map_location, texture_unit);
+}
+
+/*********************************************************
+Billboard Technique
+*********************************************************/
+BillboardTechnique::BillboardTechnique() {
+	m_vertex_shader_path = "shaders/billboard.vert";
+	m_geometry_shader_path = "shaders/billboard.geom";
+	m_fragment_shader_path = "shaders/billboard.frag";
+}
+bool BillboardTechnique::init() {
+	if (!Technique::init()) return false;
+	if (!add_shader(GL_VERTEX_SHADER, m_vertex_shader_path)) return false;
+	if (!add_shader(GL_FRAGMENT_SHADER, m_fragment_shader_path)) return false;
+	if (!add_shader(GL_GEOMETRY_SHADER, m_geometry_shader_path)) return false;
+	if (!finalize()) return false;
+
+	m_cam_pos_location = glGetUniformLocation(m_program_id, "cam_pos");
+	m_width_location = glGetUniformLocation(m_program_id, "width");
+	m_height_location = glGetUniformLocation(m_program_id, "height");
+	m_color_map_location = glGetUniformLocation(m_program_id, "g_color_map");
+	m_vp_location = glGetUniformLocation(m_program_id, "vp");
+	return m_cam_pos_location != INVALID_UNIFORM_LOCATION && m_width_location != INVALID_UNIFORM_LOCATION &&
+		m_height_location != INVALID_UNIFORM_LOCATION && m_vp_location != INVALID_UNIFORM_LOCATION &&
+		m_color_map_location != INVALID_UNIFORM_LOCATION;
+}
+
+void BillboardTechnique::set_vp_trans(const M3DMatrix44f& vp) {
+	glUniformMatrix4fv(m_vp_location, 1, false, vp);
+}
+
+void BillboardTechnique::set_camera_position(const M3DVector3f cam_pos) {
+	glUniform3f(m_cam_pos_location, cam_pos[0], cam_pos[1], cam_pos[2]);
+}
+void BillboardTechnique::set_billboard_size(float width, float height) {
+	glUniform1f(m_width_location, width);
+	glUniform1f(m_height_location, height);
+}
+void BillboardTechnique::set_color_map_tex_unit(unsigned int tex_unit) {
+	glUniform1i(m_color_map_location, tex_unit);
 }

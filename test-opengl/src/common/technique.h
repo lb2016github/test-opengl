@@ -19,6 +19,7 @@ public:
 
 protected:
 	bool add_shader(GLenum shader_type, const char* filename);	// add shader object
+	bool add_shader(GLenum shader_type, const std::string& filename);	// add shader object
 	bool finalize();	// compile and link shader
 	GLuint m_program_id;
 	std::string m_vertex_shader_path;
@@ -185,4 +186,26 @@ public:
 private:
 	GLuint m_sampler_normal_map_location;
 };
+
+/*********************************************************
+Billboard Technique
+*********************************************************/
+class BillboardTechnique : public Technique {
+public:
+	BillboardTechnique();
+	virtual bool init();
+
+	void set_vp_trans(const M3DMatrix44f& vp);
+	void set_camera_position(const M3DVector3f cam_pos);
+	void set_billboard_size(float width, float height);
+	void set_color_map_tex_unit(unsigned int tex_unit);
+
+private:
+	GLuint m_cam_pos_location;
+	GLuint m_width_location;
+	GLuint m_height_location;
+	GLuint m_color_map_location;
+	GLuint m_vp_location;
+};
+
 #endif // !_TECHNIQUE_H
