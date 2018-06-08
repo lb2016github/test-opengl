@@ -8,6 +8,7 @@
 #include "practice_ogl/tutorial_shadow_map.h"
 #include "practice_ogl/tutorial_normal_map.h"
 #include "practice_ogl/tutorial_billboard.h"
+#include "practice_ogl/tutorial_partical_system.h"
 
 void main(){
 	fprintf(stdout, "%s\n", "HelloGLFW");
@@ -18,7 +19,7 @@ void main(){
 		return;
 	}
 	
-	TutorialBillboard* tp = new TutorialBillboard();
+	TutorialParticalSystem* tp = new TutorialParticalSystem();
 	tp->init();
 	glfw_win::set_callback(tp);
 	while (true)

@@ -57,7 +57,7 @@ add_library(math3d STATIC ${MATH3D_SRC})
 # 添加practice_ogl
 file(GLOB_RECURSE PRACTICE_SRC src/practice_ogl/*.* src/stb-master/*.*)
 add_executable(practice_ogl ${PRACTICE_SRC} src/main.cpp ${SHADER_SRC})
-target_link_libraries(practice_ogl ogl_window math3d assimp common glad glfw3)
+target_link_libraries(practice_ogl ogl_window math3d assimp common glfw3)
 set_target_properties(practice_ogl PROPERTIES DEBUG_POSTFIX "_d")
 set_target_properties(practice_ogl PROPERTIES RELEASE_POSTFIX "")
 

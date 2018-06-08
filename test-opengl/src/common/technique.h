@@ -195,7 +195,7 @@ public:
 	BillboardTechnique();
 	virtual bool init();
 
-	void set_vp_trans(const M3DMatrix44f& vp);
+	void set_vp_trans(const M3DMatrix44f vp);
 	void set_camera_position(const M3DVector3f cam_pos);
 	void set_billboard_size(float width, float height);
 	void set_color_map_tex_unit(unsigned int tex_unit);

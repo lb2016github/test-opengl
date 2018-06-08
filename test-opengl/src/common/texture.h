@@ -40,4 +40,17 @@ private:
 	GLuint m_texture_obj;
 };
 
+class RandomTexture
+{
+public:
+	RandomTexture();
+	~RandomTexture();
+
+	void bind(GLenum texture_unit);
+	bool init(unsigned int size);
+
+private:
+	GLuint m_texture_obj;
+};
+
 #endif // !_TEXTURE_H

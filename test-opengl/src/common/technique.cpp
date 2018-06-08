@@ -448,7 +448,7 @@ bool BillboardTechnique::init() {
 		m_color_map_location != INVALID_UNIFORM_LOCATION;
 }
 
-void BillboardTechnique::set_vp_trans(const M3DMatrix44f& vp) {
+void BillboardTechnique::set_vp_trans(const M3DMatrix44f vp) {
 	glUniformMatrix4fv(m_vp_location, 1, false, vp);
 }
 
@@ -479,7 +479,32 @@ PSUpdateTechnique::~PSUpdateTechnique()
 }
 
 bool PSUpdateTechnique::init() {
-	if (!Technique::init()) return false;
+	m_program_id = glCreateProgram();
+	if (m_program_id == 0) {
+		fprintf(stderr, "Error creating shader program\n");
+		return false;
+	}
+	if (m_vertex_shader_path != "") {
+		if (!add_shader(GL_VERTEX_SHADER, m_vertex_shader_path)) return false;
+	}
+	if (m_geometry_shader_path != "") {
+		if (!add_shader(GL_GEOMETRY_SHADER, m_geometry_shader_path)) return false;
+	}
+	if (m_fragment_shader_path != "") {
+		if (!add_shader(GL_FRAGMENT_SHADER, m_fragment_shader_path)) return false;
+	}
+
+	const GLchar* varings[4];
+	varings[0] = "gs_out.type";
+	varings[1] = "gs_out.age";
+	varings[2] = "gs_out.position";
+	varings[3] = "gs_out.velocity";
+
+	glTransformFeedbackVaryings(m_program_id, 4, varings, GL_INTERLEAVED_ATTRIBS);
+
+	if (!finalize()) {
+		return false;
+	}
 
 	m_time_location = glGetUniformLocation(m_program_id, "g_time");
 	m_delta_time_location = glGetUniformLocation(m_program_id, "g_delta_time");

@@ -2,6 +2,9 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb-master/stb_image.h"
 #include <stdio.h>
+#include <random>
+#include "math3d/math3d.h"
+#include <vector>
 
 Texture::Texture(GLenum texture_target, const std::string& filename): data(NULL) {
 	m_texture_target = texture_target;
@@ -104,4 +107,41 @@ bool CubemapTexture::load() {
 void CubemapTexture::bind(GLenum texture_unit) {
 	glActiveTexture(texture_unit);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, m_texture_obj);
+}
+
+RandomTexture::RandomTexture()
+{
+	m_texture_obj = GL_INVALID_VALUE;
+}
+
+RandomTexture::~RandomTexture()
+{
+	if (m_texture_obj != GL_INVALID_VALUE) {
+		glDeleteTextures(1, &m_texture_obj);
+	}
+}
+
+void RandomTexture::bind(GLenum texture_unit) {
+	glActiveTexture(texture_unit);
+	glBindTexture(GL_TEXTURE_1D, texture_unit);
+}
+bool RandomTexture::init(unsigned int size) {
+#define RAND_VAL (float)rand() / RAND_MAX
+	std::vector<M3DVector3f> vals(size);
+	for (int i = 0; i < size; ++i) {
+		M3DVector3f pos;
+		pos[0] = RAND_VAL;
+		pos[1] = RAND_VAL;
+		pos[2] = RAND_VAL;
+	}
+#undef RAND_VAL
+	
+	glGenTextures(1, &m_texture_obj);
+	glBindTexture(GL_TEXTURE_1D, m_texture_obj);
+	glTexImage1D(GL_TEXTURE_1D, 0, GL_RGB, size, 0, GL_RGB, GL_FLOAT, &vals);
+	glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+
+	return glGetError() == GL_NO_ERROR;
 }

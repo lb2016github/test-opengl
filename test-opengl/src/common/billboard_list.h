@@ -12,6 +12,7 @@ public:
 	BillboardList();
 	bool init(const std::string& tex_filename, float width, float height);
 	void render(const std::vector<M3DVector3f>& pos_list, const M3DVector3f& cam_pos, const M3DMatrix44f& vp);
+
 private:
 	GLuint m_vbo;
 	Texture* m_tex;
