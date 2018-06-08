@@ -34,6 +34,19 @@ bool Technique::init() {
 		fprintf(stderr, "Error creating shader program\n");
 		return false;
 	}
+	if (m_vertex_shader_path != "") {
+		if (!add_shader(GL_VERTEX_SHADER, m_vertex_shader_path)) return false;
+	}
+	if (m_geometry_shader_path != "") {
+		if (!add_shader(GL_GEOMETRY_SHADER, m_geometry_shader_path)) return false;
+	}
+	if (m_fragment_shader_path != "") {
+		if (!add_shader(GL_FRAGMENT_SHADER, m_fragment_shader_path)) return false;
+	}
+	if (!finalize()) {
+		return false;
+	}
+
 	return true;
 }
 
@@ -112,11 +125,6 @@ DirectionLightTechnique::DirectionLightTechnique(){
 bool DirectionLightTechnique::init() {
 
 	if (!Technique::init()) return false;
-	// add shader
-	if (!add_shader(GL_VERTEX_SHADER, m_vertex_shader_path.c_str())) return false;
-	if (!add_shader(GL_FRAGMENT_SHADER, m_fragment_shader_path.c_str())) return false;
-	// finalize
-	if (!finalize()) return false;
 
 	wvp_location = glGetUniformLocation(m_program_id, "wvp");
 	w_locatioin = glGetUniformLocation(m_program_id, "w");
@@ -190,9 +198,6 @@ PointLightTechnique::PointLightTechnique() {
 bool PointLightTechnique::init() {
 
 	if (!Technique::init()) return false;
-	if (!add_shader(GL_VERTEX_SHADER, m_vertex_shader_path.c_str())) return false;
-	if (!add_shader(GL_FRAGMENT_SHADER, m_fragment_shader_path.c_str())) return false;
-	if (!finalize()) return false;
 
 	m_direction_light_location.init_location(
 		m_program_id, "g_dir_light.base_light.color", "g_dir_light.base_light.ambiant_intensity", "g_dir_light.base_light.diffuse_intensity", "g_dir_light.direction"
@@ -432,10 +437,6 @@ BillboardTechnique::BillboardTechnique() {
 }
 bool BillboardTechnique::init() {
 	if (!Technique::init()) return false;
-	if (!add_shader(GL_VERTEX_SHADER, m_vertex_shader_path)) return false;
-	if (!add_shader(GL_FRAGMENT_SHADER, m_fragment_shader_path)) return false;
-	if (!add_shader(GL_GEOMETRY_SHADER, m_geometry_shader_path)) return false;
-	if (!finalize()) return false;
 
 	m_cam_pos_location = glGetUniformLocation(m_program_id, "cam_pos");
 	m_width_location = glGetUniformLocation(m_program_id, "width");
@@ -460,4 +461,55 @@ void BillboardTechnique::set_billboard_size(float width, float height) {
 }
 void BillboardTechnique::set_color_map_tex_unit(unsigned int tex_unit) {
 	glUniform1i(m_color_map_location, tex_unit);
+}
+
+/*********************************************************
+Partical System Update Technique
+*********************************************************/
+PSUpdateTechnique::PSUpdateTechnique()
+{
+	m_vertex_shader_path = "shaders/ps_update.vert";
+	m_geometry_shader_path = "shaders/ps_update.geom";
+	m_fragment_shader_path = "shaders/ps_update.frag";
+}
+
+PSUpdateTechnique::~PSUpdateTechnique()
+{
+
+}
+
+bool PSUpdateTechnique::init() {
+	if (!Technique::init()) return false;
+
+	m_time_location = glGetUniformLocation(m_program_id, "g_time");
+	m_delta_time_location = glGetUniformLocation(m_program_id, "g_delta_time");
+	m_lancher_life_time_location = glGetUniformLocation(m_program_id, "g_lancher_life_time");
+	m_shell_life_time_location = glGetUniformLocation(m_program_id, "g_shell_life_time");
+	m_secondary_shell_life_time_location = glGetUniformLocation(m_program_id, "g_secondary_shell_life_time");
+	m_random_texture_location = glGetUniformLocation(m_program_id, "g_random_texture");
+
+	if (m_time_location == INVALID_UNIFORM_LOCATION ||
+		m_delta_time_location == INVALID_UNIFORM_LOCATION ||
+		m_lancher_life_time_location == INVALID_UNIFORM_LOCATION ||
+		m_shell_life_time_location == INVALID_UNIFORM_LOCATION ||
+		m_secondary_shell_life_time_location == INVALID_UNIFORM_LOCATION ||
+		m_random_texture_location == INVALID_UNIFORM_LOCATION
+		) {
+		return false;
+	}
+	return true;
+}
+void PSUpdateTechnique::set_time(float time) {
+	glUniform1f(m_time_location, time);
+}
+void PSUpdateTechnique::set_delta_time(float delta_time) {
+	glUniform1f(m_delta_time_location, delta_time);
+}
+void PSUpdateTechnique::set_life_time(float lancher_life_time, float shell_life_time, float secondary_shell_life_time) {
+	glUniform1f(m_lancher_life_time_location, lancher_life_time);
+	glUniform1f(m_shell_life_time_location, shell_life_time);
+	glUniform1f(m_secondary_shell_life_time_location, secondary_shell_life_time);
+}
+void PSUpdateTechnique::set_random_texture_unit(unsigned int texture_unit) {
+	glUniform1i(m_random_texture_location, texture_unit);
 }

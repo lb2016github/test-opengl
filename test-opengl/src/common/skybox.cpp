@@ -9,9 +9,6 @@ SkyboxTechnique::~SkyboxTechnique() {
 }
 bool SkyboxTechnique::init() {
 	if (!Technique::init()) return false;
-	if (!add_shader(GL_VERTEX_SHADER, m_vertex_shader_path.c_str())) return false;
-	if (!add_shader(GL_FRAGMENT_SHADER, m_fragment_shader_path.c_str())) return false;
-	if (!finalize()) return false;
 
 	m_wvp_location = glGetUniformLocation(m_program_id, "wvp");
 	m_sampler_location = glGetUniformLocation(m_program_id, "g_sampler_skybox");

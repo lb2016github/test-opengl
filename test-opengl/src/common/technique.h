@@ -208,4 +208,29 @@ private:
 	GLuint m_vp_location;
 };
 
+
+/*********************************************************
+Partical System Update Technique
+*********************************************************/
+class PSUpdateTechnique: public Technique
+{
+public:
+	PSUpdateTechnique();
+	~PSUpdateTechnique();
+
+	virtual bool init();
+	void set_time(float time);
+	void set_delta_time(float delta_time);
+	void set_life_time(float lancher_life_time, float shell_life_time, float secondary_shell_life_time);
+	void set_random_texture_unit(unsigned int texture_unit);
+
+private:
+	GLuint m_time_location;
+	GLuint m_delta_time_location;
+	GLuint m_lancher_life_time_location;
+	GLuint m_shell_life_time_location;
+	GLuint m_secondary_shell_life_time_location;
+	GLuint m_random_texture_location;
+};
+
 #endif // !_TECHNIQUE_H
