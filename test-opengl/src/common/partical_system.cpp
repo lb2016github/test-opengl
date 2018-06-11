@@ -48,7 +48,7 @@ bool ParticalSystem::init() {
 		return false;
 	}
 	m_billboard_tech->enable();
-	m_billboard_tech->set_billboard_size(0.1, 0.1);
+	m_billboard_tech->set_billboard_size(0.01, 0.01);
 	m_billboard_tech->set_color_map_tex_unit(COLOR_TEXTURE_UNIT_INDEX);
 
 	m_ps_update_tech = new PSUpdateTechnique();
@@ -76,7 +76,7 @@ bool ParticalSystem::init() {
 	memset(particals, 0, sizeof(particals));
 	particals[0].type = PARTICLE_TYPE_LAUNCHER;
 	particals[0].age = 0;
-	m3dLoadVector3(particals[0].position, 0, 0, 0);
+	m3dLoadVector3(particals[0].position, 0, 0, 1);
 	m3dLoadVector3(particals[0].velocity, 0, 0.001, 0);
 
 	glGenTransformFeedbacks(2, m_tfos);

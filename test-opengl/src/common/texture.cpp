@@ -123,22 +123,22 @@ RandomTexture::~RandomTexture()
 
 void RandomTexture::bind(GLenum texture_unit) {
 	glActiveTexture(texture_unit);
-	glBindTexture(GL_TEXTURE_1D, texture_unit);
+	glBindTexture(GL_TEXTURE_1D, m_texture_obj);
 }
 bool RandomTexture::init(unsigned int size) {
 #define RAND_VAL (float)rand() / RAND_MAX
 	std::vector<M3DVector3f> vals(size);
 	for (int i = 0; i < size; ++i) {
-		M3DVector3f pos;
-		pos[0] = RAND_VAL;
-		pos[1] = RAND_VAL;
-		pos[2] = RAND_VAL;
+		vals[i][0] = RAND_VAL;
+		vals[i][1] = RAND_VAL;
+		vals[i][2] = RAND_VAL;
+		//printf("%f, %f, %f\n", vals[i][0], vals[i][1], vals[i][2]);
 	}
 #undef RAND_VAL
 	
 	glGenTextures(1, &m_texture_obj);
 	glBindTexture(GL_TEXTURE_1D, m_texture_obj);
-	glTexImage1D(GL_TEXTURE_1D, 0, GL_RGB, size, 0, GL_RGB, GL_FLOAT, &vals);
+	glTexImage1D(GL_TEXTURE_1D, 0, GL_RGB, size, 0, GL_RGB, GL_FLOAT, &vals[0]);
 	glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_REPEAT);

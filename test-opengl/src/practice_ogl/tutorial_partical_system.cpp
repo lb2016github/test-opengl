@@ -14,11 +14,11 @@ bool TutorialParticalSystem::init() {
 	m_proj_info.height = WINDOW_HEIGHT;
 	m_proj_info.width = WINDOW_WIDTH;
 	m_proj_info.z_near = 1;
-	m_proj_info.z_far = 50;
+	m_proj_info.z_far = 100;
 
 	M3DVector3f pos, target, up;
-	pos[0] = 0, pos[1] = 3, pos[2] = -5;
-	target[0] = 0, target[1] = -0.2, target[2] = 1;
+	pos[0] = 0, pos[1] = 0.4, pos[2] = -0.5;
+	target[0] = 0, target[1] = 0.2, target[2] = 1;
 	up[0] = 0, up[1] = 1, up[2] = 0;
 	m_cam = new Camera(WINDOW_WIDTH, WINDOW_HEIGHT, pos, target, up);
 

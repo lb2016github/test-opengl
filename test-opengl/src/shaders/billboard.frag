@@ -9,4 +9,7 @@ void main(){
 	if (frag_color.r == 0 && frag_color.g == 0 && frag_color.b == 0){
 		discard;
 	}
+	if (frag_color.r > 0.9 && frag_color.g > 0.9 && frag_color.b > 0.9){
+		discard;
+		}
 }

@@ -25,7 +25,7 @@ uniform sampler1D g_random_texture;
 
 vec3 get_random_dir(float tex_coord){
 	vec3 dir = texture(g_random_texture, tex_coord).xyz;
-	dir -= vec3(-0.5, -0.5, -0.5);	// [0, 1]->[-0.5, 0.5]
+	dir -= vec3(0.5, 0.5, 0.5);	// [0, 1]->[-0.5, 0.5]
 	return dir;
 }
 
@@ -53,7 +53,7 @@ void main(){
 	else{
 		float delta_time_sec = g_delta_time / 1000.0;
 		vec3 delta_pos = gs_out.velocity * delta_time_sec;
-		vec3 delta_v = vec3(0, -9.8, 0) * delta_time_sec;
+		vec3 delta_v = (0, -9.8, 0) * vec3(delta_time_sec);
 
 		if(gs_out.type == PARTICAL_TYPE_SHELL){
 			if(gs_out.age >= g_shell_life_time){
