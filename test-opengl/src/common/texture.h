@@ -53,4 +53,24 @@ private:
 	GLuint m_texture_obj;
 };
 
+class PickingTexture {
+public:
+	PickingTexture();
+	~PickingTexture();
+	bool init(unsigned int width, unsigned int height);
+	void enable_writing();
+	void disable_writing();
+
+	struct PixelInfo {
+		float obj_id;
+		float draw_id;
+		float prim_id;
+	};
+	PixelInfo read_pixel(unsigned int x, unsigned int y);
+private:
+	GLuint m_fbo;
+	GLuint m_picking_texture;
+	GLuint m_depth_texture;
+};
+
 #endif // !_TEXTURE_H
