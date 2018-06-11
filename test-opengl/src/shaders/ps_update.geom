@@ -40,7 +40,7 @@ void main(){
 			gs_out.age = 0;
 			vec3 dir = get_random_dir(g_time / 1000.0f);
 			dir.y = max(dir.y, 0.5);
-			gs_out.velocity = normalize(dir) / 20.0;
+			gs_out.velocity = normalize(dir) / 10;
 			EmitVertex();
 			EndPrimitive();
 			gs_out.age = 0;
@@ -53,7 +53,7 @@ void main(){
 	else{
 		float delta_time_sec = g_delta_time / 1000.0;
 		vec3 delta_pos = gs_out.velocity * delta_time_sec;
-		vec3 delta_v = (0, -9.8, 0) * vec3(delta_time_sec);
+		vec3 delta_v = vec3(0, -9.8, 0) * delta_time_sec / 2000;
 
 		if(gs_out.type == PARTICAL_TYPE_SHELL){
 			if(gs_out.age >= g_shell_life_time){
@@ -62,7 +62,7 @@ void main(){
 					gs_out.type = PARTICAL_TYPE_SECONDARY_SHELL;
 					gs_out.age = 0;
 					vec3 dir = get_random_dir((g_time + i)/ 1000);
-					gs_out.velocity = normalize(dir) / 20;
+					gs_out.velocity = normalize(dir) / 10;
 					EmitVertex();
 					EndPrimitive();
 				}

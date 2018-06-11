@@ -20,6 +20,7 @@ void main(){
 	}
 	
 	TutorialParticalSystem* tp = new TutorialParticalSystem();
+	//TutorialNormalMap* tp = new TutorialNormalMap();
 	tp->init();
 	glfw_win::set_callback(tp);
 	while (true)
