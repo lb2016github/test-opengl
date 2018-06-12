@@ -103,7 +103,7 @@ void TutorialPointLight::render_scene_callback(float width, float height, float 
 	m_tech->set_specular_parameter(0, 0);
 	m_tech->set_transformation(wvp, w);
 
-	m_mesh->render();
+	m_mesh->render(NULL);
 }
 
 // ¼üÅÌ»Øµ÷

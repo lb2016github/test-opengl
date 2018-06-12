@@ -184,7 +184,7 @@ bool PickingTexture::init(unsigned int width, unsigned int height) {
 		printf("FB error, status: 0x%x\n", status);
 		return false;
 	}
-	glBindBuffer(GL_TEXTURE_2D, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	return true;
 
@@ -207,4 +207,9 @@ PickingTexture::PixelInfo PickingTexture::read_pixel(unsigned int x, unsigned in
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 
 	return pixel_info;
+}
+
+void PickingTexture::bind(GLenum tex_unit) {
+	glActiveTexture(tex_unit);
+	glBindTexture(GL_TEXTURE_2D, m_picking_texture);
 }

@@ -87,7 +87,7 @@ void Skybox::render() {
 	m_skybox_technique->set_wvp_trans(wvp);
 	m_skybox_technique->set_texture_unit(0);
 
-	m_mesh->render();
+	m_mesh->render(NULL);
 
 	glDepthFunc(old_depth_mode);
 	glCullFace(old_cull_mode);

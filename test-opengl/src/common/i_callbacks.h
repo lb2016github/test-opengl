@@ -22,5 +22,10 @@ public:
 	virtual void error_callback(int error, const char* description) {};
 };
 
+class IRenderCallback {
+public:
+	virtual void on_draw_start_callback(unsigned int mesh_id) = 0;
+};
+
 
 #endif // _I_CALLBACK_H

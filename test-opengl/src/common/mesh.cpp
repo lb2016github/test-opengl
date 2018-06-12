@@ -106,7 +106,7 @@ void SimpleMesh::calc_normal(std::vector<Vertex>& vertices, std::vector<unsigned
 	}
 }
 
-void SimpleMesh::render() {
+void SimpleMesh::render(IRenderCallback* callback) {
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
@@ -136,6 +136,10 @@ void SimpleMesh::render() {
 	);
 	m_tex->bind(GL_TEXTURE0);
 
+	if (callback) {
+		callback->on_draw_start_callback(0);
+	}
+
 	glDrawElements(GL_TRIANGLES, m_mesh_ent.num_indices, GL_UNSIGNED_INT, 0);
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
@@ -152,7 +156,7 @@ Mesh::~Mesh() {
 	clear();
 }
 
-void Mesh::render() {
+void Mesh::render(IRenderCallback* callback) {
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
@@ -171,9 +175,41 @@ void Mesh::render() {
 		if (material_index < m_textures.size() && m_textures[material_index]) {
 			m_textures[material_index]->bind(GL_TEXTURE0);
 		}
+		if (callback) {
+			callback->on_draw_start_callback(i);
+		}
 
 		glDrawElements(GL_TRIANGLES, m_entities[i].num_indices, GL_UNSIGNED_INT, 0);
 	}
+
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(2);
+	glDisableVertexAttribArray(3);
+}
+
+void Mesh::render(unsigned int mesh_id, unsigned int primitive_id) {
+	assert(mesh_id < m_entities.size());
+
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
+	glEnableVertexAttribArray(3);
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_entities[mesh_id].vb);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)12);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)20);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)32);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_entities[mesh_id].ib);
+
+	const unsigned int material_index = m_entities[mesh_id].material_index;
+	if (material_index < m_textures.size() && m_textures[material_index]) {
+		m_textures[material_index]->bind(GL_TEXTURE0);
+	}
+
+	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (GLvoid*)(primitive_id * sizeof(GLuint) * 3));
 
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);

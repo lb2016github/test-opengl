@@ -60,11 +60,13 @@ public:
 	bool init(unsigned int width, unsigned int height);
 	void enable_writing();
 	void disable_writing();
+	void bind(GLenum tex_unit);
 
 	struct PixelInfo {
-		float obj_id;
-		float draw_id;
-		float prim_id;
+		float obj_id;	// 标识哪个Mesh
+		float mesh_id;	// 标识子mesh
+		float prim_id;	// 标识图元
+		PixelInfo(): obj_id(0.0), mesh_id(0.0), prim_id(0.0){}
 	};
 	PixelInfo read_pixel(unsigned int x, unsigned int y);
 private:

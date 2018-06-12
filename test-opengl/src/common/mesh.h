@@ -6,6 +6,7 @@
 #include "texture.h"
 #include <string>
 #include "assimp/scene.h"
+#include "i_callbacks.h"
 
 class Vertex {
 public:
@@ -44,13 +45,14 @@ public:
 class IMesh {
 public:
 	virtual bool load_mesh(const std::string& filename)=0;
-	virtual void render()=0;
+	virtual void render(IRenderCallback* callback) = 0;
+	virtual void render(unsigned int mesh_id, unsigned int primitive_id) {};
 };
 
 class SimpleMesh: public IMesh {
 public:
 	virtual bool load_mesh(const std::string& filename);
-	void render();
+	void render(IRenderCallback* callback);
 
 protected:
 	void calc_normal(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices);
@@ -65,7 +67,8 @@ public:
 	~Mesh();
 
 	virtual bool load_mesh(const std::string& filename);
-	virtual void render();
+	virtual void render(IRenderCallback* callback);
+	virtual void render(unsigned int mesh_id, unsigned int primitive_id);
 private:
 	bool init_from_scene(const aiScene* scene, const std::string& filename);
 	void init_mesh(unsigned int index, const aiMesh* ai_mesh);

@@ -75,7 +75,7 @@ void TutorialPractice::render_scene_callback(float width, float height, float de
 	m_tech->set_transformation(wvp, w);
 	m_tech->set_specular_power(32);
 
-	m_mesh->render();
+	m_mesh->render(NULL);
 }
 
 // ¼üÅÌ»Øµ÷

@@ -120,7 +120,7 @@ void TutorialShadowMap::shadow_map_pass() {
 	pipline.get_pers_wvp_trans(wvp);
 
 	m_shadow_map_tech->set_transformation(wvp, w);
-	m_mesh->render();
+	m_mesh->render(NULL);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -168,7 +168,7 @@ void TutorialShadowMap::render_pass() {
 
 	m_test_tex->bind(GL_TEXTURE0);
 	m_shadow_map_fbo->bind_for_reading(GL_TEXTURE1);
-	m_plane->render();
+	m_plane->render(NULL);
 	
 	// render mesh
 	Pipline pipline_mesh;
@@ -185,7 +185,7 @@ void TutorialShadowMap::render_pass() {
 
 	m_shadow_map_tech->set_transformation(wvp_mesh, w_mesh);
 	m_shadow_map_tech->set_light_wvp_trans(light_wvp_mesh);
-	m_mesh->render();
+	m_mesh->render(NULL);
 
 
 }

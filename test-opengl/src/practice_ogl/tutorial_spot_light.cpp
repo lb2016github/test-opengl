@@ -122,8 +122,8 @@ void TutorialSpotLight::render_scene_callback(float width, float height, float t
 	m_tech->set_transformation(wvp, w);
 	m_tech->set_spot_lights(sl);
 
-	m_mesh->render();
-	m_box->render();
+	m_mesh->render(NULL);
+	m_box->render(NULL);
 }
 
 // ¼üÅÌ»Øµ÷

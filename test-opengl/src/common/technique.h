@@ -5,6 +5,7 @@
 #include "math3d/math3d.h"
 #include "light.h"
 #include <vector>
+#include "i_callbacks.h"
 
 #define MAX_POINT_LIGHT_COUNT 2
 #define MAX_SPOT_LIGHT_COUNT 2
@@ -233,4 +234,61 @@ private:
 	GLuint m_random_texture_location;
 };
 
+
+/*********************************************************
+Picking Technique
+*********************************************************/
+class PickingTechnique: public Technique, public IRenderCallback
+{
+public:
+	PickingTechnique();
+	~PickingTechnique();
+
+	virtual bool init();
+	void set_obj_id(unsigned int obj_id);
+	void set_mesh_id(unsigned int mesh_id);
+	void set_wvp(const M3DMatrix44f wvp);
+
+	virtual void on_draw_start_callback(unsigned int mesh_id);
+
+private:
+	GLuint m_obj_id_location;
+	GLuint m_mesh_id_location;
+	GLuint m_wvp_location;
+};
+
+
+/*********************************************************
+Simple Color Technique
+*********************************************************/
+class SimpleColorTechnique : public Technique
+{
+public:
+	SimpleColorTechnique();
+	~SimpleColorTechnique();
+
+	virtual bool init();
+	void set_wvp(const M3DMatrix44f wvp);
+
+private:
+	GLuint m_wvp_location;
+};
+
+/*********************************************************
+Simple Show Technique
+*********************************************************/
+class SimpleShowTechnique : public Technique
+{
+public:
+	SimpleShowTechnique();
+	~SimpleShowTechnique();
+
+	virtual bool init();
+	void set_wvp(const M3DMatrix44f wvp);
+	void set_tex_index(unsigned int tex_index);
+
+private:
+	GLuint m_wvp_location;
+	GLuint m_color_sampler_location;
+};
 #endif // !_TECHNIQUE_H

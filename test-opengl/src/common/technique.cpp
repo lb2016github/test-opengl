@@ -538,3 +538,90 @@ void PSUpdateTechnique::set_life_time(float lancher_life_time, float shell_life_
 void PSUpdateTechnique::set_random_texture_unit(unsigned int texture_unit) {
 	glUniform1i(m_random_texture_location, texture_unit);
 }
+
+
+/*********************************************************
+Picking Technique
+*********************************************************/
+PickingTechnique::PickingTechnique()
+{
+	m_vertex_shader_path = "shaders/picking.vert";
+	m_fragment_shader_path = "shaders/picking.frag";
+}
+
+PickingTechnique::~PickingTechnique()
+{
+}
+
+bool PickingTechnique::init() {
+	if (!Technique::init()) return false;
+
+	m_obj_id_location = glGetUniformLocation(m_program_id, "g_obj_id");
+	m_mesh_id_location = glGetUniformLocation(m_program_id, "g_mesh_id");
+	m_wvp_location = glGetUniformLocation(m_program_id, "mvp");
+
+	return m_obj_id_location != INVALID_UNIFORM_LOCATION && m_mesh_id_location != INVALID_UNIFORM_LOCATION && m_wvp_location != INVALID_UNIFORM_LOCATION;
+}
+void PickingTechnique::set_obj_id(unsigned int obj_id) {
+	glUniform1i(m_obj_id_location, obj_id);
+}
+void PickingTechnique::set_mesh_id(unsigned int mesh_id) {
+	glUniform1i(m_mesh_id_location, mesh_id);
+}
+void PickingTechnique::set_wvp(const M3DMatrix44f wvp) {
+	glUniformMatrix4fv(m_wvp_location, 1, GL_FALSE, wvp);
+}
+
+void PickingTechnique::on_draw_start_callback(unsigned int mesh_id) {
+	set_mesh_id(mesh_id);
+}
+
+/*********************************************************
+Simple Color Technique
+*********************************************************/
+SimpleColorTechnique::SimpleColorTechnique() {
+	m_vertex_shader_path = "shaders/simple_color.vert";
+	m_fragment_shader_path = "shaders/simple_color.frag";
+}
+SimpleColorTechnique::~SimpleColorTechnique() {
+
+}
+
+bool SimpleColorTechnique::init() {
+	if (!Technique::init()) return false;
+
+	m_wvp_location = glGetUniformLocation(m_program_id, "wvp");
+
+	return m_wvp_location != INVALID_UNIFORM_LOCATION;
+	
+}
+void SimpleColorTechnique::set_wvp(const M3DMatrix44f wvp) {
+	glUniformMatrix4fv(m_wvp_location, 1, GL_FALSE, wvp);
+}
+
+/*********************************************************
+Simple Show Technique
+*********************************************************/
+
+SimpleShowTechnique::SimpleShowTechnique() {
+	m_vertex_shader_path = "shaders/simple_show.vert";
+	m_fragment_shader_path = "shaders/simple_show.frag";
+}
+SimpleShowTechnique::~SimpleShowTechnique() {
+
+}
+
+bool SimpleShowTechnique::init() {
+	if (!Technique::init()) return false;
+
+	m_wvp_location = glGetUniformLocation(m_program_id, "wvp");
+	m_color_sampler_location = glGetUniformLocation(m_program_id, "g_color_sampler");
+
+	return m_wvp_location != INVALID_UNIFORM_LOCATION && m_color_sampler_location != INVALID_UNIFORM_LOCATION;
+}
+void SimpleShowTechnique::set_wvp(const M3DMatrix44f wvp) {
+	glUniformMatrix4fv(m_wvp_location, 1, GL_FALSE, wvp);
+}
+void SimpleShowTechnique::set_tex_index(unsigned int tex_index) {
+	glUniform1i(m_color_sampler_location, tex_index);
+}

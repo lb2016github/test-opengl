@@ -9,6 +9,7 @@
 #include "practice_ogl/tutorial_normal_map.h"
 #include "practice_ogl/tutorial_billboard.h"
 #include "practice_ogl/tutorial_partical_system.h"
+#include "practice_ogl/tutorial_picking.h"
 
 void main(){
 	fprintf(stdout, "%s\n", "HelloGLFW");
@@ -19,8 +20,10 @@ void main(){
 		return;
 	}
 	
-	TutorialParticalSystem* tp = new TutorialParticalSystem();
+	//TutorialShadowMap *tp = new TutorialShadowMap();
+	//TutorialParticalSystem* tp = new TutorialParticalSystem();
 	//TutorialNormalMap* tp = new TutorialNormalMap();
+	TutorialPicking* tp = new TutorialPicking();
 	tp->init();
 	glfw_win::set_callback(tp);
 	while (true)
