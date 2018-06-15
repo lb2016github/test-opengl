@@ -155,7 +155,7 @@ void TutorialPicking::render_pass() {
 
 			m_simple_color_technique->enable();
 			m_simple_color_technique->set_wvp(wvp);
-			m_mesh->render(pixel_info.mesh_id, pixel_info.prim_id - 1);
+			m_mesh->render_primitive(pixel_info.mesh_id, pixel_info.prim_id - 1);
 		}
 		//printf("Click: (obj_id, mesh_id, prim_id): %f, %f, %f\n", pixel_info.obj_id, pixel_info.mesh_id, pixel_info.prim_id);
 	}
@@ -173,16 +173,18 @@ void TutorialPicking::render_pass() {
 		m_mesh->render(NULL);
 	}
 
-	//// render quad
-	//m_picking_texture->bind(COLOR_TEXTURE_UNIT);
-	//pipline.set_world_pos(0, 0, -5);
-	//pipline.set_scale(10);
-	//M3DMatrix44f wvp;
-	//pipline.get_pers_wvp_trans(wvp);
+	// render quad
+	m_picking_texture->bind(COLOR_TEXTURE_UNIT);
+	pipline.set_world_pos(0, 0, -5);
+	pipline.set_scale(10);
+	M3DMatrix44f wvp;
+	pipline.get_pers_wvp_trans(wvp);
 
-	//m_simple_show_technique->enable();
-	//m_simple_show_technique->set_wvp(wvp);
-	//m_simple_show_technique->set_tex_index(COLOR_TEXTURE_UNIT_INDEX);
+	m_simple_show_technique->enable();
+	m_simple_show_technique->set_wvp(wvp);
+	m_simple_show_technique->set_tex_index(COLOR_TEXTURE_UNIT_INDEX);
 
-	//m_quad->render(NULL);
+
+	m_quad->render(NULL);
+
 }

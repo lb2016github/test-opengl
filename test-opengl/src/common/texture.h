@@ -66,7 +66,8 @@ public:
 		float obj_id;	// 标识哪个Mesh
 		float mesh_id;	// 标识子mesh
 		float prim_id;	// 标识图元
-		PixelInfo(): obj_id(0.0), mesh_id(0.0), prim_id(0.0){}
+		float tmp;
+		PixelInfo(): obj_id(0.0), mesh_id(0.0), prim_id(0.0), tmp(1.0){}
 	};
 	PixelInfo read_pixel(unsigned int x, unsigned int y);
 private:

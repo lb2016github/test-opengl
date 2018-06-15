@@ -8,11 +8,18 @@
 
 #define LOCATION_UNDEFINED 0xFFFFFFFF
 
-Technique::Technique() : Technique("", "", "") {
+Technique::Technique() : Technique("", "", "", "", "") {
 }
 
-Technique::Technique(const std::string& vertex_shader_path, const std::string& fragment_shader_path, const std::string& geometry_shader_path): m_program_id(0) {
+Technique::Technique(const std::string& vertex_shader_path,
+	const std::string& tsc_shader_path,
+	const std::string& tse_shader_path,
+	const std::string& geometry_shader_path,
+	const std::string& fragment_shader_path
+): m_program_id(0) {
 	m_vertex_shader_path = vertex_shader_path;
+	m_tc_shader_path = tsc_shader_path;
+	m_te_shader_path = tse_shader_path;
 	m_fragment_shader_path = fragment_shader_path;
 	m_geometry_shader_path = geometry_shader_path;
 }
@@ -36,6 +43,12 @@ bool Technique::init() {
 	}
 	if (m_vertex_shader_path != "") {
 		if (!add_shader(GL_VERTEX_SHADER, m_vertex_shader_path)) return false;
+	}
+	if (m_tc_shader_path != "") {
+		if (!add_shader(GL_TESS_CONTROL_SHADER, m_tc_shader_path)) return false;
+	}
+	if (m_te_shader_path != "") {
+		if (!add_shader(GL_TESS_EVALUATION_SHADER, m_te_shader_path)) return false;
 	}
 	if (m_geometry_shader_path != "") {
 		if (!add_shader(GL_GEOMETRY_SHADER, m_geometry_shader_path)) return false;
@@ -624,4 +637,60 @@ void SimpleShowTechnique::set_wvp(const M3DMatrix44f wvp) {
 }
 void SimpleShowTechnique::set_tex_index(unsigned int tex_index) {
 	glUniform1i(m_color_sampler_location, tex_index);
+}
+
+/*********************************************************
+Tessellation Technique
+*********************************************************/
+TessellationTechnique::TessellationTechnique() {
+	m_vertex_shader_path = "shaders/tessellation.vert";
+	m_tc_shader_path = "shaders/tessellation.tessc";
+	m_te_shader_path = "shaders/tessellation.tesse";
+	m_fragment_shader_path = "shaders/tessellation.frag";
+}
+TessellationTechnique::~TessellationTechnique() {
+
+}
+
+bool TessellationTechnique::init() {
+	if (!Technique::init()) return false;
+
+	m_world_location = glGetUniformLocation(m_program_id, "g_world");
+	m_eye_world_pos_location = glGetUniformLocation(m_program_id, "g_eye_world_pos");
+	m_sampler_height_map_location = glGetUniformLocation(m_program_id, "g_sampler_height_map");
+	m_height_factor_location = glGetUniformLocation(m_program_id, "g_height_factor");
+	m_vp_location = glGetUniformLocation(m_program_id, "g_vp");
+	m_sampler_color_location = glGetUniformLocation(m_program_id, "g_sampler_color_map");
+
+	if (
+		m_world_location == INVALID_UNIFORM_LOCATION ||
+		m_eye_world_pos_location == INVALID_UNIFORM_LOCATION ||
+		m_sampler_height_map_location == INVALID_UNIFORM_LOCATION ||
+		m_height_factor_location == INVALID_UNIFORM_LOCATION ||
+		m_vp_location == INVALID_UNIFORM_LOCATION ||
+		m_sampler_color_location == INVALID_UNIFORM_LOCATION
+		) {
+		return false;
+	}
+	
+	return true;
+
+}
+void TessellationTechnique::set_world(const M3DMatrix44f w) {
+	glUniformMatrix4fv(m_world_location, 1, false, w);
+}
+void TessellationTechnique::set_eye_pos(const M3DVector3f eye_pos) {
+	glUniform3f(m_eye_world_pos_location, eye_pos[0], eye_pos[1], eye_pos[3]);
+}
+void TessellationTechnique::set_vp(const M3DMatrix44f vp) {
+	glUniformMatrix4fv(m_vp_location, 1, false, vp);
+}
+void TessellationTechnique::set_height_factor(float height_factor) {
+	glUniform1f(m_height_factor_location, height_factor);
+}
+void TessellationTechnique::set_tex_height_map_index(unsigned int height_map_index) {
+	glUniform1i(m_sampler_height_map_location, height_map_index);
+}
+void TessellationTechnique::set_tex_color_index(unsigned int color_index) {
+	glUniform1i(m_sampler_color_location, color_index);
 }

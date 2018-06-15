@@ -13,7 +13,13 @@
 class Technique {
 public:
 	Technique();
-	Technique(const std::string& vertex_shader_path, const std::string& fragment_shader_path, const std::string& geometry_shader_path);
+	Technique(
+		const std::string& vertex_shader_path,
+		const std::string& tsc_shader_path,
+		const std::string& tse_shader_path,
+		const std::string& geometry_shader_path,
+		const std::string& fragment_shader_path
+	);
 	virtual ~Technique();
 	virtual bool init();
 	void enable();
@@ -24,6 +30,8 @@ protected:
 	bool finalize();	// compile and link shader
 	GLuint m_program_id;
 	std::string m_vertex_shader_path;
+	std::string m_tc_shader_path;
+	std::string m_te_shader_path;
 	std::string m_fragment_shader_path;
 	std::string m_geometry_shader_path;
 
@@ -291,4 +299,31 @@ private:
 	GLuint m_wvp_location;
 	GLuint m_color_sampler_location;
 };
+
+/*********************************************************
+Tessellation Technique
+*********************************************************/
+class TessellationTechnique : public Technique
+{
+public:
+	TessellationTechnique();
+	~TessellationTechnique();
+
+	virtual bool init();
+	void set_world(const M3DMatrix44f wvp);
+	void set_eye_pos(const M3DVector3f eye_pos);
+	void set_vp(const M3DMatrix44f vp);
+	void set_height_factor(float height_factor);
+	void set_tex_height_map_index(unsigned int height_map_index);
+	void set_tex_color_index(unsigned int color_index);
+
+private:
+	GLuint m_world_location;
+	GLuint m_eye_world_pos_location;
+	GLuint m_vp_location;
+	GLuint m_height_factor_location;
+	GLuint m_sampler_height_map_location;
+	GLuint m_sampler_color_location;
+};
+
 #endif // !_TECHNIQUE_H

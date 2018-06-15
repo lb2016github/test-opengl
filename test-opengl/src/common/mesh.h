@@ -45,14 +45,14 @@ public:
 class IMesh {
 public:
 	virtual bool load_mesh(const std::string& filename)=0;
-	virtual void render(IRenderCallback* callback) = 0;
-	virtual void render(unsigned int mesh_id, unsigned int primitive_id) {};
+	virtual void render(IRenderCallback* callback, GLenum mode=GL_TRIANGLES) = 0;
+	virtual void render_primitive(unsigned int mesh_id, unsigned int primitive_id) {};
 };
 
 class SimpleMesh: public IMesh {
 public:
 	virtual bool load_mesh(const std::string& filename);
-	void render(IRenderCallback* callback);
+	void render(IRenderCallback* callback, GLenum mode = GL_TRIANGLES);
 
 protected:
 	void calc_normal(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices);
@@ -67,8 +67,8 @@ public:
 	~Mesh();
 
 	virtual bool load_mesh(const std::string& filename);
-	virtual void render(IRenderCallback* callback);
-	virtual void render(unsigned int mesh_id, unsigned int primitive_id);
+	virtual void render(IRenderCallback* callback, GLenum mode = GL_TRIANGLES);
+	virtual void render_primitive(unsigned int mesh_id, unsigned int primitive_id);
 private:
 	bool init_from_scene(const aiScene* scene, const std::string& filename);
 	void init_mesh(unsigned int index, const aiMesh* ai_mesh);

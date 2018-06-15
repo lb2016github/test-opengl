@@ -106,7 +106,7 @@ void SimpleMesh::calc_normal(std::vector<Vertex>& vertices, std::vector<unsigned
 	}
 }
 
-void SimpleMesh::render(IRenderCallback* callback) {
+void SimpleMesh::render(IRenderCallback* callback, GLenum mode) {
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
@@ -156,7 +156,7 @@ Mesh::~Mesh() {
 	clear();
 }
 
-void Mesh::render(IRenderCallback* callback) {
+void Mesh::render(IRenderCallback* callback, GLenum mode) {
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
@@ -178,8 +178,7 @@ void Mesh::render(IRenderCallback* callback) {
 		if (callback) {
 			callback->on_draw_start_callback(i);
 		}
-
-		glDrawElements(GL_TRIANGLES, m_entities[i].num_indices, GL_UNSIGNED_INT, 0);
+		glDrawElements(mode, m_entities[i].num_indices, GL_UNSIGNED_INT, 0);
 	}
 
 	glDisableVertexAttribArray(0);
@@ -188,7 +187,7 @@ void Mesh::render(IRenderCallback* callback) {
 	glDisableVertexAttribArray(3);
 }
 
-void Mesh::render(unsigned int mesh_id, unsigned int primitive_id) {
+void Mesh::render_primitive(unsigned int mesh_id, unsigned int primitive_id) {
 	assert(mesh_id < m_entities.size());
 
 	glEnableVertexAttribArray(0);

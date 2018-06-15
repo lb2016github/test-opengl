@@ -12,4 +12,7 @@ uniform sampler2D g_color_sampler;
 
 void main(){
 	frag_color = texture(g_color_sampler, vs_out.tex_coord);
+//	if (frag_color.z > 0){
+//		frag_color = vec4(1, 1, 1, 1);
+//	}
 }

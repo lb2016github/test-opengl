@@ -1,0 +1,45 @@
+#version 410 core
+
+layout(vertices = 3) out;
+
+struct VSOut{
+	vec3 w_position;
+	vec2 tex_coord;
+	vec3 w_normal;
+};
+
+in VSOut vs_out[];
+
+out VSOut tcs_out[];
+
+uniform vec3 g_eye_world_pos;
+
+float get_tess_level(float distance_0, float distance_1){
+	float avg_distance = (distance_0 + distance_1) / 2.0;
+	if(avg_distance <= 2){
+		return 10.0;
+	}
+	else if (avg_distance <= 5){
+		return 7.0;
+	}
+	else{
+		return 3.0;
+	}
+}
+
+void main(){
+	// output contro points
+	tcs_out[gl_InvocationID] = vs_out[gl_InvocationID];
+
+	// calc distance from vertex to eye pos
+	float dis_0 = distance(g_eye_world_pos, vs_out[0].w_position);
+	float dis_1 = distance(g_eye_world_pos, vs_out[1].w_position);
+	float dis_2 = distance(g_eye_world_pos, vs_out[2].w_position);
+
+	// set tessellation levels
+	gl_TessLevelOuter[0] = get_tess_level(dis_1, dis_2);
+	gl_TessLevelOuter[1] = get_tess_level(dis_0, dis_2);
+	gl_TessLevelOuter[2] = get_tess_level(dis_0, dis_1);
+	gl_TessLevelInner[0] = gl_TessLevelOuter[2];
+
+}

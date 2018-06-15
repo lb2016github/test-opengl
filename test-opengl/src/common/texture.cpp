@@ -165,7 +165,7 @@ PickingTexture::~PickingTexture() {
 bool PickingTexture::init(unsigned int width, unsigned int height) {
 	glGenTextures(1, &m_picking_texture);
 	glBindTexture(GL_TEXTURE_2D, m_picking_texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
 	glGenTextures(1, &m_depth_texture);
 	glBindTexture(GL_TEXTURE_2D, m_depth_texture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
@@ -201,7 +201,7 @@ PickingTexture::PixelInfo PickingTexture::read_pixel(unsigned int x, unsigned in
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 
 	PixelInfo pixel_info;
-	glReadPixels(x, y, 1, 1, GL_RGB, GL_FLOAT, &pixel_info);
+	glReadPixels(x, y, 1, 1, GL_RGBA, GL_FLOAT, &pixel_info);
 
 	glReadBuffer(GL_NONE);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
