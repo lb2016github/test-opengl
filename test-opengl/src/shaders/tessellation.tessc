@@ -1,6 +1,6 @@
 #version 410 core
 
-layout(vertices = 3) out;
+layout(vertices = 1) out;
 
 struct VSOut{
 	vec3 w_position;
@@ -8,38 +8,82 @@ struct VSOut{
 	vec3 w_normal;
 };
 
+struct TCSPatchOut{
+	vec3 pos_003;
+	vec3 pos_102;
+	vec3 pos_201;
+	vec3 pos_300;
+	vec3 pos_210;
+	vec3 pos_120;
+	vec3 pos_030;
+	vec3 pos_021;
+	vec3 pos_012;
+	vec3 pos_111;
+	vec2 tex_coord[3];
+	vec3 normal[3];
+};
+
 in VSOut vs_out[];
 
-out VSOut tcs_out[];
+out patch TCSPatchOut tcs_out;
 
-uniform vec3 g_eye_world_pos;
+uniform float g_tess_level;
 
-float get_tess_level(float distance_0, float distance_1){
-	float avg_distance = (distance_0 + distance_1) / 2.0;
-	if(avg_distance <= 2){
-		return 10.0;
-	}
-	else if (avg_distance <= 5){
-		return 7.0;
-	}
-	else{
-		return 3.0;
-	}
+vec3 proj_to_plane(vec3 plane_point, vec3 plane_normal, vec3 point2){
+	vec3 edge = point2 - plane_point;
+	float factor = dot(edge, plane_normal);
+	vec3 target_point = point2 - factor * plane_normal;
+	return target_point;
 }
 
-void main(){
-	// output contro points
-	tcs_out[gl_InvocationID] = vs_out[gl_InvocationID];
+void calc_positons(){
 
-	// calc distance from vertex to eye pos
-	float dis_0 = distance(g_eye_world_pos, vs_out[0].w_position);
-	float dis_1 = distance(g_eye_world_pos, vs_out[1].w_position);
-	float dis_2 = distance(g_eye_world_pos, vs_out[2].w_position);
+	// 计算cp在原平面上的位置
+	tcs_out.pos_030 = vs_out[0].w_position;
+	tcs_out.pos_003 = vs_out[1].w_position;
+	tcs_out.pos_300 = vs_out[2].w_position;
+
+	vec3 edge_0n11 = (tcs_out.pos_003 - tcs_out.pos_030) / 3.0;
+	vec3 edge_10n1 = (tcs_out.pos_300 - tcs_out.pos_003) / 3.0;
+	vec3 edge_n110 = (tcs_out.pos_030 - tcs_out.pos_300) / 3.0;
+
+	tcs_out.pos_021 = tcs_out.pos_030 + (edge_0n11 * 1);
+	tcs_out.pos_012 = tcs_out.pos_030 + (edge_0n11 * 2);
+	tcs_out.pos_102 = tcs_out.pos_003 + (edge_10n1 * 1);
+	tcs_out.pos_201 = tcs_out.pos_003 + (edge_10n1 * 2);
+	tcs_out.pos_210 = tcs_out.pos_300 + (edge_n110 * 1);
+	tcs_out.pos_120 = tcs_out.pos_300 + (edge_n110 * 2);
+
+	// 向量投影到平面上
+	tcs_out.pos_021 = proj_to_plane(tcs_out.pos_030, tcs_out.normal[0], tcs_out.pos_021);
+	tcs_out.pos_012 = proj_to_plane(tcs_out.pos_003, tcs_out.normal[1], tcs_out.pos_012);
+	tcs_out.pos_102 = proj_to_plane(tcs_out.pos_003, tcs_out.normal[1], tcs_out.pos_102);
+	tcs_out.pos_201 = proj_to_plane(tcs_out.pos_300, tcs_out.normal[2], tcs_out.pos_201);
+	tcs_out.pos_210 = proj_to_plane(tcs_out.pos_300, tcs_out.normal[2], tcs_out.pos_210);
+	tcs_out.pos_120 = proj_to_plane(tcs_out.pos_030, tcs_out.normal[0], tcs_out.pos_120);
+
+	// 调整中心位置
+	vec3 center_2 = (tcs_out.pos_030 + tcs_out.pos_003 + tcs_out.pos_300) / 3;
+	tcs_out.pos_111 = (tcs_out.pos_021 + tcs_out.pos_012 + tcs_out.pos_102 + tcs_out.pos_201 + tcs_out.pos_210 + tcs_out.pos_120) / 6;
+	tcs_out.pos_111 += (tcs_out.pos_111 - center_2);
+	
+}
+
+
+void main(){
+
+	for(int i = 0; i < 3; ++i){
+		tcs_out.tex_coord[i] = vs_out[i].tex_coord;
+		tcs_out.normal[i] = vs_out[i].w_normal;
+	}
+
+	// calculate position
+	calc_positons();
 
 	// set tessellation levels
-	gl_TessLevelOuter[0] = get_tess_level(dis_1, dis_2);
-	gl_TessLevelOuter[1] = get_tess_level(dis_0, dis_2);
-	gl_TessLevelOuter[2] = get_tess_level(dis_0, dis_1);
-	gl_TessLevelInner[0] = gl_TessLevelOuter[2];
+	gl_TessLevelOuter[0] = g_tess_level;
+	gl_TessLevelOuter[1] = g_tess_level;
+	gl_TessLevelOuter[2] = g_tess_level;
+	gl_TessLevelInner[0] = g_tess_level;
 
 }

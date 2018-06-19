@@ -25,15 +25,19 @@ public:
 	void cursor_position_callback(double x, double y);
 
 private:
+	void render_by_dir_tech();
+	void render_by_tess_tech();
+
+private:
 	Camera * m_cam;
 	PersProjInfo m_proj_info;
 	TessellationTechnique* m_tech;
 	Texture* m_color_tex;
-	Texture* m_height_tex;
 	IMesh* m_mesh;
+	DirectionLight* m_dir_light;
+	DirectionLightTechnique* m_dir_tech;
 
-
-	float m_height_factor;
+	float m_tess_level;
 	bool m_is_wire_frame;
 };
 

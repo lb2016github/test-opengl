@@ -656,19 +656,23 @@ bool TessellationTechnique::init() {
 	if (!Technique::init()) return false;
 
 	m_world_location = glGetUniformLocation(m_program_id, "g_world");
-	m_eye_world_pos_location = glGetUniformLocation(m_program_id, "g_eye_world_pos");
-	m_sampler_height_map_location = glGetUniformLocation(m_program_id, "g_sampler_height_map");
-	m_height_factor_location = glGetUniformLocation(m_program_id, "g_height_factor");
+	m_tess_level_location = glGetUniformLocation(m_program_id, "g_tess_level");
 	m_vp_location = glGetUniformLocation(m_program_id, "g_vp");
 	m_sampler_color_location = glGetUniformLocation(m_program_id, "g_sampler_color_map");
+	bool rst = m_dir_light_location.init_location(m_program_id, "dir_light.color", "dir_light.ambiant_intensity", "dir_light.diffuse_intensity", "dir_light.direction");
+	m_eye_pos = glGetUniformLocation(m_program_id, "g_eye_pos");
+	m_specular_intensity = glGetUniformLocation(m_program_id, "materia_specular_intensity");
+	m_specular_power = glGetUniformLocation(m_program_id, "specular_power");
 
 	if (
 		m_world_location == INVALID_UNIFORM_LOCATION ||
-		m_eye_world_pos_location == INVALID_UNIFORM_LOCATION ||
-		m_sampler_height_map_location == INVALID_UNIFORM_LOCATION ||
-		m_height_factor_location == INVALID_UNIFORM_LOCATION ||
+		m_tess_level_location == INVALID_UNIFORM_LOCATION ||
 		m_vp_location == INVALID_UNIFORM_LOCATION ||
-		m_sampler_color_location == INVALID_UNIFORM_LOCATION
+		m_sampler_color_location == INVALID_UNIFORM_LOCATION ||
+		m_eye_pos == INVALID_UNIFORM_LOCATION ||
+		m_specular_intensity == INVALID_UNIFORM_LOCATION ||
+		m_specular_power == INVALID_UNIFORM_LOCATION ||
+		!rst
 		) {
 		return false;
 	}
@@ -679,18 +683,23 @@ bool TessellationTechnique::init() {
 void TessellationTechnique::set_world(const M3DMatrix44f w) {
 	glUniformMatrix4fv(m_world_location, 1, false, w);
 }
-void TessellationTechnique::set_eye_pos(const M3DVector3f eye_pos) {
-	glUniform3f(m_eye_world_pos_location, eye_pos[0], eye_pos[1], eye_pos[3]);
-}
 void TessellationTechnique::set_vp(const M3DMatrix44f vp) {
 	glUniformMatrix4fv(m_vp_location, 1, false, vp);
 }
-void TessellationTechnique::set_height_factor(float height_factor) {
-	glUniform1f(m_height_factor_location, height_factor);
-}
-void TessellationTechnique::set_tex_height_map_index(unsigned int height_map_index) {
-	glUniform1i(m_sampler_height_map_location, height_map_index);
-}
 void TessellationTechnique::set_tex_color_index(unsigned int color_index) {
 	glUniform1i(m_sampler_color_location, color_index);
+}
+void TessellationTechnique::set_tess_level(float tess_level) {
+	glUniform1f(m_tess_level_location, tess_level);
+}
+
+void TessellationTechnique::set_dir_light(DirectionLight& dir_light) {
+	m_dir_light_location.set_light(dir_light);
+}
+void TessellationTechnique::set_eye_pos(const M3DVector3f eye_pos) {
+	glUniform3f(m_eye_pos, eye_pos[0], eye_pos[1], eye_pos[2]);
+}
+void TessellationTechnique::set_specular_param(float intensity, float power) {
+	glUniform1f(m_specular_intensity, intensity);
+	glUniform1f(m_specular_power, power);
 }

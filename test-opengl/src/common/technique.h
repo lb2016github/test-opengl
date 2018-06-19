@@ -311,19 +311,23 @@ public:
 
 	virtual bool init();
 	void set_world(const M3DMatrix44f wvp);
-	void set_eye_pos(const M3DVector3f eye_pos);
 	void set_vp(const M3DMatrix44f vp);
-	void set_height_factor(float height_factor);
-	void set_tex_height_map_index(unsigned int height_map_index);
 	void set_tex_color_index(unsigned int color_index);
+	void set_tess_level(float tess_level);
+	void set_dir_light(DirectionLight& dir_light);
+	void set_eye_pos(const M3DVector3f eye_pos);
+	void set_specular_param(float intensity, float power);
 
 private:
 	GLuint m_world_location;
-	GLuint m_eye_world_pos_location;
 	GLuint m_vp_location;
-	GLuint m_height_factor_location;
-	GLuint m_sampler_height_map_location;
 	GLuint m_sampler_color_location;
+	GLuint m_tess_level_location;
+	DirectionLightLocation m_dir_light_location;
+	GLuint m_eye_pos;
+	GLuint m_specular_intensity;
+	GLuint m_specular_power;
+
 };
 
 #endif // !_TECHNIQUE_H
