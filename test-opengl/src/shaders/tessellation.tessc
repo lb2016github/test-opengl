@@ -39,9 +39,9 @@ vec3 proj_to_plane(vec3 plane_point, vec3 plane_normal, vec3 point2){
 void calc_positons(){
 
 	// 计算cp在原平面上的位置
-	tcs_out.pos_030 = vs_out[0].w_position;
-	tcs_out.pos_003 = vs_out[1].w_position;
-	tcs_out.pos_300 = vs_out[2].w_position;
+	tcs_out.pos_300 = vs_out[0].w_position;
+	tcs_out.pos_030 = vs_out[1].w_position;
+	tcs_out.pos_003 = vs_out[2].w_position;
 
 	vec3 edge_0n11 = (tcs_out.pos_003 - tcs_out.pos_030) / 3.0;
 	vec3 edge_10n1 = (tcs_out.pos_300 - tcs_out.pos_003) / 3.0;
