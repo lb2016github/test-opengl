@@ -7,6 +7,17 @@
 #include <string>
 #include "assimp/scene.h"
 #include "i_callbacks.h"
+#include "const.h"
+
+#define INDEX_BUFFER_INDEX 0
+#define POSITION_BUFFER_INDEX 1
+#define TEX_COORD_BUFFER_INDEX 2
+#define NORMAL_BUFFER_INDEX 3
+#define TANGENT_BUFFER_INDEX 4
+#define WVP_BUFFER_INDEX 5
+#define WORLD_BUFFER_INDEX 6
+#define BUFFER_SIZE 7
+
 
 class Vertex {
 public:
@@ -78,6 +89,35 @@ private:
 	std::vector<MeshEntity> m_entities;
 	std::vector<Texture*> m_textures;
 
+};
+
+class VAOMesh : public IMesh {
+public:
+	VAOMesh();
+	~VAOMesh();
+
+	virtual bool load_mesh(const std::string& filename);
+	virtual void render(IRenderCallback* callback, GLenum mode = GL_TRIANGLES);
+	virtual void render_primitive(unsigned int mesh_id, unsigned int primitive_id);
+private:
+	bool init_from_scene(const aiScene* scene, const std::string& filename);
+	bool init_materials(const aiScene* scene, const std::string& filename);
+	void clear();
+
+private:
+	struct MeshEntity {
+		int num_indices;
+		int base_vertices;
+		int base_index;
+		int material_index;
+		MeshEntity() : num_indices(0), base_vertices(0), base_index(0), material_index(0){}
+	};
+
+	std::vector<MeshEntity> m_entities;
+	std::vector<Texture*> m_textures;
+
+	GLuint m_vao;
+	GLuint m_buffers[BUFFER_SIZE];	// index, pos, tex_coord, normal, tangent, wvp, world
 };
 
 #endif // _MESH_H
