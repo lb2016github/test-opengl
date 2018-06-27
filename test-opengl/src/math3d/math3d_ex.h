@@ -34,4 +34,18 @@ public:
 	float z;
 };
 
+class Matrix
+{
+public:
+	Matrix();
+	Matrix(const Matrix& mtx);
+	Matrix(const M3DMatrix44f& mtx);
+	~Matrix();
+
+	Matrix& operator=(const Matrix& mtx);
+
+public:
+	M3DMatrix44f data;
+};
+
 #endif // !_MATH3D_EXTEND_H

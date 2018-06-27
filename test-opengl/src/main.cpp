@@ -11,6 +11,7 @@
 #include "practice_ogl/tutorial_partical_system.h"
 #include "practice_ogl/tutorial_picking.h"
 #include "practice_ogl/tutorial_tessellation.h"
+#include "practice_ogl/tutorial_instanced_render.h"
 
 void main(){
 	fprintf(stdout, "%s\n", "HelloGLFW");
@@ -25,7 +26,8 @@ void main(){
 	//TutorialParticalSystem* tp = new TutorialParticalSystem();
 	//TutorialNormalMap* tp = new TutorialNormalMap();
 	//TutorialPicking* tp = new TutorialPicking();
-	TutorialTessellation * tp = new TutorialTessellation();
+	//TutorialTessellation * tp = new TutorialTessellation();
+	TutorialInstancedRendering* tp = new TutorialInstancedRendering();
 	tp->init();
 	glfw_win::set_callback(tp);
 	while (true)

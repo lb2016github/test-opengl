@@ -62,3 +62,30 @@ Vector3& Vector3::operator=(const Vector3& vector)
 	z = vector.z;
 	return *this;
 }
+
+/******************************************************
+Matrix
+******************************************************/
+Matrix::Matrix()
+{
+	m3dLoadIdentity44(data);
+}
+Matrix::Matrix(const Matrix& mtx)
+{
+	m3dCopyMatrix44(data, mtx.data);
+}
+Matrix::Matrix(const M3DMatrix44f& mtx) {
+	m3dCopyMatrix44(data, mtx);
+}
+
+Matrix::~Matrix()
+{
+
+}
+
+Matrix& Matrix::operator=(const Matrix& mtx)
+{
+	if (this == &mtx) return *this;
+	m3dCopyMatrix44(data, mtx.data);
+	return *this;
+}

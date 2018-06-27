@@ -383,6 +383,29 @@ void VAOMesh::render_primitive(unsigned int mesh_id, unsigned int primitive_id) 
 	glBindVertexArray(0);
 }
 
+void VAOMesh::render_instances(IRenderCallback* callback, GLenum mode, unsigned int num_instance, const Matrix* wvp, const Matrix* world) {
+	glBindBuffer(GL_ARRAY_BUFFER, m_buffers[WVP_BUFFER_INDEX]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Matrix) * num_instance, wvp, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, m_buffers[WORLD_BUFFER_INDEX]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Matrix) * num_instance, world, GL_DYNAMIC_DRAW);
+	glBindVertexArray(m_vao);
+	for (int i = 0; i < m_entities.size(); ++i) {
+		const unsigned int material_index = m_entities[i].material_index;
+		if (material_index < m_textures.size() && m_textures[material_index]) {
+			m_textures[material_index]->bind(GL_TEXTURE0);
+		}
+		if (callback) {
+			callback->on_draw_start_callback(i);
+		}
+		glDrawElementsInstancedBaseVertex(
+			mode, m_entities[i].num_indices, GL_UNSIGNED_INT, (GLvoid*)(m_entities[i].base_index * sizeof(unsigned int)), num_instance, m_entities[i].base_vertices
+		);
+	}
+
+	glBindVertexArray(0);
+
+}
+
 bool VAOMesh::load_mesh(const std::string& filename) {
 	clear();
 
@@ -469,6 +492,22 @@ bool VAOMesh::init_from_scene(const aiScene* scene, const std::string& filename)
 	glBufferData(GL_ARRAY_BUFFER, tangents.size() * sizeof(tangents[0]), &tangents[0], GL_STATIC_DRAW);
 	glEnableVertexAttribArray(LOCATION_TANGENT_INDEX);
 	glVertexAttribPointer(LOCATION_TANGENT_INDEX, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	
+	glBindBuffer(GL_ARRAY_BUFFER, m_buffers[WVP_BUFFER_INDEX]);
+	for (int i = 0; i < 4; ++i)
+	{
+		glEnableVertexAttribArray(LOCATION_WVP_INDEX + i);
+		glVertexAttribPointer(LOCATION_WVP_INDEX + i, 4, GL_FLOAT, GL_FALSE, sizeof(Matrix), (GLvoid*)(sizeof(float) * i * 4));
+		glVertexAttribDivisor(LOCATION_WVP_INDEX + i, 1);
+	}
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_buffers[WORLD_BUFFER_INDEX]);
+	for (int i = 0; i < 4; ++i)
+	{
+		glEnableVertexAttribArray(LOCATION_WORLD_INDEX + i);
+		glVertexAttribPointer(LOCATION_WORLD_INDEX + i, 4, GL_FLOAT, GL_FALSE, sizeof(Matrix), (GLvoid*)(sizeof(float) * i * 4));
+		glVertexAttribDivisor(LOCATION_WORLD_INDEX + i, 1);
+	}
 
 	glBindVertexArray(0);
 

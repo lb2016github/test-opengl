@@ -8,6 +8,7 @@
 #include "assimp/scene.h"
 #include "i_callbacks.h"
 #include "const.h"
+#include "math3d/math3d_ex.h"
 
 #define INDEX_BUFFER_INDEX 0
 #define POSITION_BUFFER_INDEX 1
@@ -57,7 +58,8 @@ class IMesh {
 public:
 	virtual bool load_mesh(const std::string& filename)=0;
 	virtual void render(IRenderCallback* callback, GLenum mode=GL_TRIANGLES) = 0;
-	virtual void render_primitive(unsigned int mesh_id, unsigned int primitive_id) {};
+	virtual void render_primitive(unsigned int mesh_id, unsigned int primitive_id) {}
+	virtual void render_instances(IRenderCallback* callback, GLenum mode, unsigned int num_instance, const Matrix* wvp, const Matrix* world) {}
 };
 
 class SimpleMesh: public IMesh {
@@ -99,6 +101,7 @@ public:
 	virtual bool load_mesh(const std::string& filename);
 	virtual void render(IRenderCallback* callback, GLenum mode = GL_TRIANGLES);
 	virtual void render_primitive(unsigned int mesh_id, unsigned int primitive_id);
+	virtual void render_instances(IRenderCallback* callback, GLenum mode, unsigned int num_instance, const Matrix* wvp, const Matrix* world);
 private:
 	bool init_from_scene(const aiScene* scene, const std::string& filename);
 	bool init_materials(const aiScene* scene, const std::string& filename);

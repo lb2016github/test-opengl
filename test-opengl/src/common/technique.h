@@ -330,4 +330,20 @@ private:
 
 };
 
+/*********************************************************
+Tessellation Technique
+*********************************************************/
+class InstanceRenderingTechnique : public Technique
+{
+public:
+	InstanceRenderingTechnique();
+	~InstanceRenderingTechnique();
+
+	virtual bool init();
+	void set_tex_color_index(unsigned int color_index);
+
+private:
+	GLuint m_sampler_color_location;
+};
+
 #endif // !_TECHNIQUE_H

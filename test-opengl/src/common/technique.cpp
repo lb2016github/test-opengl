@@ -703,3 +703,27 @@ void TessellationTechnique::set_specular_param(float intensity, float power) {
 	glUniform1f(m_specular_intensity, intensity);
 	glUniform1f(m_specular_power, power);
 }
+
+
+/*********************************************************
+Tessellation Technique
+*********************************************************/
+InstanceRenderingTechnique::InstanceRenderingTechnique() {
+	m_vertex_shader_path = "shaders/instance_render.vert";
+	m_fragment_shader_path = "shaders/instance_render.frag";
+}
+InstanceRenderingTechnique::~InstanceRenderingTechnique() {
+
+}
+
+bool InstanceRenderingTechnique::init()
+{
+	bool rst = Technique::init();
+	m_sampler_color_location = glGetUniformLocation(m_program_id, "g_sampler_color");
+	return rst && m_sampler_color_location != INVALID_UNIFORM_LOCATION;
+
+}
+void InstanceRenderingTechnique::set_tex_color_index(unsigned int color_index)
+{
+	glUniform1i(m_sampler_color_location, color_index);
+}
