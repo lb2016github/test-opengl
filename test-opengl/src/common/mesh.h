@@ -22,10 +22,10 @@
 
 class Vertex {
 public:
-	M3DVector3f m_pos;
-	M3DVector2f m_coor;
-	M3DVector3f m_normal;
-	M3DVector3f m_tangent;
+	Vector3 m_pos;
+	Vector2 m_coor;
+	Vector3 m_normal;
+	Vector3 m_tangent;
 
 public:
 	Vertex(float x, float y, float z, float u, float v);
@@ -36,7 +36,7 @@ private:
 	//Vertex(const Vertex& ver);
 	//Vertex& operator=(const Vertex& ver);
 
-	void transform(M3DMatrix44f trans);
+	void transform(Matrix& trans);
 };
 
 
@@ -60,18 +60,6 @@ public:
 	virtual void render(IRenderCallback* callback, GLenum mode=GL_TRIANGLES) = 0;
 	virtual void render_primitive(unsigned int mesh_id, unsigned int primitive_id) {}
 	virtual void render_instances(IRenderCallback* callback, GLenum mode, unsigned int num_instance, const Matrix* wvp, const Matrix* world) {}
-};
-
-class SimpleMesh: public IMesh {
-public:
-	virtual bool load_mesh(const std::string& filename);
-	void render(IRenderCallback* callback, GLenum mode = GL_TRIANGLES);
-
-protected:
-	void calc_normal(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices);
-
-	MeshEntity m_mesh_ent;
-	Texture* m_tex;
 };
 
 class Mesh : public IMesh {

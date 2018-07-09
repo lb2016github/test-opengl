@@ -22,10 +22,7 @@ bool TutorialShadowMap::init() {
 	m3dNormalizeVector3(m_spot_light.direction);
 	m_spot_light.cutoff = 20;
 
-	M3DVector3f pos, target, up;
-	pos[0] = 3, pos[1] = 8, pos[2] = -10;
-	target[0] = 0, target[1] = -0.2, target[2] = 1;
-	up[0] = 0, up[1] = 1, up[2] = 0;
+	Vector3 pos(3, 8, -10), target(0, -0.2, 1), up(0, 1, 0);
 	m_cam = new Camera(WINDOW_WIDTH, WINDOW_HEIGHT, pos, target, up);
 
 	m_plane = new Mesh();
@@ -109,15 +106,13 @@ void TutorialShadowMap::shadow_map_pass() {
 	glClear(GL_DEPTH_BUFFER_BIT);
 
 	Pipline pipline;
-	M3DVector3f up;
-	m3dLoadVector3(up, 0, 1, 0);
 	pipline.set_world_pos(m_mesh_pos);
 	pipline.set_rotation(m_mesh_rot);
 	pipline.set_scale(m_mesh_scale);
-	pipline.set_camera_info(m_spot_light.position, m_spot_light.direction, up);
+	pipline.set_camera_info(m_spot_light.position, m_spot_light.direction, Vector3(0, 1, 0));
 	pipline.set_pers_proj_info(m_proj_info);
-	M3DMatrix44f wvp, w;
-	pipline.get_pers_wvp_trans(wvp);
+	Matrix wvp = pipline.get_pers_wvp_trans();
+	Matrix w = pipline.get_world_trans();
 
 	m_shadow_map_tech->set_transformation(wvp, w);
 	m_mesh->render(NULL);
@@ -141,18 +136,15 @@ void TutorialShadowMap::render_pass() {
 	std::vector<PointLight> point_lights;
 
 	Pipline pipline;
-	M3DMatrix44f w, wvp, light_wvp;
-	M3DVector3f up;
-	m3dLoadVector3(up, 0, 1, 0);
 	pipline.set_world_pos(0, 0, 1);
 	pipline.set_scale(10);
 	pipline.set_rotation(m3dDegToRad(90), 0, 0);
-	pipline.get_world_trans(w);
+	Matrix w = pipline.get_world_trans();
 	pipline.set_pers_proj_info(m_proj_info);
-	pipline.set_camera_info(m_spot_light.position, m_spot_light.direction, up);
-	pipline.get_pers_wvp_trans(light_wvp);
+	pipline.set_camera_info(m_spot_light.position, m_spot_light.direction, Vector3(0, 1, 0));
+	Matrix light_wvp = pipline.get_pers_wvp_trans();
 	pipline.set_camera_info(m_cam->m_pos, m_cam->m_target, m_cam->m_up);
-	pipline.get_pers_wvp_trans(wvp);
+	Matrix wvp = pipline.get_pers_wvp_trans();
 
 	// init technique
 	m_shadow_map_tech->set_texture_unit(0);
@@ -172,16 +164,15 @@ void TutorialShadowMap::render_pass() {
 	
 	// render mesh
 	Pipline pipline_mesh;
-	M3DMatrix44f w_mesh, wvp_mesh, light_wvp_mesh;
 	pipline_mesh.set_world_pos(m_mesh_pos);
 	pipline_mesh.set_rotation(m_mesh_rot);
 	pipline_mesh.set_scale(m_mesh_scale);
-	pipline_mesh.get_world_trans(w_mesh);
+	Matrix w_mesh = pipline_mesh.get_world_trans();
 	pipline_mesh.set_pers_proj_info(m_proj_info);
-	pipline_mesh.set_camera_info(m_spot_light.position, m_spot_light.direction, up);
-	pipline_mesh.get_pers_wvp_trans(light_wvp_mesh);
+	pipline_mesh.set_camera_info(m_spot_light.position, m_spot_light.direction, Vector3(0, 1, 0));
+	Matrix light_wvp_mesh = pipline_mesh.get_pers_wvp_trans();
 	pipline_mesh.set_camera_info(m_cam->m_pos, m_cam->m_target, m_cam->m_up);
-	pipline_mesh.get_pers_wvp_trans(wvp_mesh);
+	Matrix wvp_mesh = pipline_mesh.get_pers_wvp_trans();
 
 	m_shadow_map_tech->set_transformation(wvp_mesh, w_mesh);
 	m_shadow_map_tech->set_light_wvp_trans(light_wvp_mesh);

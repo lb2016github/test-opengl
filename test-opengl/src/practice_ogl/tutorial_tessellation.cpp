@@ -32,10 +32,7 @@ bool TutorialTessellation::init() {
 	m_proj_info.z_near = 1;
 	m_proj_info.z_far = 100;
 
-	M3DVector3f pos, target, up;
-	pos[0] = 0, pos[1] = 1.5, pos[2] = -6.5;
-	target[0] = 0, target[1] = -0.2, target[2] = 1;
-	up[0] = 0, up[1] = 1, up[2] = 0;
+	Vector3 pos(0, 1.5, -6.5), target(0, -0.2, 1), up(0, 1, 0);
 	m_cam = new Camera(WINDOW_WIDTH, WINDOW_HEIGHT, pos, target, up);
 
 	m_tech = new TessellationTechnique();
@@ -93,9 +90,8 @@ void TutorialTessellation::render_by_dir_tech() {
 	pipline.set_camera_info(m_cam->m_pos, m_cam->m_target, m_cam->m_up);
 	pipline.set_pers_proj_info(m_proj_info);
 
-	M3DMatrix44f world, wvp;
-	pipline.get_world_trans(world);
-	pipline.get_pers_wvp_trans(wvp);
+	Matrix world = pipline.get_world_trans();
+	Matrix wvp = pipline.get_pers_wvp_trans();
 
 	m_dir_tech->enable();
 	m_dir_tech->set_eye_pos(m_cam->m_pos);
@@ -108,8 +104,8 @@ void TutorialTessellation::render_by_dir_tech() {
 
 	pipline.set_world_pos(3, 0, 0);
 	pipline.set_rotation(m3dDegToRad(-90), m3dDegToRad(-15), 0);
-	pipline.get_world_trans(world);
-	pipline.get_pers_wvp_trans(wvp);
+	world = pipline.get_world_trans();
+	wvp = pipline.get_pers_wvp_trans();
 
 	m_dir_tech->set_transformation(wvp, world);
 	m_mesh->render(NULL, GL_TRIANGLES);
@@ -127,9 +123,8 @@ void TutorialTessellation::render_by_tess_tech() {
 	pipline.set_camera_info(m_cam->m_pos, m_cam->m_target, m_cam->m_up);
 	pipline.set_pers_proj_info(m_proj_info);
 
-	M3DMatrix44f world, vp;
-	pipline.get_world_trans(world);
-	pipline.get_vp_trans(vp);
+	Matrix world = pipline.get_world_trans();
+	Matrix vp = pipline.get_vp_trans();
 
 	m_tech->enable();
 	m_tech->set_tess_level(m_tess_level);
@@ -143,7 +138,7 @@ void TutorialTessellation::render_by_tess_tech() {
 
 	pipline.set_world_pos(3, 0, 0);
 	pipline.set_rotation(m3dDegToRad(-90), m3dDegToRad(-15), 0);
-	pipline.get_world_trans(world);
+	world = pipline.get_world_trans();
 
 	m_tech->set_world(world);
 	m_tech->set_tess_level(1);

@@ -29,10 +29,7 @@ bool TutorialInstancedRendering::init() {
 	m_proj_info.z_near = 1;
 	m_proj_info.z_far = 100;
 
-	M3DVector3f pos, target, up;
-	pos[0] = 7, pos[1] = 3, pos[2] = 0;
-	target[0] = 0, target[1] = -0.2, target[2] = 1;
-	up[0] = 0, up[1] = 1, up[2] = 0;
+	Vector3 pos(7, 3, 0), target(0, -0.2, 1), up(0, 1, 0);
 	m_cam = new Camera(WINDOW_WIDTH, WINDOW_HEIGHT, pos, target, up);
 
 	m_mesh = new VAOMesh();
@@ -59,9 +56,9 @@ void TutorialInstancedRendering::init_positions(){
 	for (unsigned int i = 0; i < NUM_ROWS; i++) {
 		for (unsigned int j = 0; j < NUM_COLS; j++) {
 			unsigned int Index = i * NUM_COLS + j;
-			m_positions[Index].x = (float)j;
-			m_positions[Index].y = rand() / RAND_MAX * 5.0f;
-			m_positions[Index].z = (float)i;
+			m_positions[Index][0] = (float)j;
+			m_positions[Index][1] = rand() / RAND_MAX * 5.0f;
+			m_positions[Index][2] = (float)i;
 		}
 	}
 }
@@ -82,11 +79,9 @@ void TutorialInstancedRendering::render_scene_callback(float width, float height
 	Matrix world_mtx_list[NUM_INSTANCES];
 	for (unsigned int i = 0; i < NUM_INSTANCES; i++) {
 		M3DMatrix44f wvp, world;
-		p.set_world_pos(m_positions[i].x, m_positions[i].y, m_positions[i].z);
-		p.get_world_trans(world);
-		p.get_pers_wvp_trans(wvp);
-		wvp_mtx_list[i] = Matrix(wvp);
-		world_mtx_list[i] = Matrix(world);
+		p.set_world_pos(m_positions[i][0], m_positions[i][1], m_positions[i][2]);
+		world_mtx_list[i] = p.get_world_trans();
+		wvp_mtx_list[i] = p.get_pers_wvp_trans();
 	}
 	m_mesh->render_instances(NULL, GL_TRIANGLES, NUM_INSTANCES, wvp_mtx_list, world_mtx_list);
 

@@ -45,7 +45,7 @@ private:
 
 	PickingTexture* m_picking_texture;
 
-	std::vector<M3DVector3f> m_world_pos;
+	std::vector<Vector3> m_world_pos;
 
 	struct {
 		bool is_pressed;

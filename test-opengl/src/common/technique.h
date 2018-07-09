@@ -2,7 +2,7 @@
 #define _TECHNIQUE_H
 #include "glad\glad.h"
 #include <list>
-#include "math3d/math3d.h"
+#include "math3d/math3d_ex.h"
 #include "light.h"
 #include <vector>
 #include "i_callbacks.h"
@@ -108,9 +108,9 @@ public:
 
 	virtual bool init();
 	void set_light(DirectionLight& m_dir_light);
-	void set_transformation(M3DMatrix44f wvp, M3DMatrix44f w);
+	void set_transformation(Matrix& wvp, Matrix& w);
 	void set_texture_unit(int unit_idx);
-	void set_eye_pos(M3DVector3f eye_pos);
+	void set_eye_pos(Vector3& eye_pos);
 	void set_material_specular_intensity(float materia);
 	void set_specular_power(float power);
 
@@ -134,9 +134,9 @@ public:
 
 	void set_direction_light(DirectionLight& dir_light);
 	void set_point_lights(std::vector<PointLight>& point_light_list);
-	void set_eye_position(M3DVector3f eye_pos);
+	void set_eye_position(Vector3& eye_pos);
 	void set_specular_parameter(float spec_intensity, float spec_pow);
-	void set_transformation(M3DMatrix44f wvp, M3DMatrix44f world_trans);
+	void set_transformation(Matrix& wvp, Matrix& world_trans);
 	void set_texture_unit(int unit_idx);
 
 private:
@@ -175,7 +175,7 @@ public:
 	ShadowMapTechnique();
 
 	virtual bool init();
-	void set_light_wvp_trans(M3DMatrix44f light_wvp);
+	void set_light_wvp_trans(Matrix& light_wvp);
 	void set_shadow_map_tex_unit(unsigned int tex_idx);
 
 private:
@@ -204,8 +204,8 @@ public:
 	BillboardTechnique();
 	virtual bool init();
 
-	void set_vp_trans(const M3DMatrix44f vp);
-	void set_camera_position(const M3DVector3f cam_pos);
+	void set_vp_trans(const Matrix& vp);
+	void set_camera_position(const Vector3& cam_pos);
 	void set_billboard_size(float width, float height);
 	void set_color_map_tex_unit(unsigned int tex_unit);
 
@@ -255,7 +255,7 @@ public:
 	virtual bool init();
 	void set_obj_id(unsigned int obj_id);
 	void set_mesh_id(unsigned int mesh_id);
-	void set_wvp(const M3DMatrix44f wvp);
+	void set_wvp(const Matrix& wvp);
 
 	virtual void on_draw_start_callback(unsigned int mesh_id);
 
@@ -276,7 +276,7 @@ public:
 	~SimpleColorTechnique();
 
 	virtual bool init();
-	void set_wvp(const M3DMatrix44f wvp);
+	void set_wvp(const Matrix& wvp);
 
 private:
 	GLuint m_wvp_location;
@@ -292,7 +292,7 @@ public:
 	~SimpleShowTechnique();
 
 	virtual bool init();
-	void set_wvp(const M3DMatrix44f wvp);
+	void set_wvp(const Matrix& wvp);
 	void set_tex_index(unsigned int tex_index);
 
 private:
@@ -310,12 +310,12 @@ public:
 	~TessellationTechnique();
 
 	virtual bool init();
-	void set_world(const M3DMatrix44f wvp);
-	void set_vp(const M3DMatrix44f vp);
+	void set_world(const Matrix& wvp);
+	void set_vp(const Matrix& vp);
 	void set_tex_color_index(unsigned int color_index);
 	void set_tess_level(float tess_level);
 	void set_dir_light(DirectionLight& dir_light);
-	void set_eye_pos(const M3DVector3f eye_pos);
+	void set_eye_pos(const Vector3& eye_pos);
 	void set_specular_param(float intensity, float power);
 
 private:

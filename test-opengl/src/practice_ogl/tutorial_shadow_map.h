@@ -35,9 +35,9 @@ private:
 	Mesh* m_plane;
 	Mesh* m_mesh;
 
-	M3DVector3f m_mesh_pos;
-	M3DVector3f m_mesh_rot;
-	M3DVector3f m_mesh_scale;
+	Vector3 m_mesh_pos;
+	Vector3 m_mesh_rot;
+	Vector3 m_mesh_scale;
 
 	ShadowMapTechnique* m_shadow_map_tech;
 

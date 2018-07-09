@@ -5,33 +5,6 @@
 #define FIElD_WIDTH 10
 #define FIELD_DEPTH 20 
 
-class PlaneMesh : public SimpleMesh {
-
-public:
-	bool load_mesh(const std::string& filename) {
-		// init vertexes
-		std::vector<Vertex> vertices = {
-			Vertex(0.0f, 0.0f, 0.0f, 0, 0),
-			Vertex(0.0f, 0.0f, FIELD_DEPTH, 0, 1),
-			Vertex(FIElD_WIDTH, 0, 0, 1, 0),
-			Vertex(FIElD_WIDTH, 0, FIELD_DEPTH, 1, 1)
-		};
-		std::vector<unsigned int> indices = {
-			0, 1, 2,
-			1, 3, 2,
-		};
-
-		calc_normal(vertices, indices);
-
-		m_mesh_ent.init(vertices, indices);
-
-		// init texture
-		m_tex = new Texture(GL_TEXTURE_2D, "res/test.png");
-		m_tex->load();
-
-		return true;
-	}
-};
 
 bool TutorialPointLight::init() {
 	m_proj_info.fov = m3dDegToRad(60);
@@ -40,13 +13,10 @@ bool TutorialPointLight::init() {
 	m_proj_info.z_near = 1;
 	m_proj_info.z_far = 50;
 
-	M3DVector3f pos, target, up;
-	pos[0] = 5, pos[1] = 1, pos[2] = -3;
-	target[0] = 0, target[1] = 0, target[2] = 1;
-	up[0] = 0, up[1] = 1, up[2] = 0;
+	Vector3 pos(5, 1, -3), target(0, 0, 1), up(0, 1, 0);
 	m_cam = new Camera(WINDOW_WIDTH, WINDOW_HEIGHT, pos, target, up);
 
-	m_mesh = new PlaneMesh();
+	m_mesh = new Mesh();
 	m_mesh->load_mesh("");
 
 	m_tech = new PointLightTechnique();
@@ -74,15 +44,12 @@ void TutorialPointLight::render_scene_callback(float width, float height, float 
 
 	m_cam->on_render_cb();
 
-	M3DMatrix44f wvp, w;
 	m_pipline.set_world_pos(0, 0, 1);
-	//m_pipline.set_scale(2);
-	//m_pipline.set_rotation(0, time / 5, 0);
 	m_pipline.set_camera_info(m_cam->m_pos, m_cam->m_target, m_cam->m_up);
 
 	m_pipline.set_pers_proj_info(m_proj_info);
-	m_pipline.get_pers_wvp_trans(wvp);
-	m_pipline.get_world_trans(w);
+	Matrix wvp = m_pipline.get_pers_wvp_trans();
+	Matrix w = m_pipline.get_world_trans();
 
 	std::vector<PointLight> pl(2);
 	pl[0].diffuse_intensity = 0.5;

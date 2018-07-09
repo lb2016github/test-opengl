@@ -5,31 +5,21 @@
 #include "math3d/math3d_ex.h"
 #include "utils.h"
 
-Vertex::Vertex(float x, float y, float z, float u, float v) {
-	m3dLoadVector3(m_pos, x, y, z);
-	m3dLoadVector2(m_coor, u, v);
-	m3dLoadVector3(m_normal, 0, 0, 0);
-	m3dLoadVector3(m_tangent, 0, 0, 0);
+Vertex::Vertex(float x, float y, float z, float u, float v)
+{
+	Vertex(x, y, z, u, v, 0, 0, 1, 0, 0, 1);
 }
 
-Vertex::Vertex(float x, float y, float z, float u, float v, float n_x, float n_y, float n_z) {
-	m3dLoadVector3(m_pos, x, y, z);
-	m3dLoadVector2(m_coor, u, v);
-	m3dLoadVector3(m_normal, n_x, n_y, n_z);
-	m3dLoadVector3(m_tangent, 0, 0, 0);
+Vertex::Vertex(float x, float y, float z, float u, float v, float n_x, float n_y, float n_z){
+	Vertex(x, y, z, u, v, n_x, n_y, n_z, 0, 0, 1);
 }
 
-Vertex::Vertex(float x, float y, float z, float u, float v, float n_x, float n_y, float n_z, float t_x, float t_y, float t_z) {
-	m3dLoadVector3(m_pos, x, y, z);
-	m3dLoadVector2(m_coor, u, v);
-	m3dLoadVector3(m_normal, n_x, n_y, n_z);
-	m3dLoadVector3(m_tangent, t_x, t_y, t_z);
+Vertex::Vertex(float x, float y, float z, float u, float v, float n_x, float n_y, float n_z, float t_x, float t_y, float t_z):
+	m_pos(Vector3(x, y, z)), m_coor(Vector2(u, v)), m_normal(Vector3(n_x, n_y, n_z)), m_tangent(Vector3(t_x, t_y, t_z)) {
 }
 
-void Vertex::transform(M3DMatrix44f trans) {
-	M3DVector3f tmp;
-	m3dCopyVector3(tmp, m_pos);
-	m3dTransformVector3(m_pos, tmp, trans);
+void Vertex::transform(Matrix& trans) {
+	m_pos = trans * m_pos;
 }
 
 MeshEntity::MeshEntity() {
@@ -58,94 +48,6 @@ void MeshEntity::init(const std::vector<Vertex>& vertices, const std::vector<uns
 	glGenBuffers(1, &ib);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * num_indices, &indices[0], GL_STATIC_DRAW);
-}
-
-
-bool SimpleMesh::load_mesh(const std::string& filename) {
-	// init vertexes
-	std::vector<Vertex> vertices = {
-		Vertex(-1.0f, -1.0f, 0.5773f, 0, 0),
-		Vertex(0.0f, -1.0f, -1.15475f, 0.5f, 0),
-		Vertex(1.0f, -1.0f, 0.5773f, 1, 0),
-		Vertex(0.0f, 1.0f, 0.0f, 0.5f, 1)
-	};
-	std::vector<unsigned int> indices = {
-		0, 3, 1,
-		1, 3, 2,
-		2, 3, 0,
-		1, 2, 0
-	};
-
-	calc_normal(vertices, indices);
-
-	m_mesh_ent.init(vertices, indices);
-	
-	// init texture
-	m_tex = new Texture(GL_TEXTURE_2D, "res/test.png");
-	m_tex->load();
-
-	return true;
-}
-
-void SimpleMesh::calc_normal(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices) {
-	for (int i = 2; i < indices.size(); i += 3) {
-		unsigned int idx_1 = indices[i - 2], idx_2 = indices[i - 1], idx_3 = indices[i];
-		M3DVector3f line_1, line_2, normal;
-		m3dSubtractVectors3(line_1, vertices[idx_2].m_pos, vertices[idx_1].m_pos);
-		m3dSubtractVectors3(line_2, vertices[idx_3].m_pos, vertices[idx_1].m_pos);
-		m3dCrossProduct3(normal, line_1, line_2);
-		m3dNormalizeVector3(normal);
-
-		// add normal to vertex
-		m3dAddVectors3(vertices[idx_1].m_normal, vertices[idx_1].m_normal, normal);
-		m3dAddVectors3(vertices[idx_2].m_normal, vertices[idx_2].m_normal, normal);
-		m3dAddVectors3(vertices[idx_3].m_normal, vertices[idx_3].m_normal, normal);
-	}
-
-	// average normal
-	for (int i = 0; i < vertices.size(); ++i) {
-		m3dNormalizeVector3(vertices[i].m_normal);
-	}
-}
-
-void SimpleMesh::render(IRenderCallback* callback, GLenum mode) {
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(
-		0,
-		3,
-		GL_FLOAT,
-		GL_FALSE,
-		sizeof(Vertex),
-		(void*)0
-	);
-	glVertexAttribPointer(
-		1,
-		2,
-		GL_FLOAT,
-		GL_FALSE,
-		sizeof(Vertex),
-		(const GLvoid*)(sizeof(float) * 3)
-	);
-	glVertexAttribPointer(
-		2,
-		3,
-		GL_FLOAT,
-		GL_FALSE,
-		sizeof(Vertex),
-		(const GLvoid*)(sizeof(float) * 5)
-	);
-	m_tex->bind(GL_TEXTURE0);
-
-	if (callback) {
-		callback->on_draw_start_callback(0);
-	}
-
-	glDrawElements(GL_TRIANGLES, m_mesh_ent.num_indices, GL_UNSIGNED_INT, 0);
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-	glDisableVertexAttribArray(2);
 }
 
 /********************************************

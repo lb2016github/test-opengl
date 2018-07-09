@@ -20,8 +20,8 @@ bool SkyboxTechnique::init() {
 	return true;
 }
 
-void SkyboxTechnique::set_wvp_trans(const M3DMatrix44f wvp) {
-	glUniformMatrix4fv(m_wvp_location, 1, false, wvp);
+void SkyboxTechnique::set_wvp_trans(const Matrix& wvp) {
+	glUniformMatrix4fv(m_wvp_location, 1, false, wvp.data);
 }
 void SkyboxTechnique::set_texture_unit(unsigned int texture_unit) {
 	glUniform1i(m_sampler_location, texture_unit);
@@ -81,8 +81,7 @@ void Skybox::render() {
 	pipline.set_camera_info(m_cam->m_pos, m_cam->m_target, m_cam->m_up);
 	pipline.set_pers_proj_info(m_pers_proj_info);
 
-	M3DMatrix44f wvp;
-	pipline.get_pers_wvp_trans(wvp);
+	Matrix wvp = pipline.get_pers_wvp_trans();
 
 	m_skybox_technique->set_wvp_trans(wvp);
 	m_skybox_technique->set_texture_unit(0);

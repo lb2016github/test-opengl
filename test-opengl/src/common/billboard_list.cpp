@@ -18,7 +18,7 @@ bool BillboardList::init(const std::string& tex_filename, float width, float hei
 	m_height = height;
 	return true;
 }
-void BillboardList::render(const std::vector<M3DVector3f>& pos_list, const M3DVector3f& cam_pos, const M3DMatrix44f& vp) {
+void BillboardList::render(const std::vector<Vector3>& pos_list, const Vector3& cam_pos, const Matrix& vp) {
 	m_tex->bind(GL_TEXTURE0);
 
 	m_tech->enable();
@@ -29,8 +29,8 @@ void BillboardList::render(const std::vector<M3DVector3f>& pos_list, const M3DVe
 
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-	glBufferData(GL_ARRAY_BUFFER, pos_list.size() * sizeof(M3DVector3f), &pos_list[0], GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, false, sizeof(M3DVector3f), (GLvoid*)0);
+	glBufferData(GL_ARRAY_BUFFER, pos_list.size() * sizeof(Vector3), &pos_list[0], GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, false, sizeof(Vector3), (GLvoid*)0);
 	glDrawArrays(GL_POINTS, 0, pos_list.size());
 	glDisableVertexAttribArray(0);
 }

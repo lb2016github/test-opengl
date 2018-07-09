@@ -1,24 +1,24 @@
 #include "pipline.h"
 
 CameraInfo::CameraInfo(const CameraInfo& cam_info) {
-	m3dCopyVector3(pos, cam_info.pos);
-	m3dCopyVector3(target, cam_info.target);
-	m3dCopyVector3(up, cam_info.up);
+	pos = cam_info.pos;
+	target = cam_info.target;
+	up = cam_info.up;
 }
 
 CameraInfo& CameraInfo::operator=(const CameraInfo& cam_info) {
-	m3dCopyVector3(pos, cam_info.pos);
-	m3dCopyVector3(target, cam_info.target);
-	m3dCopyVector3(up, cam_info.up);
+	pos = cam_info.pos;
+	target = cam_info.target;
+	up = cam_info.up;
 	return *this;
 }
 
-void CameraInfo::set_cam_info(const M3DVector3f p_pos, const M3DVector3f p_target, const M3DVector3f p_up) {
-	m3dCopyVector3(pos, p_pos);
-	m3dCopyVector3(target, p_target);
-	m3dCopyVector3(up, p_up);
-	m3dNormalizeVector3(target);
-	m3dNormalizeVector3(up);
+void CameraInfo::set_cam_info(const Vector3& p_pos, const Vector3& p_target, const Vector3& p_up) {
+	pos = p_pos;
+	target = p_target;
+	up = p_up;
+	target.normalize();
+	up.normalize();
 }
 
 Pipline::Pipline()
@@ -75,55 +75,74 @@ void Pipline::set_orthor_proj_info(float right, float left, float bottom, float 
 	m_op_info.z_far = z_far;
 }
 
-void Pipline::set_camera_info(const M3DVector3f pos, const M3DVector3f target, const M3DVector3f up) {
+void Pipline::set_camera_info(const Vector3& pos, const Vector3& target, const Vector3& up) {
 	m_cam_info.set_cam_info(pos, target, up);
 }
 
-void Pipline::get_world_trans(M3DMatrix44f w) {
-	M3DMatrix44f tmp_pos, tmp_scale, tmp_rotation, tmp_pr;
-	m3dTranslationMatrix44(tmp_pos, m_world_pos[0], m_world_pos[1], m_world_pos[2]);
-	m3dScaleMatrix44(tmp_scale, m_scale[0], m_scale[1], m_scale[2]);
-	m3dExtendRotationMatrix44(tmp_rotation, m_rotation[0], m_rotation[1], m_rotation[2]);
+Matrix Pipline::get_world_trans() {
+	Matrix trans = Matrix::make_translation_matrix(m_world_pos);
+	Matrix scale = Matrix::make_scale_matrix(m_scale);
+	Matrix rotation = Matrix::make_rotation_matrix(m_rotation);
+	Matrix world_trans = trans * (scale * rotation);
+	return world_trans;
 
-	m3dMatrixMultiply44(tmp_pr, tmp_scale, tmp_rotation);
-	m3dMatrixMultiply44(w, tmp_pos, tmp_pr);
+	//M3DMatrix44f tmp_pos, tmp_scale, tmp_rotation, tmp_pr;
+	//m3dTranslationMatrix44(tmp_pos, m_world_pos[0], m_world_pos[1], m_world_pos[2]);
+	//m3dScaleMatrix44(tmp_scale, m_scale[0], m_scale[1], m_scale[2]);
+	//m3dExtendRotationMatrix44(tmp_rotation, m_rotation[0], m_rotation[1], m_rotation[2]);
+
+	//m3dMatrixMultiply44(tmp_pr, tmp_scale, tmp_rotation);
+	//m3dMatrixMultiply44(w, tmp_pos, tmp_pr);
 }
 
-void Pipline::get_view_trans(M3DMatrix44f v) {
-	M3DMatrix44f pos, rot, irot;
-	m3dTranslationMatrix44(pos, -m_cam_info.pos[0], -m_cam_info.pos[1], -m_cam_info.pos[2]);
-	m3dExtendCameraMatrix44(rot, m_cam_info.target, m_cam_info.up);
-	m3dMatrixMultiply44(v, rot, pos);
+Matrix Pipline::get_view_trans() {
+	Matrix trans = Matrix::make_translation_matrix(-m_cam_info.pos);
+	Matrix rot = Matrix::make_camera_rotation_matrix(m_cam_info.target, m_cam_info.up);
+	return rot * trans;
+
+	//M3DMatrix44f pos, rot, irot;
+	//m3dTranslationMatrix44(pos, -m_cam_info.pos[0], -m_cam_info.pos[1], -m_cam_info.pos[2]);
+	//m3dExtendCameraMatrix44(rot, m_cam_info.target, m_cam_info.up);
+	//m3dMatrixMultiply44(v, rot, pos);
 }
 
-void Pipline::get_pers_proj_trans(M3DMatrix44f p) {
+Matrix Pipline::get_pers_proj_trans() {
 	float aspect = m_pp_info.width / m_pp_info.height;
-	m3dExtendCratePerspectiveMatrix(p, m_pp_info.fov, aspect, m_pp_info.z_near, m_pp_info.z_far);
+	//m3dExtendCratePerspectiveMatrix(p, m_pp_info.fov, aspect, m_pp_info.z_near, m_pp_info.z_far);
+	return Matrix::make_per_project_matrix(m_pp_info.fov, aspect, m_pp_info.z_near, m_pp_info.z_far);
 }
 
-void Pipline::get_orthor_proj_trans(M3DMatrix44f p) {
-	m3dExtendMakeOrthographicMatrix(p, m_op_info.left, m_op_info.right, m_op_info.bottom, m_op_info.top, m_op_info.z_near, m_op_info.z_far);
+Matrix Pipline::get_orthor_proj_trans() {
+	//m3dExtendMakeOrthographicMatrix(p, m_op_info.left, m_op_info.right, m_op_info.bottom, m_op_info.top, m_op_info.z_near, m_op_info.z_far);
+	return Matrix::make_orth_project_matrix(m_op_info.left, m_op_info.right, m_op_info.bottom, m_op_info.top, m_op_info.z_near, m_op_info.z_far);
 }
 
-void Pipline::get_vp_trans(M3DMatrix44f wv) {
-	M3DMatrix44f v, p;
-	get_view_trans(v);
-	get_pers_proj_trans(p);
-	m3dMatrixMultiply44(wv, p, v);
+Matrix Pipline::get_vp_trans() {
+	//M3DMatrix44f v, p;
+	//get_view_trans(v);
+	//get_pers_proj_trans(p);
+	//m3dMatrixMultiply44(wv, p, v);
+
+	return get_pers_proj_trans() * get_view_trans();
+
 }
 
-void Pipline::get_pers_wvp_trans(M3DMatrix44f wvp) {
-	M3DMatrix44f w, vp;
+Matrix Pipline::get_pers_wvp_trans() {
+	/*M3DMatrix44f w, vp;
 	get_world_trans(w);
 	get_vp_trans(vp);
-	m3dMatrixMultiply44(wvp, vp, w);
+	m3dMatrixMultiply44(wvp, vp, w);*/
+
+	return get_vp_trans() * get_world_trans();
 }
 
-void Pipline::get_orthor_wvp_trans(M3DMatrix44f wvp) {
-	M3DMatrix44f w, v, p, tmp;
-	get_world_trans(w);
-	get_view_trans(v);
-	get_orthor_proj_trans(p);
-	m3dMatrixMultiply44(tmp, p, v);
-	m3dMatrixMultiply44(wvp, tmp, w);
+Matrix Pipline::get_orthor_wvp_trans() {
+	//M3DMatrix44f w, v, p, tmp;
+	//get_world_trans(w);
+	//get_view_trans(v);
+	//get_orthor_proj_trans(p);
+	//m3dMatrixMultiply44(tmp, p, v);
+	//m3dMatrixMultiply44(wvp, tmp, w);
+
+	return get_orthor_proj_trans() * (get_view_trans() * get_world_trans());
 }

@@ -90,7 +90,7 @@ bool ParticalSystem::init() {
 
 
 }
-void ParticalSystem::render(float delta_time, const M3DVector3f cam_pos, const M3DMatrix44f vp) {
+void ParticalSystem::render(float delta_time, const Vector3& cam_pos, const Matrix& vp) {
 	m_time += delta_time;
 	ps_update(delta_time);
 	ps_render(cam_pos, vp);
@@ -138,7 +138,7 @@ void ParticalSystem::ps_update(float delta_time) {
 
 	glDisable(GL_RASTERIZER_DISCARD);
 }
-void ParticalSystem::ps_render(const M3DVector3f cam_pos, const M3DMatrix44f vp) {
+void ParticalSystem::ps_render(const Vector3& cam_pos, const Matrix& vp) {
 	m_color_texture->bind(COLOR_TEXTURE_UNIT);
 	m_billboard_tech->enable();
 	m_billboard_tech->set_camera_position(cam_pos);

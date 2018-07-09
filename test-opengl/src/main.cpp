@@ -22,12 +22,12 @@ void main(){
 		return;
 	}
 	
-	//TutorialShadowMap *tp = new TutorialShadowMap();
+	TutorialShadowMap *tp = new TutorialShadowMap();
 	//TutorialParticalSystem* tp = new TutorialParticalSystem();
 	//TutorialNormalMap* tp = new TutorialNormalMap();
 	//TutorialPicking* tp = new TutorialPicking();
 	//TutorialTessellation * tp = new TutorialTessellation();
-	TutorialInstancedRendering* tp = new TutorialInstancedRendering();
+	//TutorialInstancedRendering* tp = new TutorialInstancedRendering();
 	tp->init();
 	glfw_win::set_callback(tp);
 	while (true)

@@ -3,7 +3,7 @@
 #include "texture.h"
 #include "technique.h"
 #include "glad/glad.h"
-#include "math3d/math3d.h"
+#include "math3d/math3d_ex.h"
 #include "camera.h"
 #include "pipline.h"
 #include "mesh.h"
@@ -14,7 +14,7 @@ public:
 	~SkyboxTechnique();
 	virtual bool init();
 
-	void set_wvp_trans(const M3DMatrix44f wvp);
+	void set_wvp_trans(const Matrix& wvp);
 	void set_texture_unit(unsigned int texture_unit);
 
 private:

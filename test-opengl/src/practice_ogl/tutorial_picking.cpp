@@ -14,7 +14,7 @@ TutorialPicking::TutorialPicking() {
 	m_simple_color_technique = NULL;
 	m_simple_show_technique = NULL;
 	m_picking_texture = NULL;
-	m_world_pos = std::vector<M3DVector3f>(2);
+	m_world_pos = std::vector<Vector3>(2);
 	m_quad = NULL;
 }
 TutorialPicking::~TutorialPicking() {
@@ -34,10 +34,7 @@ bool TutorialPicking::init() {
 	m_proj_info.z_near = 1;
 	m_proj_info.z_far = 100;
 
-	M3DVector3f pos, target, up;
-	pos[0] = 0, pos[1] = 5, pos[2] = -22;
-	target[0] = 0, target[1] = -0.2, target[2] = 1;
-	up[0] = 0, up[1] = 1, up[2] = 0;
+	Vector3 pos(0, 5, -22), target(0, -0.2, 1), up(0, 1, 0);
 	m_cam = new Camera(WINDOW_WIDTH, WINDOW_HEIGHT, pos, target, up);
 
 	m_mesh = new Mesh();
@@ -127,8 +124,7 @@ void TutorialPicking::picking_pass() {
 	pipline.set_pers_proj_info(m_proj_info);
 	for (int i = 0; i < m_world_pos.size(); ++i) {
 		pipline.set_world_pos(m_world_pos[i]);
-		M3DMatrix44f wvp;
-		pipline.get_pers_wvp_trans(wvp);
+		Matrix wvp = pipline.get_pers_wvp_trans();
 		m_picking_technique->set_obj_id(i);
 		m_picking_technique->set_wvp(wvp);
 		
@@ -150,8 +146,7 @@ void TutorialPicking::render_pass() {
 		PickingTexture::PixelInfo pixel_info = m_picking_texture->read_pixel(m_left_mouse_button.x, WINDOW_HEIGHT - m_left_mouse_button.y - 1);
 		if (pixel_info.prim_id > 0) {
 			pipline.set_world_pos(m_world_pos[pixel_info.obj_id]);
-			M3DMatrix44f wvp;
-			pipline.get_pers_wvp_trans(wvp);
+			Matrix wvp = pipline.get_pers_wvp_trans();
 
 			m_simple_color_technique->enable();
 			m_simple_color_technique->set_wvp(wvp);
@@ -163,8 +158,7 @@ void TutorialPicking::render_pass() {
 	// render obj
 	for (int i = 0; i < m_world_pos.size(); ++i) {
 		pipline.set_world_pos(m_world_pos[i]);
-		M3DMatrix44f wvp;
-		pipline.get_pers_wvp_trans(wvp);
+		Matrix wvp = pipline.get_pers_wvp_trans();
 
 		m_simple_show_technique->enable();
 		m_simple_show_technique->set_wvp(wvp);

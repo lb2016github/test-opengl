@@ -3,7 +3,7 @@
 #include "math3d/math3d.h"
 
 struct BaseLight {
-	M3DVector3f color;
+	Vector3 color;
 	float ambiance_intensity;
 	float diffuse_intensity;
 
@@ -15,7 +15,7 @@ struct BaseLight {
 };
 
 struct DirectionLight: BaseLight {
-	M3DVector3f direction;
+	Vector3 direction;
 
 	DirectionLight() {
 		m3dLoadVector3(direction, 0, 0, 0);
@@ -30,7 +30,7 @@ struct PointLight: BaseLight {
 		float exp;
 	};
 	Atten atten;
-	M3DVector3f position;
+	Vector3 position;
 
 	PointLight() {
 		atten.constant = 1;
@@ -40,7 +40,7 @@ struct PointLight: BaseLight {
 };
 
 struct SpotLight : PointLight {
-	M3DVector3f direction;
+	Vector3 direction;
 	float cutoff;	// 注：这里是角度
 
 	SpotLight() {

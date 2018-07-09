@@ -4,6 +4,7 @@
 #include "glad/glad.h"
 #include "billboard_list.h"
 #include "texture.h"
+#include "math3d/math3d_ex.h"
 
 #define MAX_PARTICLES 1000
 #define PARTICLE_LIFETIME 10.0f
@@ -15,8 +16,8 @@
 struct Partical {
 	float type;
 	float age;
-	M3DVector3f position;
-	M3DVector3f velocity;
+	Vector3 position;
+	Vector3 velocity;
 };
 
 class ParticalSystem
@@ -26,11 +27,11 @@ public:
 	~ParticalSystem();
 
 	bool init();
-	void render(float time, const M3DVector3f cam_pos, const M3DMatrix44f vp);
+	void render(float delta_time, const Vector3& cam_pos, const Matrix& vp);
 
 private:
 	void ps_update(float delta_time);
-	void ps_render(const M3DVector3f cam_pos, const M3DMatrix44f vp);
+	void ps_render(const Vector3& cam_pos, const Matrix& vp);
 
 private:
 	BillboardTechnique * m_billboard_tech;

@@ -1,16 +1,16 @@
 #ifndef _CAMERA_H
 #define _CAMERA_H
-#include "math3d\math3d.h"
+#include "math3d/math3d_ex.h"
 
 #define MARGIN 30
 #define EDGE_SPEED 0.01
 
 class CameraRotationInfo {
 public:
-	CameraRotationInfo(float width, float height, float factor, M3DVector3f target);
+	CameraRotationInfo(float width, float height, float factor, Vector3& target);
 	void on_mouse_move(double x, double y);
 	void update();
-	void get_forward(M3DVector3f forward) { m3dCopyVector3(forward, m_forward); };
+	Vector3 get_forward() { return m_forward; }
 
 private:
 	float m_h_angle, m_v_angle;	 // 水平角，竖直角
@@ -18,13 +18,13 @@ private:
 	float m_mouse_x, m_mouse_y;	// 光标位置
 	float m_win_width, m_win_height;	// 窗口宽高
 	float m_factor;		// 滑屏速度
-	M3DVector3f m_forward;	// 朝向
+	Vector3 m_forward;	// 朝向
 };
 
 class Camera {
 public:
 	Camera(const int width, const int height);
-	Camera(const int width, const int height, const M3DVector3f pos, const M3DVector3f target, const M3DVector3f up);
+	Camera(const int width, const int height, const Vector3& pos, const Vector3& target, const Vector3& up);
 	Camera(const Camera& cam);
 
 	void on_render_cb();
@@ -34,19 +34,19 @@ public:
 	void on_keyboard(int key);
 	void on_mouse_move(double x, double y);
 
-	M3DVector3f m_pos;
-	M3DVector3f m_target;
-	M3DVector3f m_up;
+	Vector3 m_pos;
+	Vector3 m_target;
+	Vector3 m_up;
 
 protected:
-	void _move(M3DVector3f dir, float factor);
+	void _move(Vector3& dir, float factor);
 
 	CameraRotationInfo* m_cam_rot_info;
 
 private:
 	int m_width;
 	int m_height;
-	M3DVector3f m_right;
+	Vector3 m_right;
 };
 
 #endif // !_CAMERA_H

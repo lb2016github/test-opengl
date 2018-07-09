@@ -179,7 +179,7 @@ void DirectionLightTechnique::set_light(DirectionLight& m_dir_light) {
 	glUniform3f(m_direction_location, m_dir_light.direction[0], m_dir_light.direction[1], m_dir_light.direction[2]);
 }
 
-void DirectionLightTechnique::set_transformation(M3DMatrix44f wvp, M3DMatrix44f w) {
+void DirectionLightTechnique::set_transformation(Matrix& wvp, Matrix& w) {
 	glUniformMatrix4fv(wvp_location, 1, false, wvp);
 	glUniformMatrix4fv(w_locatioin, 1, false, w);
 }
@@ -188,7 +188,7 @@ void DirectionLightTechnique::set_texture_unit(int unit_idx) {
 	glUniform1i(m_sampler_location, unit_idx);
 }
 
-void DirectionLightTechnique::set_eye_pos(M3DVector3f eye_pos) {
+void DirectionLightTechnique::set_eye_pos(Vector3& eye_pos) {
 	glUniform3f(m_eye_pos_location, eye_pos[0], eye_pos[1], eye_pos[2]);
 }
 
@@ -258,7 +258,7 @@ void PointLightTechnique::set_point_lights(std::vector<PointLight>& point_light_
 		m_point_light_locations[i].set_light(point_light_list[i]);
 	}
 }
-void PointLightTechnique::set_eye_position(M3DVector3f eye_pos) {
+void PointLightTechnique::set_eye_position(Vector3& eye_pos) {
 	glUniform3f(m_eye_world_pos_location, eye_pos[0], eye_pos[1], eye_pos[2]);
 }
 
@@ -267,13 +267,13 @@ void PointLightTechnique::set_specular_parameter(float spec_intensity, float spe
 	glUniform1f(m_specular_power_location, spec_pow);
 
 }
-void PointLightTechnique::set_transformation(M3DMatrix44f wvp, M3DMatrix44f world_trans) {
+void PointLightTechnique::set_transformation(Matrix& wvp, Matrix& world_trans) {
 	glUniformMatrix4fv(m_wvp_location, 1, false, wvp);
 	glUniformMatrix4fv(m_w_location, 1, false, world_trans);
 }
 
 void PointLightTechnique::set_texture_unit(int unit_idx) {
-	glUniform1f(m_sampler_location, unit_idx);
+	glUniform1i(m_sampler_location, unit_idx);
 }
 
 /*********************************************************
@@ -414,7 +414,7 @@ bool ShadowMapTechnique::init() {
 	return true;
 }
 
-void ShadowMapTechnique::set_light_wvp_trans(M3DMatrix44f light_wvp) {
+void ShadowMapTechnique::set_light_wvp_trans(Matrix& light_wvp) {
 	glUniformMatrix4fv(m_light_wvp_location, 1, false, light_wvp);
 }
 
@@ -461,12 +461,12 @@ bool BillboardTechnique::init() {
 		m_color_map_location != INVALID_UNIFORM_LOCATION;
 }
 
-void BillboardTechnique::set_vp_trans(const M3DMatrix44f vp) {
-	glUniformMatrix4fv(m_vp_location, 1, false, vp);
+void BillboardTechnique::set_vp_trans(const Matrix& vp) {
+	glUniformMatrix4fv(m_vp_location, 1, false, vp.data);
 }
 
-void BillboardTechnique::set_camera_position(const M3DVector3f cam_pos) {
-	glUniform3f(m_cam_pos_location, cam_pos[0], cam_pos[1], cam_pos[2]);
+void BillboardTechnique::set_camera_position(const Vector3& cam_pos) {
+	glUniform3f(m_cam_pos_location, cam_pos.data[0], cam_pos.data[1], cam_pos.data[2]);
 }
 void BillboardTechnique::set_billboard_size(float width, float height) {
 	glUniform1f(m_width_location, width);
@@ -581,8 +581,8 @@ void PickingTechnique::set_obj_id(unsigned int obj_id) {
 void PickingTechnique::set_mesh_id(unsigned int mesh_id) {
 	glUniform1i(m_mesh_id_location, mesh_id);
 }
-void PickingTechnique::set_wvp(const M3DMatrix44f wvp) {
-	glUniformMatrix4fv(m_wvp_location, 1, GL_FALSE, wvp);
+void PickingTechnique::set_wvp(const Matrix& wvp) {
+	glUniformMatrix4fv(m_wvp_location, 1, GL_FALSE, wvp.data);
 }
 
 void PickingTechnique::on_draw_start_callback(unsigned int mesh_id) {
@@ -608,8 +608,8 @@ bool SimpleColorTechnique::init() {
 	return m_wvp_location != INVALID_UNIFORM_LOCATION;
 	
 }
-void SimpleColorTechnique::set_wvp(const M3DMatrix44f wvp) {
-	glUniformMatrix4fv(m_wvp_location, 1, GL_FALSE, wvp);
+void SimpleColorTechnique::set_wvp(const Matrix& wvp) {
+	glUniformMatrix4fv(m_wvp_location, 1, GL_FALSE, wvp.data);
 }
 
 /*********************************************************
@@ -632,8 +632,8 @@ bool SimpleShowTechnique::init() {
 
 	return m_wvp_location != INVALID_UNIFORM_LOCATION && m_color_sampler_location != INVALID_UNIFORM_LOCATION;
 }
-void SimpleShowTechnique::set_wvp(const M3DMatrix44f wvp) {
-	glUniformMatrix4fv(m_wvp_location, 1, GL_FALSE, wvp);
+void SimpleShowTechnique::set_wvp(const Matrix& wvp) {
+	glUniformMatrix4fv(m_wvp_location, 1, GL_FALSE, wvp.data);
 }
 void SimpleShowTechnique::set_tex_index(unsigned int tex_index) {
 	glUniform1i(m_color_sampler_location, tex_index);
@@ -680,11 +680,11 @@ bool TessellationTechnique::init() {
 	return true;
 
 }
-void TessellationTechnique::set_world(const M3DMatrix44f w) {
-	glUniformMatrix4fv(m_world_location, 1, false, w);
+void TessellationTechnique::set_world(const Matrix& w) {
+	glUniformMatrix4fv(m_world_location, 1, false, w.data);
 }
-void TessellationTechnique::set_vp(const M3DMatrix44f vp) {
-	glUniformMatrix4fv(m_vp_location, 1, false, vp);
+void TessellationTechnique::set_vp(const Matrix& vp) {
+	glUniformMatrix4fv(m_vp_location, 1, false, vp.data);
 }
 void TessellationTechnique::set_tex_color_index(unsigned int color_index) {
 	glUniform1i(m_sampler_color_location, color_index);
@@ -696,8 +696,8 @@ void TessellationTechnique::set_tess_level(float tess_level) {
 void TessellationTechnique::set_dir_light(DirectionLight& dir_light) {
 	m_dir_light_location.set_light(dir_light);
 }
-void TessellationTechnique::set_eye_pos(const M3DVector3f eye_pos) {
-	glUniform3f(m_eye_pos, eye_pos[0], eye_pos[1], eye_pos[2]);
+void TessellationTechnique::set_eye_pos(const Vector3& eye_pos) {
+	glUniform3f(m_eye_pos, eye_pos.data[0], eye_pos.data[1], eye_pos.data[2]);
 }
 void TessellationTechnique::set_specular_param(float intensity, float power) {
 	glUniform1f(m_specular_intensity, intensity);

@@ -14,10 +14,7 @@ bool TutorialBillboard::init() {
 	m_proj_info.z_near = 1;
 	m_proj_info.z_far = 50;
 
-	M3DVector3f pos, target, up;
-	pos[0] = 0, pos[1] = 3, pos[2] = -5;
-	target[0] = 0, target[1] = -0.2, target[2] = 1;
-	up[0] = 0, up[1] = 1, up[2] = 0;
+	Vector3 pos(0, 3, -5), target(0, -0.2, 1), up(0, 1, 0);
 	m_cam = new Camera(WINDOW_WIDTH, WINDOW_HEIGHT, pos, target, up);
 
 	m_billboard_list = new BillboardList();
@@ -82,15 +79,14 @@ void TutorialBillboard::render_pass() {
 	Pipline pipline;
 	pipline.set_camera_info(m_cam->m_pos, m_cam->m_target, m_cam->m_up);
 	pipline.set_pers_proj_info(m_proj_info);
-	M3DMatrix44f vp;
-	pipline.get_vp_trans(vp);
+	Matrix vp = pipline.get_vp_trans();
 
 	int rows = 5, cols = 5, distance = 3;
-	std::vector<M3DVector3f> pos_list(rows * cols);
+	std::vector<Vector3> pos_list(rows * cols);
 	for (int r = 0; r < rows; ++r) {
 		for (int c = 0; c < cols; ++c) {
 			int idx = r * cols + c;
-			m3dLoadVector3(pos_list[idx], c * distance, 0, r * distance);
+			pos_list[idx] = Vector3(c * distance, 0, r * distance);
 		}
 	}
 	m_billboard_list->render(pos_list, m_cam->m_pos, vp);

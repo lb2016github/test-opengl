@@ -25,16 +25,13 @@ bool TutorialPractice::init() {
 	m_tech->enable();
 	m_tech->set_texture_unit(0);
 
-	M3DVector3f pos, target, up;
-	pos[0] = 0, pos[1] = 0, pos[2] = -3;
-	target[0] = 0, target[1] = 0, target[2] = 1;
-	up[0] = 0, up[1] = 1, up[2] = 0;
+	Vector3 pos(0, 0, -3), target(0, 0, 1), up(0, 1, 0);
 	m_camera = new Camera(WINDOW_WIDTH, WINDOW_HEIGHT, pos, target, up);
 
 	pipline = new Pipline();
 
-	m_mesh = new SimpleMesh();
-	m_mesh->load_mesh("");
+	m_mesh = new Mesh();
+	m_mesh->load_mesh("res/box.obj");
 
 	m3dLoadVector3(m_dir_light.color, 1, 1, 1);
 	m_dir_light.ambiance_intensity = 0;
@@ -56,15 +53,14 @@ void TutorialPractice::render_scene_callback(float width, float height, float de
 
 	m_camera->on_render_cb();
 
-	M3DMatrix44f wvp, w;
 	pipline->set_world_pos(0, 0, 1);
 	pipline->set_scale(1);
 	pipline->set_rotation(0, delta_time / 5, 0);
 	pipline->set_camera_info(m_camera->m_pos, m_camera->m_target, m_camera->m_up);
 
 	pipline->set_pers_proj_info(m_pp_info);
-	pipline->get_pers_wvp_trans(wvp);
-	pipline->get_world_trans(w);
+	Matrix wvp = pipline->get_pers_wvp_trans();
+	Matrix w = pipline->get_world_trans();
 
 	//pipline->set_orthor_proj_info(m_op_info);
 	//pipline->get_orthor_wvp_trans(wvp);
