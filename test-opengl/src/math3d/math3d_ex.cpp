@@ -158,49 +158,49 @@ Matrix Matrix::make_orth_project_matrix(float left, float right, float bottom, f
 
 
 /***************** ÔËËã·ûÖØÔØ **********************/
-Vector3& operator-(Vector3& v, float factor) {
+Vector3 operator-(Vector3& v, float factor) {
 	Vector3 rst;
 	for (int i = 0; i < 3; ++i) {
 		rst[i] = v[i] - factor;
 	}
 	return rst;
 }
-Vector3& operator-(float factor, Vector3& v) {
+Vector3 operator-(float factor, Vector3& v) {
 	Vector3 rst;
 	for (int i = 0; i < 3; ++i) {
 		rst[i] = v[i] - factor;
 	}
 	return rst;
 }
-Vector3& operator-(Vector3& v1, Vector3& v2) {
+Vector3 operator-(Vector3& v1, Vector3& v2) {
 	Vector3 rst;
 	for (int i = 0; i < 3; ++i) {
 		rst[i] = v1[i] - v2[i];
 	}
 	return rst;
 }
-Vector3& operator-(Vector3& vector) {
+Vector3 operator-(Vector3& vector) {
 	Vector3 rst;
 	for (int i = 0; i < 3; ++i) {
 		rst[i] = -vector[i];
 	}
 	return rst;
 }
-Vector3& operator+(Vector3& v1, Vector3& v2) {
+Vector3 operator+(Vector3& v1, Vector3& v2) {
 	Vector3 rst;
 	for (int i = 0; i < 3; ++i) {
 		rst[i] = v1[i] + v2[i];
 	}
 	return rst;
 }
-Vector3& operator+(Vector3& v, float factor) {
+Vector3 operator+(Vector3& v, float factor) {
 	Vector3 rst;
 	for (int i = 0; i < 3; ++i) {
 		rst[i] = v[i] + factor;
 	}
 	return rst;
 }
-Vector3& operator+(float factor, Vector3& v) {
+Vector3 operator+(float factor, Vector3& v) {
 	Vector3 rst;
 	for (int i = 0; i < 3; ++i) {
 		rst[i] = v[i] + factor;
@@ -212,14 +212,14 @@ Vector3& operator+(float factor, Vector3& v) {
 float operator*(Vector3& v1, Vector3& v2) {
 	return m3dDotProduct3(v1, v2);
 }
-Vector3& operator*(Vector3& v, float factor) {
+Vector3 operator*(Vector3& v, float factor) {
 	Vector3 rst;
 	for (int i = 0; i < 3; ++i) {
 		rst[i] = v[i] * factor;
 	}
 	return rst;
 }
-Vector3& operator*(float factor, Vector3& v) {
+Vector3 operator*(float factor, Vector3& v) {
 	Vector3 rst;
 	for (int i = 0; i < 3; ++i) {
 		rst[i] = v[i] * factor;
@@ -227,13 +227,13 @@ Vector3& operator*(float factor, Vector3& v) {
 	return rst;
 }
 
-Matrix& operator*(Matrix& mtx1, Matrix& mtx2) {
+Matrix operator*(Matrix& mtx1, Matrix& mtx2) {
 	Matrix rst;
 	m3dMatrixMultiply44(rst, mtx1, mtx2);
 	return rst;
 }
 
-Vector3& operator*(Matrix& mtx, Vector3& v) {
+Vector3 operator*(Matrix& mtx, Vector3& v) {
 	Vector3 rst;
 	m3dTransformVector3(rst, v, mtx);
 	return rst;

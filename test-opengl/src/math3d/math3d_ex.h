@@ -44,16 +44,16 @@ public:
 	/***************** 运算符重载 **********************/
 	Vector3& operator=(const Vector3& vector);
 
-	friend Vector3& operator-(Vector3& v, float factor);
-	friend Vector3& operator-(Vector3& v1, Vector3& v2);
-	friend Vector3& operator-(Vector3& vector);
-	friend Vector3& operator+(Vector3& v1, Vector3& v2);
-	friend Vector3& operator+(Vector3& v, float factor);
-	friend Vector3& operator+(float factor, Vector3& v);
+	friend Vector3 operator-(Vector3& v, float factor);
+	friend Vector3 operator-(Vector3& v1, Vector3& v2);
+	friend Vector3 operator-(Vector3& vector);
+	friend Vector3 operator+(Vector3& v1, Vector3& v2);
+	friend Vector3 operator+(Vector3& v, float factor);
+	friend Vector3 operator+(float factor, Vector3& v);
 	friend float operator*(Vector3& v1, Vector3& v2);	// 点乘
-	friend Vector3& operator*(Vector3& v, float factor);
-	friend Vector3& operator*(float factor, Vector3& v);
-	friend Vector3& operator*(Matrix& mtx, Vector3& v);
+	friend Vector3 operator*(Vector3& v, float factor);
+	friend Vector3 operator*(float factor, Vector3& v);
+	friend Vector3 operator*(Matrix& mtx, Vector3& v);
 
 public:
 	M3DVector3f data;
@@ -71,8 +71,8 @@ public:
 	operator float*();
 	/***************** 运算符重载 **********************/
 	Matrix& operator=(const Matrix& mtx);
-	friend Matrix& operator*(Matrix& mtx1, Matrix& mtx2);
-	friend Vector3& operator*(Matrix& mtx, Vector3& v);
+	friend Matrix operator*(Matrix& mtx1, Matrix& mtx2);
+	friend Vector3 operator*(Matrix& mtx, Vector3& v);
 
 
 	/***************** 构建矩阵 **********************/
@@ -88,20 +88,20 @@ public:
 };
 
 /***************** 运算符重载 **********************/
-Vector3& operator-(Vector3& v, float factor);
-Vector3& operator-(float factor, Vector3& v);
-Vector3& operator-(Vector3& v1, Vector3& v2);
-Vector3& operator-(Vector3& vector);
-Vector3& operator+(Vector3& v, float factor);
-Vector3& operator+(float factor, Vector3& v);
-Vector3& operator+(Vector3& v1, Vector3& v2);
+Vector3 operator-(Vector3& v, float factor);
+Vector3 operator-(float factor, Vector3& v);
+Vector3 operator-(Vector3& v1, Vector3& v2);
+Vector3 operator-(Vector3& vector);
+Vector3 operator+(Vector3& v, float factor);
+Vector3 operator+(float factor, Vector3& v);
+Vector3 operator+(Vector3& v1, Vector3& v2);
 float operator*(Vector3& v1, Vector3& v2);	// 点乘
-Vector3& operator*(Vector3& v, float factor);
-Vector3& operator*(float factor, Vector3& v);
+Vector3 operator*(Vector3& v, float factor);
+Vector3 operator*(float factor, Vector3& v);
 
-Vector3& operator*(Matrix& mtx, Vector3& v);
+Vector3 operator*(Matrix& mtx, Vector3& v);
 
-Matrix& operator*(Matrix& mtx1, Matrix& mtx2);
+Matrix operator*(Matrix& mtx1, Matrix& mtx2);
 
 
 
