@@ -12,6 +12,7 @@
 #include "practice_ogl/tutorial_picking.h"
 #include "practice_ogl/tutorial_tessellation.h"
 #include "practice_ogl/tutorial_instanced_render.h"
+#include "practice_ogl/tutorial_deferred_shading.h"
 
 void main(){
 	fprintf(stdout, "%s\n", "HelloGLFW");
@@ -21,13 +22,14 @@ void main(){
 		glfw_win::destroy_window();
 		return;
 	}
-	
-	TutorialShadowMap *tp = new TutorialShadowMap();
+	//TutorialPractice* tp = new TutorialPractice();
+	//TutorialShadowMap *tp = new TutorialShadowMap();
 	//TutorialParticalSystem* tp = new TutorialParticalSystem();
 	//TutorialNormalMap* tp = new TutorialNormalMap();
 	//TutorialPicking* tp = new TutorialPicking();
 	//TutorialTessellation * tp = new TutorialTessellation();
 	//TutorialInstancedRendering* tp = new TutorialInstancedRendering();
+	TutorialDeferredShading* tp = new TutorialDeferredShading();
 	tp->init();
 	glfw_win::set_callback(tp);
 	while (true)

@@ -346,4 +346,20 @@ private:
 	GLuint m_sampler_color_location;
 };
 
+class DSGeometryTechnique : public Technique
+{
+public:
+	DSGeometryTechnique();
+	~DSGeometryTechnique();
+	virtual bool init();
+	void set_tex_color_index(unsigned int color_index);
+	void set_wvp_trans(const Matrix& wvp);
+	void set_world_trans(const Matrix& world);
+
+private:
+	GLuint m_color_sampler_location;
+	GLuint m_wvp_location;
+	GLuint m_world_location;
+};
+
 #endif // !_TECHNIQUE_H

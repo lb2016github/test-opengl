@@ -706,7 +706,7 @@ void TessellationTechnique::set_specular_param(float intensity, float power) {
 
 
 /*********************************************************
-Tessellation Technique
+Instanced Rending Technique
 *********************************************************/
 InstanceRenderingTechnique::InstanceRenderingTechnique() {
 	m_vertex_shader_path = "shaders/instance_render.vert";
@@ -726,4 +726,33 @@ bool InstanceRenderingTechnique::init()
 void InstanceRenderingTechnique::set_tex_color_index(unsigned int color_index)
 {
 	glUniform1i(m_sampler_color_location, color_index);
+}
+
+/*********************************************************
+Deffered Rending Technique
+*********************************************************/
+DSGeometryTechnique::DSGeometryTechnique() {
+	m_vertex_shader_path = "shaders/deferred_shading.vert";
+	m_fragment_shader_path = "shaders/deferred_shading.frag";
+}
+DSGeometryTechnique::~DSGeometryTechnique() {
+	
+}
+bool DSGeometryTechnique::init() {
+	bool rst = Technique::init();
+	m_color_sampler_location = glGetUniformLocation(m_program_id, "g_color_sampler");
+	m_wvp_location = glGetUniformLocation(m_program_id, "wvp");
+	m_world_location = glGetUniformLocation(m_program_id, "world");
+	return rst && m_color_sampler_location != INVALID_UNIFORM_LOCATION &&
+		m_wvp_location != INVALID_UNIFORM_LOCATION &&
+		m_world_location != INVALID_UNIFORM_LOCATION;
+}
+void DSGeometryTechnique::set_tex_color_index(unsigned int color_index) {
+	glUniform1i(m_color_sampler_location, color_index);
+}
+void DSGeometryTechnique::set_wvp_trans(const Matrix& wvp) {
+	glUniformMatrix4fv(m_wvp_location, 1, GL_FALSE, wvp.data);
+}
+void DSGeometryTechnique::set_world_trans(const Matrix& world) {
+	glUniformMatrix4fv(m_world_location, 1, GL_FALSE, world.data);
 }
