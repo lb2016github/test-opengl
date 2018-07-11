@@ -346,6 +346,10 @@ private:
 	GLuint m_sampler_color_location;
 };
 
+
+/*********************************************************
+Deferred shading
+*********************************************************/
 class DSGeometryTechnique : public Technique
 {
 public:
@@ -360,6 +364,32 @@ private:
 	GLuint m_color_sampler_location;
 	GLuint m_wvp_location;
 	GLuint m_world_location;
+};
+
+class DSDirLightTechnique : public Technique {
+public:
+	DSDirLightTechnique();
+	~DSDirLightTechnique();
+	virtual bool init();
+	void set_wvp_trans(const Matrix& wvp);
+	void set_diffuse_sampler_index(unsigned int tex_index);
+	void set_position_sampler_index(unsigned int tex_index);
+	void set_normal_sampler_index(unsigned int tex_index);
+	void set_window_size(int win_width, int win_height);
+	void set_dir_light(DirectionLight& dir_light);
+	void set_eye_pos(const Vector3 w_pos);
+	void set_specular_param(float pow, float mat_specular);
+
+private:
+	GLuint m_wvp_location;
+	GLuint m_diffuse_sampler_location;
+	GLuint m_position_sampler_location;
+	GLuint m_normal_sampler_location;
+	GLuint m_win_size_location;
+	DirectionLightLocation m_dir_light_location;
+	GLuint m_eye_pos_location;
+	GLuint m_specular_pow_location;
+	GLuint m_specular_intensity_location;
 };
 
 #endif // !_TECHNIQUE_H

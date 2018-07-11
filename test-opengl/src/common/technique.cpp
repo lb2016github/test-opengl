@@ -732,8 +732,8 @@ void InstanceRenderingTechnique::set_tex_color_index(unsigned int color_index)
 Deffered Rending Technique
 *********************************************************/
 DSGeometryTechnique::DSGeometryTechnique() {
-	m_vertex_shader_path = "shaders/deferred_shading.vert";
-	m_fragment_shader_path = "shaders/deferred_shading.frag";
+	m_vertex_shader_path = "shaders/ds_geometry_pass.vert";
+	m_fragment_shader_path = "shaders/ds_geometry_pass.frag";
 }
 DSGeometryTechnique::~DSGeometryTechnique() {
 	
@@ -755,4 +755,64 @@ void DSGeometryTechnique::set_wvp_trans(const Matrix& wvp) {
 }
 void DSGeometryTechnique::set_world_trans(const Matrix& world) {
 	glUniformMatrix4fv(m_world_location, 1, GL_FALSE, world.data);
+}
+
+DSDirLightTechnique::DSDirLightTechnique() {
+	m_vertex_shader_path = "shaders/ds_light_pass.vert";
+	m_fragment_shader_path = "shaders/ds_dir_light_pass.frag";
+}
+DSDirLightTechnique::~DSDirLightTechnique() {
+
+}
+bool DSDirLightTechnique::init() {
+	bool rst1 = Technique::init();
+	m_wvp_location = glGetUniformLocation(m_program_id, "wvp");
+	m_diffuse_sampler_location = glGetUniformLocation(m_program_id, "g_diffuse_sampler");
+	m_position_sampler_location = glGetUniformLocation(m_program_id, "g_position_sampler");
+	m_normal_sampler_location = glGetUniformLocation(m_program_id, "g_normal_sampler");
+	m_win_size_location = glGetUniformLocation(m_program_id, "g_win_size");
+	m_eye_pos_location = glGetUniformLocation(m_program_id, "g_eye_w_pos");
+	m_specular_pow_location = glGetUniformLocation(m_program_id, "g_specular_power");
+	m_specular_intensity_location = glGetUniformLocation(m_program_id, "g_mat_specular_intensity");
+	bool rst2 = m_dir_light_location.init_location(m_program_id,
+		"g_dir_light.base_light.color", "g_dir_light.base_light.ambiant_intensity", "g_dir_light.base_light.diffuse_intensity", "g_dir_light.direction"
+	);
+	std::vector<GLuint> locations = {
+		m_wvp_location, m_diffuse_sampler_location, m_position_sampler_location, m_normal_sampler_location,
+		m_win_size_location, m_eye_pos_location, m_specular_pow_location, m_specular_intensity_location
+	};
+
+	if (!rst1 || !rst2) {
+		return false;
+	}
+	for (std::vector<GLuint>::iterator iter = locations.begin(); iter != locations.end(); ++iter) {
+		if (*iter == INVALID_UNIFORM_LOCATION) return false;
+	}
+	return true;
+
+}
+void DSDirLightTechnique::set_wvp_trans(const Matrix& wvp) {
+	glUniformMatrix4fv(m_wvp_location, 1, GL_FALSE, wvp.data);
+}
+void DSDirLightTechnique::set_diffuse_sampler_index(unsigned int tex_index) {
+	glUniform1i(m_diffuse_sampler_location, tex_index);
+}
+void DSDirLightTechnique::set_position_sampler_index(unsigned int tex_index) {
+	glUniform1i(m_position_sampler_location, tex_index);
+}
+void DSDirLightTechnique::set_normal_sampler_index(unsigned int tex_index) {
+	glUniform1i(m_normal_sampler_location, tex_index);
+}
+void DSDirLightTechnique::set_window_size(int win_width, int win_height) {
+	glUniform2f(m_win_size_location, win_width, win_height);
+}
+void DSDirLightTechnique::set_dir_light(DirectionLight& dir_light) {
+	m_dir_light_location.set_light(dir_light);
+}
+void DSDirLightTechnique::set_eye_pos(const Vector3 w_pos) {
+	glUniform3f(m_eye_pos_location, w_pos.data[0], w_pos.data[1], w_pos.data[2]);
+}
+void DSDirLightTechnique::set_specular_param(float pow, float mat_specular) {
+	glUniform1f(m_specular_pow_location, pow);
+	glUniform1f(m_specular_intensity_location, mat_specular);
 }

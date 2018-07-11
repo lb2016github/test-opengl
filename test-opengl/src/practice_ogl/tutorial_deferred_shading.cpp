@@ -4,12 +4,14 @@
 TutorialDeferredShading::TutorialDeferredShading() {
 	m_mesh = NULL;
 	m_tech = NULL;
+	m_dir_tech = NULL;
 	m_cam = NULL;
 }
 TutorialDeferredShading::~TutorialDeferredShading() {
 	SAFE_DELETE(m_mesh);
 	SAFE_DELETE(m_tech);
 	SAFE_DELETE(m_cam);
+	SAFE_DELETE(m_dir_tech);
 }
 
 bool TutorialDeferredShading::init() {
@@ -24,15 +26,26 @@ bool TutorialDeferredShading::init() {
 
 	m_mesh = new VAOMesh();
 	m_mesh->load_mesh("res/spider.obj");
+	m_quad = new VAOMesh();
+	m_quad->load_mesh("res/quad.obj");
 
 	m_tech = new DSGeometryTechnique();
 	if (!m_tech->init()) {
 		printf("Error: init tech\n");
 	}
+	m_dir_tech = new DSDirLightTechnique();
+	if (!m_dir_tech->init()) {
+		printf("Error: init DSDirLightTechnique\n");
+	}
 	m_tech->enable();
 	m_tech->set_tex_color_index(COLOR_TEXTURE_UNIT_INDEX);
 
 	m_gbuffer.init(WINDOW_WIDTH, WINDOW_HEIGHT);
+
+	m_dir_light.ambiance_intensity = 0.1f;
+	m_dir_light.color = COLOR_WHITE;
+	m_dir_light.diffuse_intensity = 0.5f;
+	m_dir_light.direction = Vector3(1, 0, 0);
 
 	glFrontFace(GL_CW);
 	glCullFace(GL_BACK);
@@ -44,13 +57,16 @@ bool TutorialDeferredShading::init() {
 // äÖÈ¾³¡¾°
 void TutorialDeferredShading::render_scene_callback(float width, float height, float time) {
 	ds_geom_pass(time);
-	ds_rend_pass();
+	ds_begin_light_pass();
+	ds_dir_light_pass();
 }
 
 void TutorialDeferredShading::ds_geom_pass(float time) {
 	m_gbuffer.bind_for_writing();
+	glDepthMask(GL_TRUE);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_BLEND);
 	m_tech->enable();
 	Pipline pipline;
 	pipline.set_world_pos(0, 0, 0);
@@ -67,6 +83,33 @@ void TutorialDeferredShading::ds_geom_pass(float time) {
 
 	m_mesh->render(NULL);
 
+	glDepthMask(GL_FALSE);
+	glDisable(GL_DEPTH_TEST);
+}
+
+void TutorialDeferredShading::ds_begin_light_pass() {
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_ONE, GL_ONE);
+	glBlendEquation(GL_FUNC_ADD);
+	
+	m_gbuffer.bind_for_reading();
+	glClear(GL_COLOR_BUFFER_BIT);
+}
+void TutorialDeferredShading::ds_dir_light_pass() {
+	m_dir_tech->enable();
+	m_dir_tech->set_diffuse_sampler_index(GBuffer::GBUFFER_TEXTURE_TYPE_DIFFUSE);
+	m_dir_tech->set_normal_sampler_index(GBuffer::GBUFFER_TEXTURE_TYPE_NORMAL);
+	m_dir_tech->set_position_sampler_index(GBuffer::GBUFFER_TEXTURE_TYPE_POSITION);
+	m_dir_tech->set_dir_light(m_dir_light);
+	m_dir_tech->set_eye_pos(m_cam->m_pos);
+	m_dir_tech->set_specular_param(5, 1);
+	m_dir_tech->set_window_size(WINDOW_WIDTH, WINDOW_HEIGHT);
+	Matrix wvp;
+	m_dir_tech->set_wvp_trans(wvp);
+	
+
+	m_quad->render(NULL);
+	
 }
 
 void TutorialDeferredShading::ds_rend_pass() {

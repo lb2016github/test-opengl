@@ -1,6 +1,12 @@
 #ifndef _LIGHT_H
 #define _LIGHT_H
-#include "math3d/math3d.h"
+#include "math3d/math3d_ex.h"
+
+#define COLOR_WHITE Vector3(1.0f, 1.0f, 1.0f)
+#define COLOR_RED Vector3(1.0f, 0.0f, 0.0f)
+#define COLOR_GREEN Vector3(0.0f, 1.0f, 0.0f)
+#define COLOR_CYAN Vector3(0.0f, 1.0f, 1.0f)
+#define COLOR_BLUE Vector3(0.0f, 0.0f, 1.0f)
 
 struct BaseLight {
 	Vector3 color;

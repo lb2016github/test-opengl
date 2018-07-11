@@ -27,6 +27,8 @@ public:
 
 private:
 	void ds_geom_pass(float time);
+	void ds_begin_light_pass();
+	void ds_dir_light_pass();
 	void ds_rend_pass();
 
 private:
@@ -34,9 +36,13 @@ private:
 	PersProjInfo m_proj_info;
 
 	VAOMesh* m_mesh;
+	VAOMesh* m_quad;
 	DSGeometryTechnique* m_tech;
+	DSDirLightTechnique* m_dir_tech;
 
 	GBuffer m_gbuffer;
+
+	DirectionLight m_dir_light;
 };
 
 #endif // !_TUTORIAL_DEFERRED_SHADING
