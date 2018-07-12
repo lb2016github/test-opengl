@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 Camera::Camera(const int width, const int height){
-	Camera(width, height, Vector3(0, 0, 1), Vector3(0, 0, 1), Vector3(0, 1, 0));
+	Camera(width, height, Vector3(0, 0, 0), Vector3(0, 0, 1), Vector3(0, 1, 0));
 }
 
 Camera::Camera(const int width, const int height, const Vector3& pos, const Vector3& target, const Vector3& up) : 

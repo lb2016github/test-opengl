@@ -29,8 +29,9 @@ uniform sampler2D g_normal_sampler;
 
 uniform PointLight g_point_light_list[MAX_POINT_LIGHTS];
 uniform int g_point_light_num;
+
+uniform vec2 g_win_size;
 uniform vec3 g_eye_w_pos;
-uniform sampler2D g_sampler;
 uniform float g_mat_specular_intensity;
 uniform float g_specular_power;
 
@@ -41,7 +42,7 @@ vec3 calc_point_light_color(vec3 world_pos, vec3 normal, PointLight point_light)
 void main(){
 	vec2 tex_coord = calc_tex_coord();
 	vec3 diffuse_color = texture(g_diffuse_sampler, tex_coord).xyz;
-	vec3 positon = texture(g_position_sampler, tex_coord).xyz;
+	vec3 position = texture(g_position_sampler, tex_coord).xyz;
 	vec3 normal = texture(g_normal_sampler, tex_coord).xyz;
 	vec3 light_color = vec3(0, 0, 0);
 	for(int i = 0; i < g_point_light_num; ++i){

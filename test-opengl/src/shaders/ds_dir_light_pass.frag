@@ -16,9 +16,10 @@ out vec4 frag_color;
 uniform sampler2D g_diffuse_sampler;
 uniform sampler2D g_position_sampler;
 uniform sampler2D g_normal_sampler;
-uniform vec2 g_win_size;
+
 uniform DirectionLight g_dir_light;
 
+uniform vec2 g_win_size;
 uniform vec3 g_eye_w_pos;
 uniform float g_specular_power;
 uniform float g_mat_specular_intensity;

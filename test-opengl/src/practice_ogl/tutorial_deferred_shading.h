@@ -26,23 +26,32 @@ public:
 	void cursor_position_callback(double x, double y);
 
 private:
+	void init_lights();
+	void init_tech();
+	void init_box_positions();
+	float calc_light_sphere_distance(PointLight& light);
 	void ds_geom_pass(float time);
 	void ds_begin_light_pass();
 	void ds_dir_light_pass();
+	void ds_point_light_pass();
 	void ds_rend_pass();
 
 private:
 	Camera * m_cam;
 	PersProjInfo m_proj_info;
 
-	VAOMesh* m_mesh;
-	VAOMesh* m_quad;
+	VAOMesh m_box;
+	VAOMesh m_quad;
+	VAOMesh m_sphere;
 	DSGeometryTechnique* m_tech;
 	DSDirLightTechnique* m_dir_tech;
+	DSPointLightTechnique* m_point_tech;
 
 	GBuffer m_gbuffer;
 
 	DirectionLight m_dir_light;
+	PointLight m_point_lights[3];
+	Vector3 m_box_positions[5];
 };
 
 #endif // !_TUTORIAL_DEFERRED_SHADING

@@ -56,6 +56,8 @@ struct BaseLightLocation {
 	);
 
 	virtual void set_light(BaseLight& light);
+
+	virtual bool is_valide();
 };
 
 struct DirectionLightLocation : BaseLightLocation {
@@ -67,6 +69,7 @@ struct DirectionLightLocation : BaseLightLocation {
 	);
 
 	virtual void set_light(DirectionLight& light);
+	virtual bool is_valide();
 };
 
 struct PointLightLocation : BaseLightLocation {
@@ -82,6 +85,7 @@ struct PointLightLocation : BaseLightLocation {
 	);
 
 	virtual void set_light(PointLight& light);
+	virtual bool is_valide();
 };
 
 struct SpotLightLocation : PointLightLocation {
@@ -366,17 +370,14 @@ private:
 	GLuint m_world_location;
 };
 
-class DSDirLightTechnique : public Technique {
+class DSLightTechnique : public Technique {
 public:
-	DSDirLightTechnique();
-	~DSDirLightTechnique();
 	virtual bool init();
 	void set_wvp_trans(const Matrix& wvp);
 	void set_diffuse_sampler_index(unsigned int tex_index);
 	void set_position_sampler_index(unsigned int tex_index);
 	void set_normal_sampler_index(unsigned int tex_index);
 	void set_window_size(int win_width, int win_height);
-	void set_dir_light(DirectionLight& dir_light);
 	void set_eye_pos(const Vector3 w_pos);
 	void set_specular_param(float pow, float mat_specular);
 
@@ -386,10 +387,31 @@ private:
 	GLuint m_position_sampler_location;
 	GLuint m_normal_sampler_location;
 	GLuint m_win_size_location;
-	DirectionLightLocation m_dir_light_location;
 	GLuint m_eye_pos_location;
 	GLuint m_specular_pow_location;
 	GLuint m_specular_intensity_location;
+};
+
+class DSDirLightTechnique : public DSLightTechnique {
+public:
+	DSDirLightTechnique();
+	~DSDirLightTechnique();
+	virtual bool init();
+	void set_dir_light(DirectionLight& dir_light);
+
+private:
+	DirectionLightLocation m_dir_light_location;
+};
+
+class DSPointLightTechnique : public DSLightTechnique {
+public:
+	DSPointLightTechnique();
+	~DSPointLightTechnique();
+	virtual bool init();
+	void set_point_lights(int light_num, PointLight lights[], int start_index=0);
+private:
+	GLuint m_light_num_location;
+	PointLightLocation m_light_locations[MAX_POINT_LIGHT_COUNT];
 };
 
 #endif // !_TECHNIQUE_H
