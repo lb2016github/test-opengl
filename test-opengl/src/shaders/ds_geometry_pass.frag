@@ -17,7 +17,7 @@ uniform sampler2D g_color_sampler;
 
 void main(){
 	w_pos = vs_out.w_pos;
-	w_normal = vs_out.w_normal;
+	w_normal = normalize(vs_out.w_normal);
 	tex_coord = vec3(vs_out.tex_coord, 0);
 	diffuse = texture(g_color_sampler, vs_out.tex_coord).xyz;
 }

@@ -33,6 +33,7 @@ void main(){
 	vec3 diffuse_color = texture(g_diffuse_sampler, tex_coord).xyz;
 	vec3 positon = texture(g_position_sampler, tex_coord).xyz;
 	vec3 normal = texture(g_normal_sampler, tex_coord).xyz;
+	normal = normalize(normal);
 	frag_color.xyz = diffuse_color * calc_dir_color(g_dir_light.direction, normal, g_dir_light.base_light, 1, positon);
 	frag_color.w = 1;
 }

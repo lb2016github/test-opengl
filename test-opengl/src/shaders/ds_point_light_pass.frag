@@ -44,6 +44,7 @@ void main(){
 	vec3 diffuse_color = texture(g_diffuse_sampler, tex_coord).xyz;
 	vec3 position = texture(g_position_sampler, tex_coord).xyz;
 	vec3 normal = texture(g_normal_sampler, tex_coord).xyz;
+	normal = normalize(normal);
 	vec3 light_color = vec3(0, 0, 0);
 	for(int i = 0; i < g_point_light_num; ++i){
 		light_color += calc_point_light_color(position, normal, g_point_light_list[i]);

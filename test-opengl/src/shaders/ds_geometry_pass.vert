@@ -24,6 +24,6 @@ out VSOut vs_out;
 void main(){
 	gl_Position = wvp * vec4(position, 1);
 	vs_out.w_pos = (world * vec4(position, 1)).xyz;
-	vs_out.w_normal = (world * vec4(normal, 1)).xyz;
+	vs_out.w_normal = (world * vec4(normal, 0)).xyz;
 	vs_out.tex_coord = tex_coord;
 }
