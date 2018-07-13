@@ -51,7 +51,7 @@ void GBuffer::bind_for_reading() {
 	for (int i = 0; i < GBUFFER_NUM_TEXTURES; ++i) {
 		glActiveTexture(GL_TEXTURE0 + i);
 		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, m_textures[GBUFFER_TEXTURE_TYPE_POSITION + i]);
+		glBindTexture(GL_TEXTURE_2D, m_textures[i]);
 	}
 }
 void GBuffer::set_read_buffer(GBUFFER_TEXTURE_TYPE texture_type) {

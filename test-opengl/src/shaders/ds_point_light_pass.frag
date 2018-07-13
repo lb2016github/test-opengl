@@ -59,6 +59,7 @@ float calc_attenuation(Attenuation atten, float dis){
 vec3 calc_point_light_color(vec3 world_pos, vec3 normal, PointLight point_light){
 	float dis = distance(world_pos, point_light.position);
 	float atten = calc_attenuation(point_light.atten, dis);
+	atten = max(1, atten);
 	vec3 light_dir = world_pos - point_light.position;
 	light_dir = normalize(light_dir);
 	return calc_dir_color(light_dir, normal, point_light.base_light, 1, world_pos) / atten;

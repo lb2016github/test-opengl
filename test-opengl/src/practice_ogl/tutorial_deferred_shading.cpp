@@ -85,14 +85,14 @@ void TutorialDeferredShading::init_tech() {
 	m_dir_tech->set_normal_sampler_index(GBuffer::GBUFFER_TEXTURE_TYPE_NORMAL);
 	m_dir_tech->set_position_sampler_index(GBuffer::GBUFFER_TEXTURE_TYPE_POSITION);
 	m_dir_tech->set_dir_light(m_dir_light);
-	m_dir_tech->set_specular_param(5, 1);
+	m_dir_tech->set_specular_param(0, 0);
 	m_dir_tech->set_window_size(WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	m_point_tech->enable();
 	m_point_tech->set_diffuse_sampler_index(GBuffer::GBUFFER_TEXTURE_TYPE_DIFFUSE);
 	m_point_tech->set_normal_sampler_index(GBuffer::GBUFFER_TEXTURE_TYPE_NORMAL);
 	m_point_tech->set_position_sampler_index(GBuffer::GBUFFER_TEXTURE_TYPE_POSITION);
-	m_point_tech->set_specular_param(5, 1);
+	m_point_tech->set_specular_param(0, 0);
 	m_point_tech->set_window_size(WINDOW_WIDTH, WINDOW_HEIGHT);
 }
 
@@ -148,8 +148,7 @@ void TutorialDeferredShading::ds_begin_light_pass() {
 void TutorialDeferredShading::ds_dir_light_pass() {
 	m_dir_tech->enable();
 	m_dir_tech->set_eye_pos(m_cam->m_pos);
-	Matrix wvp;
-	m_dir_tech->set_wvp_trans(wvp);
+	m_dir_tech->set_wvp_trans(Matrix());
 	
 	m_quad.render(NULL);
 	
@@ -166,8 +165,8 @@ void TutorialDeferredShading::ds_point_light_pass() {
 		float dis = calc_light_sphere_distance(m_point_lights[i]);
 		pipline.set_scale(dis);
 		pipline.set_world_pos(m_point_lights[i].position);
-		m_point_tech->set_point_lights(1, m_point_lights, i);
 		m_point_tech->set_wvp_trans(pipline.get_pers_wvp_trans());
+		m_point_tech->set_point_lights(1, m_point_lights, i);
 		m_sphere.render(NULL);
 	}
 }
