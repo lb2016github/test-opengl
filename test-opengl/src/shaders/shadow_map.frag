@@ -59,7 +59,7 @@ vec3 calc_dir_color(vec3 light_dir, vec3 normal, BaseLight base_light){
 
 	float diffuse_factor = dot(normal, -light_dir);
 	if (diffuse_factor > 0){
-		diffuse_color = base_light.color * base_light.diffuse_intensity;
+		diffuse_color = base_light.color * base_light.diffuse_intensity * diffuse_factor;
 
 		vec3 light_ref_dir = normalize(reflect(light_dir, normal));
 		vec3 eye_dir = normalize(g_eye_w_pos - w_pos0);
