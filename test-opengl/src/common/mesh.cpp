@@ -120,7 +120,7 @@ void Mesh::render_primitive(unsigned int mesh_id, unsigned int primitive_id) {
 	glDisableVertexAttribArray(3);
 }
 
-bool Mesh::load_mesh(const std::string& filename) {
+bool Mesh::load_mesh(const std::string& filename, bool with_adjacencies) {
 	clear();
 
 	bool ret = false;
@@ -280,8 +280,8 @@ void VAOMesh::render_primitive(unsigned int mesh_id, unsigned int primitive_id) 
 	if (material_index < m_textures.size() && m_textures[material_index]) {
 		m_textures[material_index]->bind(GL_TEXTURE0);
 	}
-
-	glDrawElementsBaseVertex(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (GLvoid*)(sizeof(GL_UNSIGNED_INT) * (m_entities[mesh_id].base_index + (primitive_id * 3))), m_entities[mesh_id].base_vertices);
+	GLenum mode = m_with_adjacencies ? GL_TRIANGLES_ADJACENCY : GL_TRIANGLES;
+	glDrawElementsBaseVertex(mode, 3, GL_UNSIGNED_INT, (GLvoid*)(sizeof(GL_UNSIGNED_INT) * (m_entities[mesh_id].base_index + (primitive_id * 3))), m_entities[mesh_id].base_vertices);
 	glBindVertexArray(0);
 }
 
@@ -308,9 +308,10 @@ void VAOMesh::render_instances(IRenderCallback* callback, GLenum mode, unsigned 
 
 }
 
-bool VAOMesh::load_mesh(const std::string& filename) {
+bool VAOMesh::load_mesh(const std::string& filename, bool with_adjacencies) {
 	clear();
 
+	m_with_adjacencies = with_adjacencies;
 	bool ret = false;
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(filename, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);

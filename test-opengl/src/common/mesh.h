@@ -56,7 +56,7 @@ public:
 
 class IMesh {
 public:
-	virtual bool load_mesh(const std::string& filename)=0;
+	virtual bool load_mesh(const std::string& filename, bool with_adjacencies = false)=0;
 	virtual void render(IRenderCallback* callback, GLenum mode=GL_TRIANGLES) = 0;
 	virtual void render_primitive(unsigned int mesh_id, unsigned int primitive_id) {}
 	virtual void render_instances(IRenderCallback* callback, GLenum mode, unsigned int num_instance, const Matrix* wvp, const Matrix* world) {}
@@ -67,7 +67,7 @@ public:
 	Mesh();
 	~Mesh();
 
-	virtual bool load_mesh(const std::string& filename);
+	virtual bool load_mesh(const std::string& filename, bool with_adjacencies=false);
 	virtual void render(IRenderCallback* callback, GLenum mode = GL_TRIANGLES);
 	virtual void render_primitive(unsigned int mesh_id, unsigned int primitive_id);
 private:
@@ -86,7 +86,7 @@ public:
 	VAOMesh();
 	~VAOMesh();
 
-	virtual bool load_mesh(const std::string& filename);
+	virtual bool load_mesh(const std::string& filename, bool with_adjacencies = false);
 	virtual void render(IRenderCallback* callback, GLenum mode = GL_TRIANGLES);
 	virtual void render_primitive(unsigned int mesh_id, unsigned int primitive_id);
 	virtual void render_instances(IRenderCallback* callback, GLenum mode, unsigned int num_instance, const Matrix* wvp, const Matrix* world);
@@ -109,6 +109,9 @@ private:
 
 	GLuint m_vao;
 	GLuint m_buffers[BUFFER_SIZE];	// index, pos, tex_coord, normal, tangent, wvp, world
+
+	// adjacenceœ‡πÿ
+	bool m_with_adjacencies;
 };
 
 #endif // _MESH_H
