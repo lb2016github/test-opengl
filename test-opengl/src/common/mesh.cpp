@@ -51,6 +51,36 @@ void MeshEntity::init(const std::vector<Vertex>& vertices, const std::vector<uns
 }
 
 /********************************************
+Mesh adjacent
+*********************************************/
+bool CompareEdges::operator()(const Edge& e1, const Edge& e2) const{
+	if (e1.idx_1 < e2.idx_1) return true;
+	if (e1.idx_1 == e2.idx_1) return e1.idx_2 < e2.idx_2;
+	return false;
+}
+
+bool CompareVectors::operator()(const aiVector3D& a, const aiVector3D& b) const{
+	if (a.x < b.x) return true;
+	if (a.x == b.x) {
+		if (a.y < b.y) return true;
+		if (a.y == b.y) return a.z < b.z;
+		return false;
+	}
+	return false;
+}
+
+void Neighbors::add_neighbor(unsigned int i) {
+	if (n_idx_1 == -1) {
+		n_idx_1 = i;
+		return;
+	}
+	if (n_idx_2 == -1) {
+		n_idx_2 = i;
+		return;
+	}
+}
+
+/********************************************
 Mesh implementation
 *********************************************/
 Mesh::Mesh() {
@@ -354,16 +384,26 @@ bool VAOMesh::init_from_scene(const aiScene* scene, const std::string& filename)
 			// add vertex
 			num_vertices += 1;
 		}
-		for (unsigned int i = 0; i < ai_mesh->mNumFaces; ++i) {
-			// read data
-			const aiFace& face = ai_mesh->mFaces[i];
-			assert(face.mNumIndices == 3);
-			// save data
-			indices.push_back(face.mIndices[0]);
-			indices.push_back(face.mIndices[1]);
-			indices.push_back(face.mIndices[2]);
-			// add index
-			num_indices += 3;
+		
+		if (m_with_adjacencies) {
+			int index_count = 0;
+			// create index with GL_TRIANGLE_ADJACENCY mode
+			std::vector<unsigned int> sub_indices = create_adjacent_indices(*ai_mesh);
+			num_indices += sub_indices.size();
+			indices.insert(indices.end(), sub_indices.begin(), sub_indices.end());
+		}
+		else {
+			for (unsigned int i = 0; i < ai_mesh->mNumFaces; ++i) {
+				// read data
+				const aiFace& face = ai_mesh->mFaces[i];
+				assert(face.mNumIndices == 3);
+				// save data
+				indices.push_back(face.mIndices[0]);
+				indices.push_back(face.mIndices[1]);
+				indices.push_back(face.mIndices[2]);
+				// add index
+				num_indices += 3;
+			}
 		}
 		m_entities[i].num_indices = num_indices - m_entities[i].base_index;
 	}
@@ -417,6 +457,65 @@ bool VAOMesh::init_from_scene(const aiScene* scene, const std::string& filename)
 	bool rst = glGetError() == GL_NO_ERROR;
 	
 	return init_materials(scene, filename) && rst;
+}
+
+std::vector<unsigned int> VAOMesh::create_adjacent_indices(const aiMesh& ai_mesh) {
+	std::vector<unsigned int> indices;
+	// 构建pos_map
+	std::map<aiVector3D, unsigned int, CompareVectors> pos_map;	//
+	std::map<Edge, Neighbors, CompareEdges> edge_neighbors;	// 保存edge所对应的两个index
+	auto get_unique_index = [&](unsigned int ori_index) -> unsigned int {
+		unsigned int index = ori_index;
+		const aiVector3D& v = ai_mesh.mVertices[index];
+		if (pos_map.find(v) == pos_map.end()) {	//没有找到，是第一个出现的
+			pos_map[v] = index;
+		}
+		else {
+			index = pos_map[v];
+		}
+		return index;
+	};
+	for (int i = 0; i < ai_mesh.mNumFaces; ++i) {
+		const aiFace& face = ai_mesh.mFaces[i];
+
+		unsigned int idx_0 = get_unique_index(face.mIndices[0]);
+		unsigned int idx_1 = get_unique_index(face.mIndices[1]);
+		unsigned int idx_2 = get_unique_index(face.mIndices[2]);
+
+		Edge e1(idx_0, idx_1);
+		Edge e2(idx_1, idx_2);
+		Edge e3(idx_2, idx_0);
+
+		edge_neighbors[e1].add_neighbor(i);
+		edge_neighbors[e2].add_neighbor(i);
+		edge_neighbors[e3].add_neighbor(i);
+
+	}
+	// 构建index
+	for (int i = 0; i < ai_mesh.mNumFaces; ++i) {
+		const aiFace& face = ai_mesh.mFaces[i];
+
+		unsigned int idx_0 = get_unique_index(face.mIndices[0]);
+		unsigned int idx_1 = get_unique_index(face.mIndices[1]);
+		unsigned int idx_2 = get_unique_index(face.mIndices[2]);
+
+		Edge e1(idx_0, idx_1);
+		Edge e2(idx_1, idx_2);
+		Edge e3(idx_2, idx_0);
+
+		indices.push_back(face.mIndices[0]);
+		Neighbors n1 = edge_neighbors[e1];
+		indices.push_back(n1.find_other(i));
+
+		indices.push_back(face.mIndices[1]);
+		Neighbors n2 = edge_neighbors[e2];
+		indices.push_back(n1.find_other(i));
+
+		indices.push_back(face.mIndices[2]);
+		Neighbors n3 = edge_neighbors[e3];
+		indices.push_back(n1.find_other(i));
+	}
+	return indices;
 }
 
 bool VAOMesh::init_materials(const aiScene* scene, const std::string& filename) {

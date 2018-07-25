@@ -52,6 +52,8 @@ private:
 	DirectionLight m_dir_light;
 	PointLight m_point_lights[3];
 	Vector3 m_box_positions[5];
+
+	bool m_with_adjacencies;
 };
 
 #endif // !_TUTORIAL_DEFERRED_SHADING

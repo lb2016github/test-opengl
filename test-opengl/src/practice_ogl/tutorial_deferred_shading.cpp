@@ -5,6 +5,7 @@ TutorialDeferredShading::TutorialDeferredShading() {
 	m_tech = NULL;
 	m_dir_tech = NULL;
 	m_cam = NULL;
+	m_with_adjacencies = true;
 }
 TutorialDeferredShading::~TutorialDeferredShading() {
 	SAFE_DELETE(m_tech);
@@ -22,7 +23,7 @@ bool TutorialDeferredShading::init() {
 	Vector3 pos(0, 0, 0), target(0, 0, 1), up(0, 1, 0);
 	m_cam = new Camera(WINDOW_WIDTH, WINDOW_HEIGHT, pos, target, up);
 
-	m_box.load_mesh("res/box.obj");
+	m_box.load_mesh("res/box.obj", m_with_adjacencies);
 	m_quad.load_mesh("res/quad.obj");
 	m_sphere.load_mesh("res/sphere.obj");
 
@@ -130,7 +131,8 @@ void TutorialDeferredShading::ds_geom_pass(float time) {
 		pipline.set_world_pos(m_box_positions[i]);
 		m_tech->set_world_trans(pipline.get_world_trans());
 		m_tech->set_wvp_trans(pipline.get_pers_wvp_trans());
-		m_box.render(NULL);
+		GLenum mode = m_with_adjacencies ? GL_TRIANGLES_ADJACENCY : GL_TRIANGLES;
+		m_box.render(NULL, mode);
 	}
 
 	glDepthMask(GL_FALSE);
