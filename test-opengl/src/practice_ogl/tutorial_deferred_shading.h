@@ -35,6 +35,7 @@ private:
 	void ds_dir_light_pass();
 	void ds_point_light_pass();
 	void ds_rend_pass();
+	void silhouette_pass(float time);
 
 private:
 	Camera * m_cam;
@@ -46,6 +47,7 @@ private:
 	DSGeometryTechnique* m_tech;
 	DSDirLightTechnique* m_dir_tech;
 	DSPointLightTechnique* m_point_tech;
+	SilhouetteDetectionTechnique* m_silhouette_tech;
 
 	GBuffer m_gbuffer;
 

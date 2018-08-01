@@ -414,4 +414,24 @@ private:
 	PointLightLocation m_light_locations[MAX_POINT_LIGHT_COUNT];
 };
 
+/*********************************************************
+Stencil shadow volume
+*********************************************************/
+class SilhouetteDetectionTechnique : public Technique {
+public:
+	SilhouetteDetectionTechnique();
+	~SilhouetteDetectionTechnique();
+
+	virtual bool init();
+	void set_wvp_mat(Matrix& wvp);
+	void set_world_mat(Matrix& world_mat);
+	void set_light_pos(Vector3& world_pos);
+
+private:
+	GLuint m_wvp_location;
+	GLuint m_world_location;
+	GLuint m_light_pos_location;
+};
+
+
 #endif // !_TECHNIQUE_H

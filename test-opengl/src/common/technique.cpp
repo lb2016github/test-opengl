@@ -1,4 +1,5 @@
 #include "technique.h"
+#include "technique.h"
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -875,4 +876,39 @@ void DSPointLightTechnique::set_point_lights(int light_num, PointLight lights[],
 	for (int i = 0; i < light_num; ++i) {
 		m_light_locations[i].set_light(lights[start_index + i]);
 	}
+}
+
+SilhouetteDetectionTechnique::SilhouetteDetectionTechnique()
+{
+	m_vertex_shader_path = "shaders/silhouette.vert";
+	m_geometry_shader_path = "shaders/silhouette.geom";
+	m_fragment_shader_path = "shaders/silhouette.frag";
+}
+
+SilhouetteDetectionTechnique::~SilhouetteDetectionTechnique()
+{
+}
+
+bool SilhouetteDetectionTechnique::init()
+{
+	bool rst = Technique::init();
+	m_wvp_location = glGetUniformLocation(m_program_id, "g_wvp");
+	m_world_location = glGetUniformLocation(m_program_id, "g_world_mat");
+	m_light_pos_location = glGetUniformLocation(m_program_id, "g_light_pos");
+	return rst && m_wvp_location != INVALID_UNIFORM_LOCATION && m_world_location != INVALID_UNIFORM_LOCATION && m_light_pos_location != INVALID_UNIFORM_LOCATION;
+}
+
+void SilhouetteDetectionTechnique::set_wvp_mat(Matrix & wvp)
+{
+	glUniformMatrix4fv(m_wvp_location, 1, GL_FALSE, wvp.data);
+}
+
+void SilhouetteDetectionTechnique::set_world_mat(Matrix & world_mat)
+{
+	glUniformMatrix4fv(m_world_location, 1, GL_FALSE, world_mat.data);
+}
+
+void SilhouetteDetectionTechnique::set_light_pos(Vector3 & world_pos)
+{
+	glUniform3f(m_light_pos_location, world_pos[0], world_pos[1], world_pos[2]);
 }

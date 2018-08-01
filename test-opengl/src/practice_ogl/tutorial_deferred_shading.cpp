@@ -81,6 +81,11 @@ void TutorialDeferredShading::init_tech() {
 	if (!m_point_tech->init()) {
 		printf("Error: init DSPointLightTechnique\n");
 	}
+	m_silhouette_tech = new SilhouetteDetectionTechnique();
+	if (!m_silhouette_tech->init()) {
+		printf("Error: init SilhouetteDetectionTechnique\n");
+	}
+
 	m_dir_tech->enable();
 	m_dir_tech->set_diffuse_sampler_index(GBuffer::GBUFFER_TEXTURE_TYPE_DIFFUSE);
 	m_dir_tech->set_normal_sampler_index(GBuffer::GBUFFER_TEXTURE_TYPE_NORMAL);
@@ -107,10 +112,11 @@ void TutorialDeferredShading::init_box_positions() {
 
 // äÖÈ¾³¡¾°
 void TutorialDeferredShading::render_scene_callback(float width, float height, float time) {
-	ds_geom_pass(time);
+	ds_geom_pass(time / 10);
 	ds_begin_light_pass();
 	ds_dir_light_pass();
 	ds_point_light_pass();
+	silhouette_pass(time / 10);
 }
 
 void TutorialDeferredShading::ds_geom_pass(float time) {
@@ -205,6 +211,24 @@ void TutorialDeferredShading::ds_rend_pass() {
 	m_gbuffer.set_read_buffer(GBuffer::GBUFFER_TEXTURE_TYPE_TEXCOORD);
 	glBlitFramebuffer(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, half_width, half_height, WINDOW_WIDTH, WINDOW_HEIGHT, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 	
+}
+
+void TutorialDeferredShading::silhouette_pass(float time)
+{
+	m_silhouette_tech->enable();
+	m_silhouette_tech->set_light_pos(m_cam->m_pos);
+	Pipline pipline;
+	pipline.set_rotation(0, time, 0);
+	pipline.set_camera_info(m_cam->m_pos, m_cam->m_target, m_cam->m_up);
+	pipline.set_pers_proj_info(m_proj_info);
+	GLenum mode = m_with_adjacencies ? GL_TRIANGLES_ADJACENCY : GL_TRIANGLES;
+
+	for (int i = 0; i < ELEMENTS_COUNT(m_box_positions); ++i) {
+		pipline.set_world_pos(m_box_positions[i]);
+		m_silhouette_tech->set_world_mat(pipline.get_world_trans());
+		m_silhouette_tech->set_wvp_mat(pipline.get_pers_wvp_trans());
+		m_box.render(NULL, mode);
+	}
 }
 
 // ¼üÅÌ»Øµ÷
