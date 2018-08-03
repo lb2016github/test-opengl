@@ -70,6 +70,9 @@ bool CompareVectors::operator()(const aiVector3D& a, const aiVector3D& b) const{
 }
 
 void Neighbors::add_neighbor(unsigned int i) {
+	// 已经添加过，则返回
+	if (i == n_idx_1 || i == n_idx_2) return;
+
 	if (n_idx_1 == -1) {
 		n_idx_1 = i;
 		return;
@@ -486,9 +489,9 @@ std::vector<unsigned int> VAOMesh::create_adjacent_indices(const aiMesh& ai_mesh
 		Edge e2(idx_1, idx_2);
 		Edge e3(idx_2, idx_0);
 
-		edge_neighbors[e1].add_neighbor(i);
-		edge_neighbors[e2].add_neighbor(i);
-		edge_neighbors[e3].add_neighbor(i);
+		edge_neighbors[e1].add_neighbor(idx_2);
+		edge_neighbors[e2].add_neighbor(idx_0);
+		edge_neighbors[e3].add_neighbor(idx_1);
 
 	}
 	// 构建index
@@ -505,15 +508,15 @@ std::vector<unsigned int> VAOMesh::create_adjacent_indices(const aiMesh& ai_mesh
 
 		indices.push_back(face.mIndices[0]);
 		Neighbors n1 = edge_neighbors[e1];
-		indices.push_back(n1.find_other(i));
+		indices.push_back(n1.find_other(idx_2));
 
 		indices.push_back(face.mIndices[1]);
 		Neighbors n2 = edge_neighbors[e2];
-		indices.push_back(n1.find_other(i));
+		indices.push_back(n2.find_other(idx_0));
 
 		indices.push_back(face.mIndices[2]);
 		Neighbors n3 = edge_neighbors[e3];
-		indices.push_back(n1.find_other(i));
+		indices.push_back(n3.find_other(idx_1));
 	}
 	return indices;
 }
@@ -577,4 +580,16 @@ void VAOMesh::clear() {
 		if (m_buffers[i]) glDeleteBuffers(1, &(m_buffers[i]));
 	}
 	glDeleteVertexArrays(1, &m_vao);
+}
+
+Edge::Edge(unsigned int i1, unsigned int i2)
+{
+	if (i1 > i2) {
+		idx_1 = i2;
+		idx_2 = i1;
+	}
+	else {
+		idx_1 = i1;
+		idx_2 = i2;
+	}
 }

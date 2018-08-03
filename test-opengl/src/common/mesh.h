@@ -59,7 +59,7 @@ public:
 // ÊµÏÖMeshµÄajdacency
 //***********************************
 struct Edge {
-	Edge(unsigned int i1, unsigned int i2=-1) : idx_1(i1), idx_2(i2) {}
+	Edge(unsigned int i1, unsigned int i2 = -1);
 	unsigned int idx_1;
 	unsigned int idx_2;
 };
@@ -71,10 +71,10 @@ struct CompareVectors {
 };
 struct Neighbors {
 	Neighbors() : n_idx_1(-1), n_idx_2(-1) {}
-	unsigned int find_other(unsigned int idx) { return idx == n_idx_1 ? n_idx_1 : n_idx_2; }
+	unsigned int find_other(unsigned int idx) { return idx == n_idx_1 ? n_idx_2 : n_idx_1; }
 	void add_neighbor(unsigned int i);
-	unsigned int n_idx_1;
-	unsigned int n_idx_2;
+	int n_idx_1;
+	int n_idx_2;
 };
 class MeshAdjacentHelper {
 public:

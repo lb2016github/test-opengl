@@ -116,7 +116,7 @@ void TutorialDeferredShading::render_scene_callback(float width, float height, f
 	ds_begin_light_pass();
 	ds_dir_light_pass();
 	ds_point_light_pass();
-	silhouette_pass(time / 10);
+
 }
 
 void TutorialDeferredShading::ds_geom_pass(float time) {
@@ -140,6 +140,8 @@ void TutorialDeferredShading::ds_geom_pass(float time) {
 		GLenum mode = m_with_adjacencies ? GL_TRIANGLES_ADJACENCY : GL_TRIANGLES;
 		m_box.render(NULL, mode);
 	}
+
+	silhouette_pass(time);
 
 	glDepthMask(GL_FALSE);
 	glDisable(GL_DEPTH_TEST);
