@@ -70,17 +70,17 @@ bool TutorialStencilShadow::init()
 void TutorialStencilShadow::render_scene_callback(float width, float height, float time)
 {
 	render_pass(time / 10);
-	//m_cam->on_render_cb();
+	m_cam->on_render_cb();
 }
 
 void TutorialStencilShadow::key_callback(int key, int scancode, int action, int mods)
 {
-	//m_cam->on_keyboard(key);
+	m_cam->on_keyboard(key);
 }
 
 void TutorialStencilShadow::cursor_position_callback(double x, double y)
 {
-	//m_cam->on_mouse_move(x, y);
+	m_cam->on_mouse_move(x, y);
 }
 
 void TutorialStencilShadow::render_pass(float time)
