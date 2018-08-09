@@ -138,6 +138,7 @@ public:
 
 	void set_direction_light(DirectionLight& dir_light);
 	void set_point_lights(std::vector<PointLight>& point_light_list);
+	void set_point_light(PointLight& point_light);
 	void set_eye_position(Vector3& eye_pos);
 	void set_specular_parameter(float spec_intensity, float spec_pow);
 	void set_transformation(Matrix& wvp, Matrix& world_trans);
@@ -433,5 +434,35 @@ private:
 	GLuint m_light_pos_location;
 };
 
+class NullTechnique : public Technique {
+public:
+	NullTechnique()
+	{
+		m_vertex_shader_path = "shaders/null_technique.vert";
+		m_fragment_shader_path = "shaders/null_technique.frag";
+	}
+	~NullTechnique();
+	bool init();
+	void set_wvp_mtx(const Matrix& wvp);
+
+private:
+	GLuint m_wvp_location;
+};
+
+class StencilShadowVolumeTechnique : public Technique {
+public:
+	StencilShadowVolumeTechnique();
+	~StencilShadowVolumeTechnique();
+
+	bool init();
+	void set_world_mtx(const Matrix& world_trans);
+	void set_light_position(const Vector3& light_pos);
+	void set_vp_mtx(const Matrix& vp_mtx);
+
+private:
+	GLuint m_world_trans_location;
+	GLuint m_light_position_location;
+	GLuint m_vp_location;
+};
 
 #endif // !_TECHNIQUE_H

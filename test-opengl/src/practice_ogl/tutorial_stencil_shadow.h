@@ -7,6 +7,13 @@
 #include "common/pipline.h"
 #include "common/mesh.h"
 
+struct Orientation {
+public:
+	Vector3 position;
+	Vector3 rotation;
+	Vector3 scale;
+};
+
 class TutorialStencilShadow : public ICallback {
 public:
 	TutorialStencilShadow();
@@ -25,17 +32,26 @@ public:
 
 protected:
 	void render_pass(float time);
+	void render_to_depth();
+	void render_shadow_volume_to_stencil();
+	void render_scene();
 
 private:
 	Camera * m_cam;
 	PersProjInfo m_proj_info;
-	SilhouetteDetectionTechnique* m_silhouette_tech;
-	DirectionLightTechnique* m_dir_light_tech;
-	DirectionLight m_dir_light;
+	NullTechnique* m_null_tech;
+	StencilShadowVolumeTechnique* m_ssv_tech;
+	PointLightTechnique* m_point_light_tech;
 
-
+	PointLight m_point_light;
 	IMesh* m_box;
+	IMesh* m_floor;
 	bool m_with_adjacencies;
+
+	Orientation m_box_orientation;
+	Orientation m_floor_orientation;
+
+	Texture* m_floor_texure;
 
 };
 

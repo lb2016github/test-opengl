@@ -259,6 +259,11 @@ void PointLightTechnique::set_point_lights(std::vector<PointLight>& point_light_
 		m_point_light_locations[i].set_light(point_light_list[i]);
 	}
 }
+void PointLightTechnique::set_point_light(PointLight & point_light)
+{
+	glUniform1i(m_point_light_num_location, 1);
+	m_point_light_locations[0].set_light(point_light);
+}
 void PointLightTechnique::set_eye_position(Vector3& eye_pos) {
 	glUniform3f(m_eye_world_pos_location, eye_pos[0], eye_pos[1], eye_pos[2]);
 }
@@ -911,4 +916,55 @@ void SilhouetteDetectionTechnique::set_world_mat(Matrix & world_mat)
 void SilhouetteDetectionTechnique::set_light_pos(Vector3 & world_pos)
 {
 	glUniform3f(m_light_pos_location, world_pos[0], world_pos[1], world_pos[2]);
+}
+
+NullTechnique::~NullTechnique()
+{
+}
+
+bool NullTechnique::init()
+{
+	bool rst = Technique::init();
+	m_wvp_location = glGetUniformLocation(m_program_id, "g_wvp");
+	return rst && m_wvp_location != INVALID_UNIFORM_LOCATION;
+}
+
+void NullTechnique::set_wvp_mtx(const Matrix & wvp)
+{
+	glUniformMatrix4fv(m_wvp_location, 1, GL_FALSE, wvp.data);
+}
+
+StencilShadowVolumeTechnique::StencilShadowVolumeTechnique()
+{
+	m_vertex_shader_path = "shaders/stencil_shadow_volume.vert";
+	m_geometry_shader_path = "shaders/stencil_shadow_volume.geom";
+	m_fragment_shader_path = "shaders/stencil_shadow_volume.frag";
+}
+
+StencilShadowVolumeTechnique::~StencilShadowVolumeTechnique()
+{
+}
+
+bool StencilShadowVolumeTechnique::init()
+{
+	bool rst = Technique::init();
+	m_world_trans_location = glGetUniformLocation(m_program_id, "g_world_trans");
+	m_light_position_location = glGetUniformLocation(m_program_id, "g_light_position");
+	m_vp_location = glGetUniformLocation(m_program_id, "g_vp");
+	return rst && m_world_trans_location != INVALID_UNIFORM_LOCATION && m_light_position_location != INVALID_UNIFORM_LOCATION && m_vp_location != INVALID_UNIFORM_LOCATION;
+}
+
+void StencilShadowVolumeTechnique::set_world_mtx(const Matrix & world_trans)
+{
+	glUniformMatrix4fv(m_world_trans_location, 1, GL_FALSE, world_trans.data);
+}
+
+void StencilShadowVolumeTechnique::set_light_position(const Vector3 & light_pos)
+{
+	glUniform3f(m_light_position_location, light_pos.data[0], light_pos.data[1], light_pos.data[2]);
+}
+
+void StencilShadowVolumeTechnique::set_vp_mtx(const Matrix & vp_mtx)
+{
+	glUniformMatrix4fv(m_vp_location, 1, GL_FALSE, vp_mtx.data);
 }
