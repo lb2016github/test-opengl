@@ -55,7 +55,7 @@ bool TutorialStencilShadow::init()
 	if (m_point_light_tech->init()) {
 		m_point_light_tech->enable();
 		m_point_light_tech->set_texture_unit(COLOR_TEXTURE_UNIT_INDEX);
-		m_point_light_tech->set_specular_parameter(1, 5);
+		m_point_light_tech->set_specular_parameter(0, 0);
 	}
 	else {
 		printf("ERROR: init silhouette technique\n");
@@ -98,8 +98,8 @@ void TutorialStencilShadow::render_pass(float time)
 	glEnable(GL_DEPTH_CLAMP);
 	glDisable(GL_CULL_FACE);
 	glStencilFunc(GL_ALWAYS, 0, 0xff);
-	glStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR, GL_KEEP);
-	glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR, GL_KEEP);
+	glStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR_WRAP, GL_KEEP);
+	glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR_WRAP, GL_KEEP);
 	render_shadow_volume_to_stencil();
 	// render diffuse scene
 	glDrawBuffer(GL_BACK);
