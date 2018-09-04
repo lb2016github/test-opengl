@@ -8,12 +8,13 @@
 class CameraRotationInfo {
 public:
 	CameraRotationInfo(float width, float height, float factor, Vector3& target);
+	void set_target(Vector3 target);
 	void on_mouse_move(double x, double y);
 	void update();
 	Vector3 get_forward() { return m_forward; }
 
 private:
-	float m_h_angle, m_v_angle;	 // 水平角，竖直角
+	float m_h_angle, m_v_angle, m_roll_angle;	 // 水平角，竖直角
 	bool m_left_edge, m_right_edge, m_upper_edge, m_lower_edge;	// 鼠标是否到达边缘
 	float m_mouse_x, m_mouse_y;	// 光标位置
 	float m_win_width, m_win_height;	// 窗口宽高
@@ -30,6 +31,7 @@ public:
 	void on_render_cb();
 
 	void set_pos(float x, float y, float z);
+	void set_target(const Vector3& target);
 
 	void on_keyboard(int key);
 	void on_mouse_move(double x, double y);

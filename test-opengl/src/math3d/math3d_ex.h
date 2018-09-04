@@ -41,6 +41,9 @@ public:
 	operator float*();
 	/******************* ÔËËã **********************/
 	Vector3 cross_product(Vector3& vector);
+	float get_length() {
+		return m3dGetVectorLengthSquared3(data);
+	}
 	/***************** ÔËËã·ûÖØÔØ **********************/
 	Vector3& operator=(const Vector3& vector);
 

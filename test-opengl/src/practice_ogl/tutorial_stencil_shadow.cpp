@@ -32,8 +32,8 @@ bool TutorialStencilShadow::init()
 	m_proj_info.z_far = 50;
 
 	m_cam->m_pos = Vector3(0, 20, -7);
-	m_cam->m_target = Vector3(0, -1, 1);
 	m_cam->m_up = Vector3(0, 1, 0);
+	m_cam->set_target(Vector3(0, -1, 1));
 
 	m_with_adjacencies = true;
 	m_box->load_mesh("res/box.obj", m_with_adjacencies);

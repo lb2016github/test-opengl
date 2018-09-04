@@ -34,6 +34,12 @@ void Camera::set_pos(float x, float y, float z) {
 	m_pos[2] = z;
 }
 
+void Camera::set_target(const Vector3 & target)
+{
+	m_target = target;
+	m_cam_rot_info->set_target(m_target);
+}
+
 void Camera::on_keyboard(int key) {
 	float factor = 1;
 	switch (key)
@@ -88,8 +94,14 @@ void Camera::on_render_cb() {
 CameraRotationInfo::CameraRotationInfo(float width, float height, float factor, Vector3& target):
 	m_win_width(width), m_win_height(height), m_left_edge(false), m_right_edge(false), 
 	m_lower_edge(false), m_upper_edge(false), m_factor(factor){
+	set_target(target);
+}
+
+void CameraRotationInfo::set_target(Vector3 target)
+{
 	// 次数假设target已经normalize
-	float h_angle = asin(target[2]);
+	float h_len = sqrtf(target[0] * target[0] + target[2] * target[2]);
+	float h_angle = asin(target[2] / h_len);
 	if (target[0] >= 0 && target[2] >= 0) {	// 第一象限
 		m_h_angle = h_angle;
 	}
@@ -104,16 +116,20 @@ CameraRotationInfo::CameraRotationInfo(float width, float height, float factor, 
 	}
 
 	// 竖直角度
-	m_v_angle = asin(target[1]);
+	m_v_angle = asin(target[1] / target.get_length());
 
 	// 光标
-	m_mouse_x = width / 2;
-	m_mouse_y = height / 2;
-
+	m_mouse_x = -1;
+	m_mouse_y = -1;
 }
 
 void CameraRotationInfo::on_mouse_move(double x, double y) {
 	//printf("%f, %f\n", x, y);
+	if (m_mouse_x < 0) {
+		m_mouse_x = x;
+		m_mouse_y = y;
+		return;
+	}
 
 	float delta_x = x - m_mouse_x;
 	float delta_y = y - m_mouse_y;
@@ -128,23 +144,29 @@ void CameraRotationInfo::on_mouse_move(double x, double y) {
 		m_left_edge = x <= MARGIN;
 		m_right_edge = x >= m_win_width - MARGIN;
 	}
+	else {
+		m_left_edge = m_right_edge = false;
+	}
 	if (delta_y == 0) {
-		m_upper_edge = y >= m_win_height - MARGIN;
-		m_lower_edge = y <= MARGIN;
+		m_lower_edge = y >= m_win_height - MARGIN;
+		m_upper_edge = y <= MARGIN;
+	}
+	else {
+		m_upper_edge = m_lower_edge = false;
 	}
 }
 
 void CameraRotationInfo::update() {
 	if (m_left_edge) m_h_angle -= EDGE_SPEED;
 	if (m_right_edge) m_h_angle += EDGE_SPEED;
-	if (m_upper_edge) m_v_angle -= EDGE_SPEED;
-	if (m_lower_edge) m_v_angle += EDGE_SPEED;
+	if (m_upper_edge) m_v_angle += EDGE_SPEED;
+	if (m_lower_edge) m_v_angle -= EDGE_SPEED;
 
 	//printf("%d, %d, %d, %d\n", m_left_edge, m_right_edge, m_lower_edge, m_upper_edge);
 
 	m_forward[0] = cos(m_h_angle);
 	m_forward[2] = sin(m_h_angle);
-	m_forward[1] = sin(m_v_angle);
+	m_forward[1] = tan(m_v_angle);
 
 	m_forward.normalize();
 }
