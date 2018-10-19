@@ -55,15 +55,28 @@ file(GLOB_RECURSE MATH3D_SRC src/math3d/*.*)
 add_library(math3d STATIC ${MATH3D_SRC})
 
 # 添加practice_ogl
-file(GLOB_RECURSE PRACTICE_SRC src/practice_ogl/*.* src/stb-master/*.*)
-add_executable(practice_ogl ${PRACTICE_SRC} src/main.cpp ${SHADER_SRC})
-target_link_libraries(practice_ogl ogl_window math3d assimp common glfw3)
+file(GLOB_RECURSE PRACTICE_SRC src/practice_ogl/*.*)
+add_executable(practice_ogl ${PRACTICE_SRC} ${SHADER_SRC})
+target_link_libraries(practice_ogl ogl_window math3d assimp common glfw3 math3d)
 set_target_properties(practice_ogl PROPERTIES DEBUG_POSTFIX "_d")
 set_target_properties(practice_ogl PROPERTIES RELEASE_POSTFIX "")
+
+# 添加ray_tracing功能
+file(GLOB_RECURSE RAY_TRACING_SRC src/ray_tracing/*.*)
+add_executable(ray_tracing_demo ${RAY_TRACING_SRC})
+target_link_libraries(ray_tracing_demo ogl_window math3d assimp common glfw3 math3d)
+set_target_properties(ray_tracing_demo PROPERTIES DEBUG_POSTFIX "_d")
+set_target_properties(ray_tracing_demo PROPERTIES RELEASE_POSTFIX "")
+
 
 file(GLOB_RECURSE LIBS libs/*.dll)
 add_custom_command(
 	TARGET practice_ogl
+	POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy ${LIBS} ${CMAKE_BINARY_DIR}/bin
+	)
+add_custom_command(
+	TARGET ray_tracing_demo
 	POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E copy ${LIBS} ${CMAKE_BINARY_DIR}/bin
 	)
