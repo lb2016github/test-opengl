@@ -461,4 +461,33 @@ private:
 	GLuint m_vp_location;
 };
 
+/*********************************************************
+PBR techniche
+*********************************************************/
+class PBRTechnique : public Technique {
+public:
+	PBRTechnique();
+	~PBRTechnique();
+	bool init();
+
+	void set_mvp_mtx(const Matrix& mvp_mtx);
+	void set_world_mtx(const Matrix& world_mtx);
+	void set_cam_position(Vector3& cam_pos);
+	void set_tex_metalness(unsigned int tex_index);
+	void set_tex_roughness(unsigned int tex_index);
+	void set_tex_albedo(unsigned int tex_index);
+	void set_tex_ao(unsigned int tex_ao);
+	void set_point_lights(unsigned int ligh_num, PointLight* lights);
+
+private:
+	GLuint m_mvp_location;
+	GLuint m_world_location;
+	GLuint m_tex_roughness_location;
+	GLuint m_tex_metalness_location;
+	GLuint m_tex_albedo_location;
+	GLuint m_tex_ao_location;
+	PointLightLocation m_point_lights_location[MAX_POINT_LIGHT_COUNT];
+	GLuint m_light_num_location;
+	GLuint m_cam_pos_location;
+};
 #endif // !_TECHNIQUE_H
