@@ -61,12 +61,12 @@ target_link_libraries(practice_ogl ogl_window math3d assimp common glfw3 math3d)
 set_target_properties(practice_ogl PROPERTIES DEBUG_POSTFIX "_d")
 set_target_properties(practice_ogl PROPERTIES RELEASE_POSTFIX "")
 
-# 添加ray_tracing功能
-file(GLOB_RECURSE RAY_TRACING_SRC src/ray_tracing/*.*)
-add_executable(ray_tracing_demo ${RAY_TRACING_SRC})
-target_link_libraries(ray_tracing_demo ogl_window math3d assimp common glfw3 math3d)
-set_target_properties(ray_tracing_demo PROPERTIES DEBUG_POSTFIX "_d")
-set_target_properties(ray_tracing_demo PROPERTIES RELEASE_POSTFIX "")
+# # 添加ray_tracing功能
+# file(GLOB_RECURSE RAY_TRACING_SRC src/ray_tracing/*.*)
+# add_executable(ray_tracing_demo ${RAY_TRACING_SRC})
+# target_link_libraries(ray_tracing_demo ogl_window math3d assimp common glfw3 math3d)
+# set_target_properties(ray_tracing_demo PROPERTIES DEBUG_POSTFIX "_d")
+# set_target_properties(ray_tracing_demo PROPERTIES RELEASE_POSTFIX "")
 
 
 file(GLOB_RECURSE LIBS libs/*.dll)
@@ -75,11 +75,11 @@ add_custom_command(
 	POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E copy ${LIBS} ${CMAKE_BINARY_DIR}/bin
 	)
-add_custom_command(
-	TARGET ray_tracing_demo
-	POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy ${LIBS} ${CMAKE_BINARY_DIR}/bin
-	)
+# add_custom_command(
+# 	TARGET ray_tracing_demo
+# 	POST_BUILD
+# 	COMMAND ${CMAKE_COMMAND} -E copy ${LIBS} ${CMAKE_BINARY_DIR}/bin
+# 	)
 
 # 移动shader文件
 add_custom_target(
