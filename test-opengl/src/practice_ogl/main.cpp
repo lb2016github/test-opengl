@@ -14,6 +14,7 @@
 #include "practice_ogl/tutorial_instanced_render.h"
 #include "practice_ogl/tutorial_deferred_shading.h"
 #include "practice_ogl/tutorial_stencil_shadow.h"
+#include "practice_ogl/tutorial_pbr.h"
 
 void main(){
 	fprintf(stdout, "%s\n", "HelloGLFW");
@@ -31,7 +32,8 @@ void main(){
 	//TutorialTessellation * tp = new TutorialTessellation();
 	//TutorialInstancedRendering* tp = new TutorialInstancedRendering();
 	//TutorialDeferredShading* tp = new TutorialDeferredShading();
-	TutorialStencilShadow* tp = new TutorialStencilShadow();
+	//TutorialStencilShadow* tp = new TutorialStencilShadow();
+	TutorialPBR* tp = new TutorialPBR();
 	tp->init();
 	glfw_win::set_callback(tp);
 	while (true)

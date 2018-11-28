@@ -968,3 +968,101 @@ void StencilShadowVolumeTechnique::set_vp_mtx(const Matrix & vp_mtx)
 {
 	glUniformMatrix4fv(m_vp_location, 1, GL_FALSE, vp_mtx.data);
 }
+
+PBRTechnique::PBRTechnique()
+{
+	m_vertex_shader_path = "shaders/pbr.vert";
+	m_fragment_shader_path = "shaders/pbr.frag";
+}
+
+PBRTechnique::~PBRTechnique()
+{
+
+}
+
+bool PBRTechnique::init()
+{
+	bool rst = Technique::init();
+	m_mvp_location = glGetUniformLocation(m_program_id, "g_mvp");
+	m_world_location = glGetUniformLocation(m_program_id, "g_world");
+	m_tex_roughness_location = glGetUniformLocation(m_program_id, "g_tex_roughness");
+	m_tex_metalness_location = glGetUniformLocation(m_program_id, "g_tex_metalness");
+	m_tex_albedo_location = glGetUniformLocation(m_program_id, "g_tex_albedo");
+	m_tex_ao_location = glGetUniformLocation(m_program_id, "g_tex_ao");
+	m_light_num_location = glGetUniformLocation(m_program_id, "g_light_num");
+	m_cam_pos_location = glGetUniformLocation(m_program_id, "g_cam_pos");
+	for (int i = 0; i < MAX_POINT_LIGHT_COUNT; ++i) {
+		char name[128];
+		snprintf(name, sizeof(name), "g_point_lights[%d].base_light.color", i);
+		m_point_lights_location[i].color = glGetUniformLocation(m_program_id, name);
+		snprintf(name, sizeof(name), "g_point_lights[%d].base_light.ambiant_intensity", i);
+		m_point_lights_location[i].ambiant_intensity = glGetUniformLocation(m_program_id, name);
+		snprintf(name, sizeof(name), "g_point_lights[%d].base_light.diffuse_intensity", i);
+		m_point_lights_location[i].diffuse_intensity = glGetUniformLocation(m_program_id, name);
+
+		snprintf(name, sizeof(name), "g_point_lights[%d].position", i);
+		m_point_lights_location[i].position = glGetUniformLocation(m_program_id, name);
+
+		snprintf(name, sizeof(name), "g_point_lights[%d].atten.constant", i);
+		m_point_lights_location[i].constant = glGetUniformLocation(m_program_id, name);
+		snprintf(name, sizeof(name), "g_point_lights[%d].atten.linear", i);
+		m_point_lights_location[i].linear = glGetUniformLocation(m_program_id, name);
+		snprintf(name, sizeof(name), "g_point_lights[%d].atten.expo", i);
+		m_point_lights_location[i].exp = glGetUniformLocation(m_program_id, name);
+
+		rst &= m_point_lights_location[i].is_valide();
+	}
+
+	return rst &&
+		m_mvp_location != INVALID_UNIFORM_LOCATION &&
+		m_world_location != INVALID_UNIFORM_LOCATION &&
+		m_tex_roughness_location != INVALID_UNIFORM_LOCATION &&
+		m_tex_metalness_location != INVALID_UNIFORM_LOCATION &&
+		m_tex_albedo_location != INVALID_UNIFORM_LOCATION &&
+		m_light_num_location != INVALID_UNIFORM_LOCATION &&
+		m_tex_ao_location != INVALID_UNIFORM_LOCATION &&
+		m_cam_pos_location != INVALID_UNIFORM_LOCATION;
+}
+
+void PBRTechnique::set_mvp_mtx(const Matrix& mvp_mtx)
+{
+	glUniformMatrix4fv(m_mvp_location, 1, GL_FALSE, mvp_mtx.data);
+}
+
+void PBRTechnique::set_world_mtx(const Matrix& world_mtx)
+{
+	glUniformMatrix4fv(m_world_location, 1, GL_FALSE, world_mtx.data);
+}
+
+void PBRTechnique::set_cam_position(Vector3& cam_pos)
+{
+	glUniform3f(m_cam_pos_location, cam_pos[0], cam_pos[1], cam_pos[2]);
+}
+
+void PBRTechnique::set_tex_metalness(unsigned int tex_index)
+{
+	glUniform1i(m_tex_metalness_location, tex_index);
+}
+
+void PBRTechnique::set_tex_roughness(unsigned int tex_index)
+{
+	glUniform1i(m_tex_roughness_location, tex_index);
+}
+
+void PBRTechnique::set_tex_albedo(unsigned int tex_index)
+{
+	glUniform1i(m_tex_albedo_location, tex_index);
+}
+
+void PBRTechnique::set_tex_ao(unsigned int tex_ao)
+{
+	glUniform1i(m_tex_ao_location, tex_ao);
+}
+
+void PBRTechnique::set_point_lights(unsigned int ligh_num, PointLight* lights)
+{
+	glUniform1i(m_light_num_location, ligh_num);
+	for (int i = 0; i < ligh_num; ++i) {
+		m_point_lights_location[i].set_light(lights[i]);
+	}
+}

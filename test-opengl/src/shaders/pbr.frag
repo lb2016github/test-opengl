@@ -1,40 +1,57 @@
-#version 330 core
-#define MAX_LIGHT_NUM 5
+#version 410 core
+#define MAX_LIGHT_NUM 2
 #define PI 3.1415926
-struct PointLight{
-	vec3 pos;
+
+struct BaseLight{
 	vec3 color;
+	float ambiant_intensity;
+	float diffuse_intensity;
 };
 
-struct FragIn{
-	vec3 coord;
+// 衰减参数
+struct Attenuation{
+	float constant;
+	float linear;
+	float expo;
+};
+
+struct PointLight{
+	BaseLight base_light;
+	vec3 position;
+	Attenuation atten;
+};
+
+struct VSOut{
+	vec2 coord;
 	vec3 w_pos;
 	vec3 w_normal;
 };
 
-uniform sampler1D g_tex_roughness;	// 粗糙度贴图
-uniform sampler1D g_tex_metalness;	// 金属度贴图
-uniform sampler3D g_tex_albedo;	// 基础发射率贴图（即diffuse，只是概念上不同）
+uniform sampler2D g_tex_roughness;	// 粗糙度贴图
+uniform sampler2D g_tex_metalness;	// 金属度贴图
+uniform sampler2D g_tex_albedo;	// 基础发射率贴图（即diffuse，只是概念上不同）
+uniform sampler2D g_tex_ao;		// ao贴图
 
 uniform PointLight g_point_lights[MAX_LIGHT_NUM];	// 点光源
 uniform int g_light_num;		// 光照数目
 uniform vec3 g_cam_pos;			// 相机位置
 
-in FragIn vs_in;			// 输入
+in VSOut vs_out;			// 输入
 out vec4 g_frag_color;	// 输出颜色
 
 float distribution_ggx(vec3 n, vec3 h, float roughness);
 vec3 fresnel_schlick(float h_o_v, vec3 f0);
 float geometry_schlick_ggx(float costheta, float roughness);
 float geometry_smith(vec3 n, vec3 l, vec3 v, float roughness);
-float calc_attenuation(float distance);	// 计算光照衰减
+float calc_attenuation(Attenuation atten, float dis);	// 计算光照衰减
 
 void main(){
-	vec3 w_normal = normalize(vs_in.w_normal);	// 表面normal方向
-	vec3 w_pos = vs_in.w_pos;
-	float roughness = sample(g_tex_roughness, vs_in.coord);
-	float metalness = sample(g_tex_metalness, vs_in.coord);
-	vec3 albedo = sample(g_tex_albedo, vs_in.coord);
+	vec3 w_normal = normalize(vs_out.w_normal);	// 表面normal方向
+	vec3 w_pos = vs_out.w_pos;
+	float roughness = texture(g_tex_roughness, vs_out.coord).x;
+	float metalness = texture(g_tex_metalness, vs_out.coord).x;
+	vec3 albedo = texture(g_tex_albedo, vs_out.coord).xyz;
+	vec3 ao = texture(g_tex_ao, vs_out.coord).xyz;
 	vec3 view_dir = normalize(g_cam_pos - w_pos);	// 相机朝向
 
 	vec3 f0 = vec3(0.04);
@@ -44,7 +61,7 @@ void main(){
 	float light_num = min(g_light_num, MAX_LIGHT_NUM);
 	for(int i = 0; i < light_num; ++i){
 		PointLight light = g_point_lights[i];
-		vec3 light_dir = normalize(light.pos - w_pos);		// 光照方向
+		vec3 light_dir = normalize(light.position - w_pos);		// 光照方向
 		vec3 h_dir = normalize(view_dir + light_dir);		// h方向
 
 		// 光照计算
@@ -59,23 +76,26 @@ void main(){
 		vec3 kd = vec3(1) - ks;
 		kd *= 1.0 - metalness;	// 金属不会折射光线（会直接吸收）
 
-		vec3 radiance = light.color * calc_attenuation(length(light.pos - w_pos));
+		vec3 radiance = light.base_light.color / calc_attenuation(light.atten, length(light.position - w_pos));
 		float n_dot_l = dot(w_normal, light_dir);
 
 		color += kd * (albedo / PI + specular) * n_dot_l * radiance;
 	}
+	vec3 ambiant = vec3(0.03) * albedo * ao;
+	color += ambiant;
+
 	g_frag_color = vec4(color, 1);
 }
 
-float calc_attenuation(float distance){
-	return 1 / distance / distance;
+float calc_attenuation(Attenuation atten, float dis){
+	return atten.constant + atten.linear * dis + atten.expo * dis * dis;;
 }
 
 // 计算D项
 float distribution_ggx(vec3 n, vec3 h, float roughness){
 	float a = roughness * roughness;	// 据迪士尼的经验调整，使得光照看起来更加自然
 	float a2 = a * a;
-	float n_o_h = dot(n, v);
+	float n_o_h = dot(n, h);
 	float denom = n_o_h * n_o_h * (a2 - 1) + 1;
 	denom = PI * denom * denom;
 	return a2 / denom;
@@ -101,5 +121,3 @@ float geometry_smith(vec3 n, vec3 l, vec3 v, float roughness){
 	float n_dot_v = max(dot(n, v), 0);
 	return geometry_schlick_ggx(n_dot_l, roughness) * geometry_schlick_ggx(n_dot_v, roughness);
 }
-
-

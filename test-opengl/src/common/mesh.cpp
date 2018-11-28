@@ -373,6 +373,7 @@ bool VAOMesh::init_from_scene(const aiScene* scene, const std::string& filename)
 		m_entities[i].base_index = num_indices;
 		m_entities[i].base_vertices = num_vertices;
 		m_entities[i].material_index = ai_mesh->mMaterialIndex;
+		// read vertex data
 		for (unsigned int i = 0; i < ai_mesh->mNumVertices; ++i) {
 			// read data
 			const aiVector3D* pos = &(ai_mesh->mVertices[i]);
@@ -388,6 +389,7 @@ bool VAOMesh::init_from_scene(const aiScene* scene, const std::string& filename)
 			num_vertices += 1;
 		}
 		
+		// read margin indices
 		if (m_with_adjacencies) {
 			int index_count = 0;
 			// create index with GL_TRIANGLE_ADJACENCY mode
@@ -395,7 +397,7 @@ bool VAOMesh::init_from_scene(const aiScene* scene, const std::string& filename)
 			num_indices += sub_indices.size();
 			indices.insert(indices.end(), sub_indices.begin(), sub_indices.end());
 		}
-		else {
+		else { // read all indices
 			for (unsigned int i = 0; i < ai_mesh->mNumFaces; ++i) {
 				// read data
 				const aiFace& face = ai_mesh->mFaces[i];
