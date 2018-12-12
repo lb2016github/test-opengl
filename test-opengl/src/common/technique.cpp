@@ -6,6 +6,7 @@
 #include <sstream>
 #include <vector>
 #include "const.h"
+#include "utils.h"
 
 #define LOCATION_UNDEFINED 0xFFFFFFFF
 
@@ -132,8 +133,8 @@ bool Technique::finalize() {
 
 ////////////////////////////////////DirectionLightTechnique////////////////
 DirectionLightTechnique::DirectionLightTechnique(){
-	m_vertex_shader_path = "shaders/direction_light.vert";
-	m_fragment_shader_path = "shaders/direction_light.frag";
+	m_vertex_shader_path = PathManager::instance()->get_shader_dir("direction_light.vert");
+	m_fragment_shader_path = PathManager::instance()->get_shader_dir("direction_light.frag");
 }
 
 bool DirectionLightTechnique::init() {
@@ -205,8 +206,8 @@ void DirectionLightTechnique::set_specular_power(float power) {
 Point Light Technique
 *****************************************/
 PointLightTechnique::PointLightTechnique() {
-	m_vertex_shader_path = "shaders/point_light.vert";
-	m_fragment_shader_path = "shaders/point_light.frag";
+	m_vertex_shader_path = PathManager::instance()->get_shader_dir("point_light.vert");
+	m_fragment_shader_path = PathManager::instance()->get_shader_dir("point_light.frag");
 }
 
 bool PointLightTechnique::init() {
@@ -286,8 +287,8 @@ void PointLightTechnique::set_texture_unit(int unit_idx) {
 Spot light technique
 *********************************************************/
 SpotLightTechnique::SpotLightTechnique() {
-	m_vertex_shader_path = "shaders/spot_light.vert";
-	m_fragment_shader_path = "shaders/spot_light.frag";
+	m_vertex_shader_path = PathManager::instance()->get_shader_dir("spot_light.vert");
+	m_fragment_shader_path = PathManager::instance()->get_shader_dir("spot_light.frag");
 }
 
 bool SpotLightTechnique::init() {
@@ -417,8 +418,8 @@ ShadowMapTechnique
 *********************************************************/
 
 ShadowMapTechnique::ShadowMapTechnique() {
-	m_vertex_shader_path = "shaders/shadow_map.vert";
-	m_fragment_shader_path = "shaders/shadow_map.frag";
+	m_vertex_shader_path = PathManager::instance()->get_shader_dir("shadow_map.vert");
+	m_fragment_shader_path = PathManager::instance()->get_shader_dir("shadow_map.frag");
 }
 
 bool ShadowMapTechnique::init() {
@@ -444,8 +445,8 @@ void ShadowMapTechnique::set_shadow_map_tex_unit(unsigned int tex_idx) {
 ShadowMapTechnique
 *********************************************************/
 LightingTechnique::LightingTechnique() {
-	m_vertex_shader_path = "shaders/lighting_technique.vert";
-	m_fragment_shader_path = "shaders/lighting_technique.frag";
+	m_vertex_shader_path = PathManager::instance()->get_shader_dir("lighting_technique.vert");
+	m_fragment_shader_path = PathManager::instance()->get_shader_dir("lighting_technique.frag");
 }
 
 bool LightingTechnique::init() {
@@ -462,9 +463,9 @@ void LightingTechnique::set_normal_map_tex_unit(unsigned int texture_unit) {
 Billboard Technique
 *********************************************************/
 BillboardTechnique::BillboardTechnique() {
-	m_vertex_shader_path = "shaders/billboard.vert";
-	m_geometry_shader_path = "shaders/billboard.geom";
-	m_fragment_shader_path = "shaders/billboard.frag";
+	m_vertex_shader_path = PathManager::instance()->get_shader_dir("billboard.vert");
+	m_geometry_shader_path = PathManager::instance()->get_shader_dir("billboard.geom");
+	m_fragment_shader_path = PathManager::instance()->get_shader_dir("billboard.frag");
 }
 bool BillboardTechnique::init() {
 	if (!Technique::init()) return false;
@@ -499,9 +500,9 @@ Partical System Update Technique
 *********************************************************/
 PSUpdateTechnique::PSUpdateTechnique()
 {
-	m_vertex_shader_path = "shaders/ps_update.vert";
-	m_geometry_shader_path = "shaders/ps_update.geom";
-	m_fragment_shader_path = "shaders/ps_update.frag";
+	m_vertex_shader_path = PathManager::instance()->get_shader_dir("ps_update.vert");
+	m_geometry_shader_path = PathManager::instance()->get_shader_dir("ps_update.geom");
+	m_fragment_shader_path = PathManager::instance()->get_shader_dir("ps_update.frag");
 }
 
 PSUpdateTechnique::~PSUpdateTechnique()
@@ -576,8 +577,8 @@ Picking Technique
 *********************************************************/
 PickingTechnique::PickingTechnique()
 {
-	m_vertex_shader_path = "shaders/picking.vert";
-	m_fragment_shader_path = "shaders/picking.frag";
+	m_vertex_shader_path = PathManager::instance()->get_shader_dir("picking.vert");
+	m_fragment_shader_path = PathManager::instance()->get_shader_dir("picking.frag");
 }
 
 PickingTechnique::~PickingTechnique()
@@ -611,8 +612,8 @@ void PickingTechnique::on_draw_start_callback(unsigned int mesh_id) {
 Simple Color Technique
 *********************************************************/
 SimpleColorTechnique::SimpleColorTechnique() {
-	m_vertex_shader_path = "shaders/simple_color.vert";
-	m_fragment_shader_path = "shaders/simple_color.frag";
+	m_vertex_shader_path = PathManager::instance()->get_shader_dir("simple_color.vert");
+	m_fragment_shader_path = PathManager::instance()->get_shader_dir("simple_color.frag");
 }
 SimpleColorTechnique::~SimpleColorTechnique() {
 
@@ -635,8 +636,8 @@ Simple Show Technique
 *********************************************************/
 
 SimpleShowTechnique::SimpleShowTechnique() {
-	m_vertex_shader_path = "shaders/simple_show.vert";
-	m_fragment_shader_path = "shaders/simple_show.frag";
+	m_vertex_shader_path = PathManager::instance()->get_shader_dir("simple_show.vert");
+	m_fragment_shader_path = PathManager::instance()->get_shader_dir("simple_show.frag");
 }
 SimpleShowTechnique::~SimpleShowTechnique() {
 
@@ -661,10 +662,10 @@ void SimpleShowTechnique::set_tex_index(unsigned int tex_index) {
 Tessellation Technique
 *********************************************************/
 TessellationTechnique::TessellationTechnique() {
-	m_vertex_shader_path = "shaders/tessellation.vert";
-	m_tc_shader_path = "shaders/tessellation.tessc";
-	m_te_shader_path = "shaders/tessellation.tesse";
-	m_fragment_shader_path = "shaders/tessellation.frag";
+	m_vertex_shader_path = PathManager::instance()->get_shader_dir("tessellation.vert");
+	m_tc_shader_path = PathManager::instance()->get_shader_dir("tessellation.tessc");
+	m_te_shader_path = PathManager::instance()->get_shader_dir("tessellation.tesse");
+	m_fragment_shader_path = PathManager::instance()->get_shader_dir("tessellation.frag");
 }
 TessellationTechnique::~TessellationTechnique() {
 
@@ -727,8 +728,8 @@ void TessellationTechnique::set_specular_param(float intensity, float power) {
 Instanced Rending Technique
 *********************************************************/
 InstanceRenderingTechnique::InstanceRenderingTechnique() {
-	m_vertex_shader_path = "shaders/instance_render.vert";
-	m_fragment_shader_path = "shaders/instance_render.frag";
+	m_vertex_shader_path = PathManager::instance()->get_shader_dir("instance_render.vert");
+	m_fragment_shader_path = PathManager::instance()->get_shader_dir("instance_render.frag");
 }
 InstanceRenderingTechnique::~InstanceRenderingTechnique() {
 
@@ -750,8 +751,8 @@ void InstanceRenderingTechnique::set_tex_color_index(unsigned int color_index)
 Deffered Rending Technique
 *********************************************************/
 DSGeometryTechnique::DSGeometryTechnique() {
-	m_vertex_shader_path = "shaders/ds_geometry_pass.vert";
-	m_fragment_shader_path = "shaders/ds_geometry_pass.frag";
+	m_vertex_shader_path = PathManager::instance()->get_shader_dir("ds_geometry_pass.vert");
+	m_fragment_shader_path = PathManager::instance()->get_shader_dir("ds_geometry_pass.frag");
 }
 DSGeometryTechnique::~DSGeometryTechnique() {
 	
@@ -824,8 +825,8 @@ void DSLightTechnique::set_specular_param(float pow, float mat_specular) {
 }
 
 DSDirLightTechnique::DSDirLightTechnique() {
-	m_vertex_shader_path = "shaders/ds_light_pass.vert";
-	m_fragment_shader_path = "shaders/ds_dir_light_pass.frag";
+	m_vertex_shader_path = PathManager::instance()->get_shader_dir("ds_light_pass.vert");
+	m_fragment_shader_path = PathManager::instance()->get_shader_dir("ds_dir_light_pass.frag");
 }
 DSDirLightTechnique::~DSDirLightTechnique() {
 
@@ -844,8 +845,8 @@ void DSDirLightTechnique::set_dir_light(DirectionLight& dir_light) {
 
 
 DSPointLightTechnique::DSPointLightTechnique() {
-	m_vertex_shader_path = "shaders/ds_light_pass.vert";
-	m_fragment_shader_path = "shaders/ds_point_light_pass.frag";
+	m_vertex_shader_path = PathManager::instance()->get_shader_dir("ds_light_pass.vert");
+	m_fragment_shader_path = PathManager::instance()->get_shader_dir("ds_point_light_pass.frag");
 }
 DSPointLightTechnique::~DSPointLightTechnique() {
 
@@ -885,9 +886,9 @@ void DSPointLightTechnique::set_point_lights(int light_num, PointLight lights[],
 
 SilhouetteDetectionTechnique::SilhouetteDetectionTechnique()
 {
-	m_vertex_shader_path = "shaders/silhouette.vert";
-	m_geometry_shader_path = "shaders/silhouette.geom";
-	m_fragment_shader_path = "shaders/silhouette.frag";
+	m_vertex_shader_path = PathManager::instance()->get_shader_dir("silhouette.vert");
+	m_geometry_shader_path = PathManager::instance()->get_shader_dir("silhouette.geom");
+	m_fragment_shader_path = PathManager::instance()->get_shader_dir("silhouette.frag");
 }
 
 SilhouetteDetectionTechnique::~SilhouetteDetectionTechnique()
@@ -918,6 +919,12 @@ void SilhouetteDetectionTechnique::set_light_pos(Vector3 & world_pos)
 	glUniform3f(m_light_pos_location, world_pos[0], world_pos[1], world_pos[2]);
 }
 
+NullTechnique::NullTechnique()
+{
+	m_vertex_shader_path = PathManager::instance()->get_shader_dir("null_technique.vert");
+	m_fragment_shader_path = PathManager::instance()->get_shader_dir("null_technique.frag");
+}
+
 NullTechnique::~NullTechnique()
 {
 }
@@ -936,9 +943,9 @@ void NullTechnique::set_wvp_mtx(const Matrix & wvp)
 
 StencilShadowVolumeTechnique::StencilShadowVolumeTechnique()
 {
-	m_vertex_shader_path = "shaders/stencil_shadow_volume.vert";
-	m_geometry_shader_path = "shaders/stencil_shadow_volume.geom";
-	m_fragment_shader_path = "shaders/stencil_shadow_volume.frag";
+	m_vertex_shader_path = PathManager::instance()->get_shader_dir("stencil_shadow_volume.vert");
+	m_geometry_shader_path = PathManager::instance()->get_shader_dir("stencil_shadow_volume.geom");
+	m_fragment_shader_path = PathManager::instance()->get_shader_dir("stencil_shadow_volume.frag");
 }
 
 StencilShadowVolumeTechnique::~StencilShadowVolumeTechnique()

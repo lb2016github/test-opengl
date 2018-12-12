@@ -1,5 +1,10 @@
 #include "tutorial_stencil_shadow.h"
 #include "common/utils.h"
+#include "nxgenvid/nxgenvid.h"
+
+void func_read_pixels(char* data) {
+	glReadPixels(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA, GL_UNSIGNED_BYTE, data);
+}
 
 TutorialStencilShadow::TutorialStencilShadow()
 {
@@ -9,7 +14,7 @@ TutorialStencilShadow::TutorialStencilShadow()
 	m_point_light_tech = new PointLightTechnique();
 	m_box = new VAOMesh();
 	m_floor = new VAOMesh();
-	m_floor_texure = new Texture(GL_TEXTURE_2D, "res/test.png");
+	m_floor_texure = new Texture(GL_TEXTURE_2D, PathManager::instance()->get_res_dir("test.png"));
 }
 
 TutorialStencilShadow::~TutorialStencilShadow()
@@ -21,6 +26,7 @@ TutorialStencilShadow::~TutorialStencilShadow()
 	SAFE_DELETE(m_floor);
 	SAFE_DELETE(m_point_light_tech);
 	SAFE_DELETE(m_floor_texure);
+	destroy_nxgenvid();
 }
 
 bool TutorialStencilShadow::init()
@@ -36,8 +42,8 @@ bool TutorialStencilShadow::init()
 	m_cam->set_target(Vector3(0, -1, 1));
 
 	m_with_adjacencies = true;
-	m_box->load_mesh("res/box.obj", m_with_adjacencies);
-	m_floor->load_mesh("res/quad.obj", m_with_adjacencies);
+	m_box->load_mesh(PathManager::instance()->get_res_dir("box.obj"), m_with_adjacencies);
+	m_floor->load_mesh(PathManager::instance()->get_res_dir("quad.obj"), m_with_adjacencies);
 	m_box_orientation.position = Vector3(0, 2, 0);
 	m_floor_orientation.scale = Vector3(10, 10, 10);
 	m_floor_orientation.rotation = Vector3(m3dDegToRad(90), 0, 0);
@@ -64,13 +70,22 @@ bool TutorialStencilShadow::init()
 	glEnable(GL_DEPTH_TEST | GL_CULL_FACE | GL_STENCIL_TEST);
 	glFrontFace(GL_CW);
 
-	return false;
+	NxGenvidInitInfo info;
+	info.width = WINDOW_WIDTH;
+	info.height = WINDOW_HEIGHT;
+	info.format = GenvidPixelFormat_R8G8B8A8;
+	info.func_read_pixel = &func_read_pixels;
+
+	init_nxgenvid(info);
+
+	return true;
 }
 
 void TutorialStencilShadow::render_scene_callback(float width, float height, float time)
 {
 	render_pass(time / 10);
 	m_cam->on_render_cb();
+	on_game_loop();
 }
 
 void TutorialStencilShadow::key_callback(int key, int scancode, int action, int mods)

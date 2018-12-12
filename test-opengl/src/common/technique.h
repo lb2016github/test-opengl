@@ -436,11 +436,7 @@ private:
 
 class NullTechnique : public Technique {
 public:
-	NullTechnique()
-	{
-		m_vertex_shader_path = "shaders/null_technique.vert";
-		m_fragment_shader_path = "shaders/null_technique.frag";
-	}
+	NullTechnique();
 	~NullTechnique();
 	bool init();
 	void set_wvp_mtx(const Matrix& wvp);

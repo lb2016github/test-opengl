@@ -54,10 +54,14 @@ add_library(common STATIC ${COMMON_SRC})
 file(GLOB_RECURSE MATH3D_SRC src/math3d/*.*)
 add_library(math3d STATIC ${MATH3D_SRC})
 
+# 添加genvid库
+file(GLOB_RECURSE GENVID_SRC src/nxgenvid/*.*)
+add_library(nxgenvid STATIC ${GENVID_SRC})
+
 # 添加practice_ogl
 file(GLOB_RECURSE PRACTICE_SRC src/practice_ogl/*.*)
 add_executable(practice_ogl ${PRACTICE_SRC} ${SHADER_SRC})
-target_link_libraries(practice_ogl ogl_window math3d assimp common glfw3 math3d)
+target_link_libraries(practice_ogl ogl_window math3d assimp common glfw3 math3d nxgenvid genvid)
 set_target_properties(practice_ogl PROPERTIES DEBUG_POSTFIX "_d")
 set_target_properties(practice_ogl PROPERTIES RELEASE_POSTFIX "")
 
