@@ -1,6 +1,5 @@
 #include "tutorial_stencil_shadow.h"
 #include "common/utils.h"
-#include "nxgenvid/nxgenvid.h"
 
 void func_read_pixels(char* data) {
 	glReadPixels(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA, GL_UNSIGNED_BYTE, data);
@@ -26,7 +25,6 @@ TutorialStencilShadow::~TutorialStencilShadow()
 	SAFE_DELETE(m_floor);
 	SAFE_DELETE(m_point_light_tech);
 	SAFE_DELETE(m_floor_texure);
-	destroy_nxgenvid();
 }
 
 bool TutorialStencilShadow::init()
@@ -70,14 +68,6 @@ bool TutorialStencilShadow::init()
 	glEnable(GL_DEPTH_TEST | GL_CULL_FACE | GL_STENCIL_TEST);
 	glFrontFace(GL_CW);
 
-	NxGenvidInitInfo info;
-	info.width = WINDOW_WIDTH;
-	info.height = WINDOW_HEIGHT;
-	info.format = GenvidPixelFormat_R8G8B8A8;
-	info.func_read_pixel = &func_read_pixels;
-
-	init_nxgenvid(info);
-
 	return true;
 }
 
@@ -85,7 +75,6 @@ void TutorialStencilShadow::render_scene_callback(float width, float height, flo
 {
 	render_pass(time / 10);
 	m_cam->on_render_cb();
-	on_game_loop();
 }
 
 void TutorialStencilShadow::key_callback(int key, int scancode, int action, int mods)
